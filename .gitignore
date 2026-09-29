@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+
+# Caches and test artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Logs and archives
+*.log
+*.zip
+*.tar.gz
+*.tgz
+*.7z
+
+# Environment / secrets
+.env
+.env.*
+secrets.*
+
+# Project outputs (runtime artifacts)
+outputs/
+staging/
+artifacts/
+_backups/
+backups/
+artifacts-*/
+app-tkinter-legacy/
+
+# IDE / editor
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# KDE / desktop
+.DirectoryEntry
+.Directory
+.directory
+
+# Local screenshots not meant for repo
+screenshots/local/

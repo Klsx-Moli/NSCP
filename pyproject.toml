@@ -1,0 +1,83 @@
+[project]
+name = "neuroprompt-semantic-compiler"
+version = "1.0.0rc2"
+description = "Semantic prompt compiler that converts messy prompts into NSL and reconstructed model-ready instructions."
+requires-python = ">=3.10"
+readme = "README.md"
+authors = [{name = "NeuroPrompt Team"}]
+dependencies = ["PySide6>=6.11"]
+
+[project.scripts]
+npsc = "npsc_cli:run_cli"
+npsc-gui = "npsc_gui.main:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = [
+  "benchmark_quality",
+  "compilation_profiles",
+  "compiler_defaults",
+  "clarification_gate",
+  "constraint_normalizer",
+  "context_loss_verifier",
+  "export_manager",
+  "exporters",
+  "field_validator",
+  "hybrid_output",
+  "i18n",
+  "model_adapter",
+  "npsc_cli",
+  "npsc_service",
+  "nsl_compiler",
+  "nsl_parser",
+  "profile_selector",
+  "profile_policy",
+  "prompt_quality",
+  "prompt_reconstructor",
+  "report_builder",
+  "resource_paths",
+  "rop_template",
+  "safety_vocabulary",
+  "semantic_dictionary",
+  "semantic_extractor",
+  "semantic_ir",
+  "semantic_seed_mapper",
+  "template_manager",
+  "token_estimator",
+  "utils",
+  "variables",
+  "version_history"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+npsc_resources = ["configs/*.json", "assets/icons/*.svg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+  ".venv",
+  "dist",
+  "build",
+  "backups",
+  "_backups",
+  "outputs",
+  "staging",
+  "*.egg-info",
+  ".pytest_cache",
+  "__pycache__"
+]
+python_files = ["test_*.py"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests bootstrap sys.path with the repo's src/ directory BEFORE importing the
+# modules under test; those imports are necessarily not at the top of the file
+# (E402). This is the intentional local-run pattern — CI additionally exports
+# PYTHONPATH=src. No semantic rule (F821/F601/F811/...) is ignored anywhere.
+"tests/**" = ["E402"]
