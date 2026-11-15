@@ -1,0 +1,192 @@
+{
+  "schema": "npsc.benchmark.corpus.v1",
+  "note": "Corpus independiente del usado en examples/ y tools/ab_eval. Incluye preguntas de foro reales (estilo Stack Overflow / Reddit / foros de programación), peticiones vagas de una linea, tareas tecnicas densas, escritura, datos, sysadmin y casos en varios idiomas. El objetivo es medir la mejora sobre entradas DIFERENTES a las de entrenamiento/ejemplos del repo.",
+  "cases": [
+    {
+      "id": "forum-python-keyerror",
+      "group": "forum",
+      "language": "es",
+      "raw": "Hola, tengo un problema con mi script de Python. Cuando lo ejecuto me da KeyError: 'nombre' y no entiendo por que. El archivo es un CSV que leo con pandas y luego hago un for para recorrer las filas. Alguien me puede ayudar? Gracias!"
+    },
+    {
+      "id": "forum-js-async-order",
+      "group": "forum",
+      "language": "en",
+      "raw": "why does my for loop print undefined before the array is filled? i'm doing fetch calls in a loop and pushing results but console.log at the end shows empty array. using async/await already but still broken, what am i doing wrong"
+    },
+    {
+      "id": "forum-sql-slow",
+      "group": "forum",
+      "language": "es",
+      "raw": "tengo una consulta SQL que tarda como 30 segundos y no se por que, la tabla tiene unos 2 millones de registros y hago un join con otra tabla, he probado indices pero sigue igual, que puedo hacer?"
+    },
+    {
+      "id": "forum-docker-port",
+      "group": "forum",
+      "language": "en",
+      "raw": "docker container runs fine locally but i cant reach it from the browser, port mapping looks right (8080:80) and logs say listening on 80. host is windows. any idea?"
+    },
+    {
+      "id": "forum-css-layout",
+      "group": "forum",
+      "language": "es",
+      "raw": "no consigo centrar un div verticalmente, he probado margin auto y flexbox pero nada funciona, el contenedor tiene altura fija y el hijo es dinamico, ayuda por favor"
+    },
+    {
+      "id": "forum-git-undo",
+      "group": "forum",
+      "language": "en",
+      "raw": "i accidentally committed a 200mb file and pushed it. how do i remove it from history without breaking everyone else's clone? we're a small team and i'd rather not force everyone to re-clone"
+    },
+    {
+      "id": "forum-regex-email",
+      "group": "forum",
+      "language": "es",
+      "raw": "necesito una expresion regular para validar emails en javascript, he visto mil versiones distintas y ninguna me convence, cual es la correcta?"
+    },
+    {
+      "id": "forum-memory-leak",
+      "group": "forum",
+      "language": "en",
+      "raw": "my node process memory keeps growing until it crashes after a few hours. heap snapshots show something but i can't tell what's leaking. it's an express server with a websocket. where do i start"
+    },
+    {
+      "id": "forum-excel-formula",
+      "group": "forum",
+      "language": "es",
+      "raw": "como hago en excel para que una celda me muestre el valor de otra hoja solo si cumple dos condiciones? he probado si anidado pero me da error de referencia circular"
+    },
+    {
+      "id": "forum-cors-error",
+      "group": "forum",
+      "language": "en",
+      "raw": "getting CORS policy blocked when calling my api from localhost:3000 to localhost:8000. i added the header on the server but the browser still blocks the preflight. what am i missing"
+    },
+    {
+      "id": "vague-one-line-1",
+      "group": "vague",
+      "language": "es",
+      "raw": "hazme una web"
+    },
+    {
+      "id": "vague-one-line-2",
+      "group": "vague",
+      "language": "en",
+      "raw": "fix my code"
+    },
+    {
+      "id": "vague-one-line-3",
+      "group": "vague",
+      "language": "es",
+      "raw": "necesito automatizar algo del trabajo"
+    },
+    {
+      "id": "vague-one-line-4",
+      "group": "vague",
+      "language": "en",
+      "raw": "write me something for my startup"
+    },
+    {
+      "id": "vague-one-line-5",
+      "group": "vague",
+      "language": "es",
+      "raw": "mejorame este texto que suena raro"
+    },
+    {
+      "id": "tech-api-fastapi",
+      "group": "technical",
+      "language": "es",
+      "raw": "Implementa un endpoint POST /api/v1/tickets en Python con FastAPI que valide title (string, 1-120) y priority (low|medium|high). Responde 201 con el ticket creado y 422 con errores de validacion. Incluye tests con pytest y sin dependencias externas. Criterios de aceptacion: los tests pasan y el OpenAPI refleja los limites. No uses sudo ni bases de datos externas."
+    },
+    {
+      "id": "tech-migration-plan",
+      "group": "technical",
+      "language": "en",
+      "raw": "We need to migrate a 400k LOC Django monolith from Python 3.8 to 3.12 without downtime. Postgres 12 to 16 too. Produce a phased plan with rollback at each step, risk register, and the exact CI gates. No external SaaS, everything self-hosted, and we cannot touch the legacy billing module this quarter."
+    },
+    {
+      "id": "tech-data-pipeline",
+      "group": "technical",
+      "language": "es",
+      "raw": "Disena un pipeline que ingiera 50 GB diarios de logs JSON, los valide contra un schema, deduplique por request_id y los agregue en parquet particionado por fecha. Debe correr en batch nocturno, ser idempotente y alertar si la tasa de registros invalidos supera el 2%. Restriccion: solo herramientas open source y on-premise."
+    },
+    {
+      "id": "tech-review",
+      "group": "technical",
+      "language": "en",
+      "raw": "Review this design: a single Redis instance used as both cache and job queue for a payment reconciliation service processing 2M jobs/day. Failure mode if Redis dies is full reconciliation stop. Give me the concrete risks ranked, and what to change first with the least migration effort."
+    },
+    {
+      "id": "writing-email",
+      "group": "writing",
+      "language": "es",
+      "raw": "escribe un email para mi jefe explicando que el proyecto se va a retrasar dos semanas por un problema con el proveedor, sin sonar excusas y proponiendo un plan"
+    },
+    {
+      "id": "writing-rewrite",
+      "group": "writing",
+      "language": "en",
+      "raw": "rewrite this paragraph so it's clearer and more professional but keep it under 90 words and don't add claims i didn't make: 'we did a bunch of stuff and it kind of worked but there were some issues and we think we can maybe fix them soon'"
+    },
+    {
+      "id": "writing-docs",
+      "group": "writing",
+      "language": "es",
+      "raw": "redacta la documentacion de instalacion de una CLI en python para linux y macos, incluyendo requisitos, instalacion con pipx, verificacion y solucion de problemas comunes"
+    },
+    {
+      "id": "data-analysis",
+      "group": "data",
+      "language": "es",
+      "raw": "tengo un CSV de ventas con columnas fecha, producto, cantidad, precio y region. Quiero saber que region crece mas mes a mes y detectar productos con caida sostenida. Dame el analisis en python con pandas y explica los supuestos."
+    },
+    {
+      "id": "data-metrics",
+      "group": "data",
+      "language": "en",
+      "raw": "define the metrics for a SaaS onboarding funnel: signup, first project, first successful run, week-2 retention. For each one give the exact SQL shape, the edge cases that would make it lie, and how to detect them"
+    },
+    {
+      "id": "sysadmin-nginx",
+      "group": "sysadmin",
+      "language": "es",
+      "raw": "configura nginx como reverse proxy para una app en localhost:3000 con https, redireccion de http a https, y que no exponga la version en las cabeceras. El certificado ya existe en /etc/ssl. Sin tocar el firewall."
+    },
+    {
+      "id": "sysadmin-backup",
+      "group": "sysadmin",
+      "language": "en",
+      "raw": "design a backup strategy for a 2TB postgres database with a 4 hour RPO. We have one server and no budget for another. Include restore drill steps and how to prove the backup is actually restorable without touching production"
+    },
+    {
+      "id": "learning-explain",
+      "group": "learning",
+      "language": "es",
+      "raw": "explicame la diferencia entre concurrencia y paralelismo con ejemplos concretos en python, y cuando conviene usar cada uno, asumiendo que se programar pero no soy experto"
+    },
+    {
+      "id": "learning-interview",
+      "group": "learning",
+      "language": "en",
+      "raw": "i have a system design interview in 3 days for a mid-level backend role. build me a study plan that actually fits in 3 days, with the 8 topics that matter most, and one practice prompt per topic"
+    },
+    {
+      "id": "i18n-french",
+      "group": "multilingual",
+      "language": "fr",
+      "raw": "ecris une fonction python qui valide un numero de telephone francais et international, avec des tests, et explique les cas limites"
+    },
+    {
+      "id": "i18n-german",
+      "group": "multilingual",
+      "language": "de",
+      "raw": "erstelle ein konzept fuer eine lokale desktop app zur zeiterfassung mit export nach csv, ohne cloud und ohne externe abhaengigkeiten, inklusive datenmodell und testplan"
+    },
+    {
+      "id": "i18n-portuguese",
+      "group": "multilingual",
+      "language": "pt",
+      "raw": "preciso de um script que renomeie em lote arquivos de imagem por data de captura, mantendo um log das mudancas e sem sobrescrever nada"
+    }
+  ]
+}

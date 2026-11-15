@@ -53,7 +53,15 @@ def _detect_language(text: str) -> str:
 
 
 def _sentence_candidates(text: str) -> list[str]:
-    parts = re.split(r"[\n\.\!\?]+", text)
+    """Split text into sentences without breaking numbers or file names.
+
+    Splitting on every "." destroyed version numbers ("3.12" -> "3"),
+    decimals ("0.5" -> "0"), IPs ("10.0.0.1") and file names ("app.py" ->
+    "app"), which then leaked into the extracted goal and the compiled
+    artifact. A period only ends a sentence when whitespace or the end of the
+    text follows it.
+    """
+    parts = re.split(r"(?<=[.!?])\s+|\n+", text)
     return [p.strip() for p in parts if p.strip()]
 
 
