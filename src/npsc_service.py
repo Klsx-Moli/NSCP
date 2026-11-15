@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from clarification_gate import apply_prepend, evaluate_clarification_gate
 from compilation_profiles import (
     apply_profile_to_semantics,
     build_profile_status,
@@ -18,7 +19,6 @@ from compilation_profiles import (
     validate_profile_name,
 )
 from compiler_defaults import load_compiler_defaults, strict_policy
-from clarification_gate import apply_prepend, evaluate_clarification_gate
 from context_loss_verifier import verify_context_loss
 from exporters import export_json, export_text, prepare_output_dir
 from hybrid_output import (
@@ -30,19 +30,22 @@ from hybrid_output import (
 from model_adapter import adapter_layer, load_model_profiles, select_level
 from nsl_compiler import compile_to_nsl
 from nsl_parser import parse_nsl
-from profile_selector import auto_select_profile
 from profile_policy import evaluate_profile_policy
+from profile_selector import auto_select_profile
 from prompt_quality import evaluate_quality
-from rop_template import rop_payload
-from semantic_ir import build_semantic_ir
 from prompt_reconstructor import reconstruct_prompt
-from report_builder import build_context_loss_report, build_run_summary, build_token_report_markdown
+from report_builder import (
+    build_context_loss_report,
+    build_run_summary,
+    build_token_report_markdown,
+)
+from rop_template import rop_payload
 from semantic_dictionary import load_semantic_dictionary
 from semantic_extractor import extract_semantics
+from semantic_ir import build_semantic_ir
 from semantic_seed_mapper import suggest_seeds
 from token_estimator import build_token_report
 from utils import now_run_id
-
 
 ROOT = Path(__file__).resolve().parents[1]
 

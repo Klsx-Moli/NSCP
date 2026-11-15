@@ -5,13 +5,25 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QComboBox, QDialog, QDialogButtonBox, QFormLayout, QHBoxLayout,
-    QLabel, QLineEdit, QListWidget, QListWidgetItem, QMessageBox,
-    QPlainTextEdit, QPushButton, QTabWidget, QVBoxLayout, QWidget,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QPlainTextEdit,
+    QPushButton,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 from i18n import tr
-from template_manager import TemplateManager, PromptTemplate
+from template_manager import PromptTemplate, TemplateManager
 from utils import now_run_id
 
 if TYPE_CHECKING:
@@ -105,7 +117,7 @@ class TemplateEditorDialog(QDialog):
         )
 
 
-def build_template_page(parent: "MainWindow") -> QWidget:
+def build_template_page(parent: MainWindow) -> QWidget:
     """Build the template management page for the extreme mode sidebar."""
     page = QWidget()
     layout = QVBoxLayout(page)
@@ -152,7 +164,7 @@ def build_template_page(parent: "MainWindow") -> QWidget:
 
     # Template list
     template_list = QListWidget()
-    template_list.setAlternatingRowColors(True)
+    template_list.setAlternatingRowColors(False)
     layout.addWidget(template_list, 1)
 
     # Detail panel

@@ -56,3 +56,10 @@ Thumbs.db
 
 # Local screenshots not meant for repo
 screenshots/local/
+
+# Local UI audit scratch space (tool output, not source)
+.uibinder_audit/
+_ui_redesign_backup/
+
+# One-off debugging scripts
+scripts/_tmp_*.py

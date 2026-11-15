@@ -1,13 +1,23 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from compilation_profiles import get_profile, supported_profile_names, validate_profile_name
+from compilation_profiles import (
+    get_profile,
+    supported_profile_names,
+    validate_profile_name,
+)
 from i18n import set_language, tr
 from model_adapter import load_model_profiles
-from npsc_service import CompileRequest, compile_prompt, evaluate_strict, export_artifacts, result_json_for_console
+from npsc_service import (
+    CompileRequest,
+    compile_prompt,
+    evaluate_strict,
+    export_artifacts,
+    result_json_for_console,
+)
 from utils import read_text
 
 

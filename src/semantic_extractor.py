@@ -10,16 +10,15 @@ Changes vs previous version
 """
 from __future__ import annotations
 
-from pathlib import Path
 import json
 import re
+from pathlib import Path
 from typing import Any
 
-from utils import unique_preserve
 from constraint_normalizer import normalize_constraints
 from resource_paths import resource_path
 from safety_vocabulary import canonical_constraints as _safety_canonical
-
+from utils import unique_preserve
 
 PATTERN_PATH = resource_path("configs/extraction_patterns.json")
 

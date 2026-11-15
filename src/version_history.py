@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -33,7 +33,7 @@ class PromptVersion:
         return asdict(self)
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "PromptVersion":
+    def from_dict(data: dict[str, Any]) -> PromptVersion:
         valid_fields = set(PromptVersion.__dataclass_fields__)
         filtered = {k: v for k, v in data.items() if k in valid_fields}
         return PromptVersion(**filtered)

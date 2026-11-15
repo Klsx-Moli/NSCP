@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-
 TECHNICAL_SIGNALS = [
     "code", "codigo", "código", "arquitectura", "architecture", "documentacion",
     "documentación", "app", "sistema", "system", "error", "debug", "tests",

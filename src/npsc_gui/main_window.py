@@ -1,10 +1,25 @@
+"""Main window — workflow composition on top of the design system.
+
+Structure:
+- ``chrome`` owns the header, sidebar and status bar.
+- ``components`` owns every visual primitive (buttons, cards, feedback).
+- this module owns the workflow: prompt → compile → result, plus the expert
+  pages that expose the compiler's technical output.
+
+Visual hierarchy (deliberate, in this order):
+1. what the user is doing now (page header),
+2. the input and the configuration in use (editor + rail),
+3. what the system is processing (inline status + progress),
+4. the result (``ResultCard`` — the product),
+5. the next action (one primary button per context).
+"""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtCore import QEvent, QObject, QThread, Qt, QUrl, Signal, Slot, QTimer
+from PySide6.QtCore import QEvent, QObject, Qt, QThread, QTimer, QUrl, Signal, Slot
 from PySide6.QtGui import QDesktopServices, QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QApplication,
@@ -12,18 +27,15 @@ from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
     QFrame,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QListWidget,
     QListWidgetItem,
     QMainWindow,
-    QMessageBox,
+    QMenu,
     QPlainTextEdit,
-    QProgressBar,
-    QPushButton,
-    QSplitter,
+    QScrollArea,
     QStackedWidget,
     QTabWidget,
     QTextEdit,
@@ -32,41 +44,115 @@ from PySide6.QtWidgets import (
 )
 
 from compilation_profiles import supported_profile_names
-from i18n import set_language, tr
+from field_validator import validate_compile_form
+from i18n import normalize_language, set_language, tr
 from model_adapter import load_model_profiles
-from npsc_gui.controller import CompileController
-from npsc_gui.glossary import CATEGORIES, format_entry, get_entry, load_glossary, search_glossary
-from npsc_gui.help_popover import ContextHelpButton, close_context_help_popovers
-from npsc_gui.settings import data_dir, load_settings, reset_settings, save_settings
-from npsc_gui.theme import get_qss
-from npsc_gui.tooltips import apply_tooltip, glossary_term_for, help_text
-from npsc_gui.components.scan_ring import ScanRing
-from npsc_gui.components.health_dashboard import HealthDashboard
-from npsc_gui.components.status_chip import StatusChip
-from npsc_gui.components.tool_card import ToolCard
-from npsc_gui.components.nav_group import NavGroup, NavItem
-from npsc_gui.template_page import build_template_page
-from npsc_gui.history_page import build_history_page
-from npsc_gui.advanced_mode_page import AdvancedModePage
 from npsc_gui.about_dialog import AboutDialog
+from npsc_gui.advanced_mode_page import AdvancedModePage
+from npsc_gui.chrome import Header, Sidebar, StatusBar
+from npsc_gui.components.buttons import (
+    DangerButton,
+    GhostButton,
+    PrimaryButton,
+    SecondaryButton,
+)
+from npsc_gui.components.cards import (
+    Card,
+    EmptyState,
+    PageHeader,
+    ResultCard,
+)
+from npsc_gui.components.feedback import (
+    InlineNotice,
+    ProgressIndicator,
+    Skeleton,
+    ToastHost,
+)
+from npsc_gui.components.health_dashboard import HealthDashboard
+from npsc_gui.components.tool_card import ToolCard
+from npsc_gui.controller import CompileController
+from npsc_gui.design import motion
+from npsc_gui.design.style import active_theme, apply_design, get_theme
 from npsc_gui.export_preview import ExportPreviewDialog
+from npsc_gui.glossary import (
+    CATEGORIES,
+    format_entry,
+    get_entry,
+    load_glossary,
+    search_glossary,
+)
+from npsc_gui.help_popover import ContextHelpButton, close_context_help_popovers
+from npsc_gui.history_page import build_history_page
+from npsc_gui.settings import data_dir, load_settings, reset_settings, save_settings
+from npsc_gui.template_page import build_template_page
+from npsc_gui.tooltips import apply_tooltip, glossary_term_for, help_text
+from template_manager import TemplateManager
 from token_estimator import estimate_counters
 from variables import extract_variables, fill_variables
-from field_validator import validate_compile_form
 from version_history import VersionHistory
-from template_manager import TemplateManager
-
 
 ROOT = Path(__file__).resolve().parents[2]
-ICON_PATH = ROOT / "assets" / "icons" / "neuro-prompt-semantic-compiler.svg"
+ICON_PATH = ROOT / "assets" / "icons" / "nscp.ico"
+ICON_SVG = ROOT / "assets" / "icons" / "neuro-prompt-semantic-compiler.svg"
 EXAMPLE_PATH = ROOT / "examples" / "messy_prompt.txt"
 
-# ─── Mode constants ──────────────────────────────────────────────────────────
 MODE_SIMPLE = "simple"
 MODE_EXTREME = "extreme"
 
+LANGUAGES = ("es", "en", "fr", "de", "ru", "ko", "zh")
+
+PROFILES = supported_profile_names()
+MODELS = list(load_model_profiles().keys())
+
+LEVEL_KEYS = (
+    ("level.auto", "profile_default"),
+    ("level.safe", "safe"),
+    ("level.balanced", "balanced"),
+    ("level.compact", "aggressive"),
+    ("level.all", "all"),
+)
+PRIVACY_KEYS = (
+    ("privacy.full_original", "full_original"),
+    ("privacy.hash_only", "hash_only"),
+    ("privacy.redacted", "redacted_preview"),
+)
+
+
+def _levels() -> tuple[tuple[str, str], ...]:
+    return tuple((tr(key), value) for key, value in LEVEL_KEYS)
+
+
+def _privacy_modes() -> tuple[tuple[str, str], ...]:
+    return tuple((tr(key), value) for key, value in PRIVACY_KEYS)
+
+
+def _fill_combo(combo: QComboBox, items: tuple[tuple[str, str], ...]) -> None:
+    """(Re)label a combo while keeping the current data value selected."""
+    current = combo.currentData()
+    combo.blockSignals(True)
+    combo.clear()
+    for label, value in items:
+        combo.addItem(label, value)
+    for index in range(combo.count()):
+        if combo.itemData(index) == current:
+            combo.setCurrentIndex(index)
+            break
+    combo.blockSignals(False)
+
+
+PROFILE_DEFINITIONS = (
+    ("AUTO", "profile.def.auto"),
+    ("FAST", "profile.def.fast"),
+    ("STANDARD", "profile.def.standard"),
+    ("ADVANCED", "profile.def.advanced"),
+    ("ROP", "profile.def.rop"),
+    ("RESEARCH_MAX", "profile.def.research"),
+)
+
 
 class CompileWorker(QObject):
+    """Runs one compilation off the UI thread and reports coarse stages."""
+
     progress = Signal(int, str)
     finished = Signal(dict)
     failed = Signal(str)
@@ -83,16 +169,16 @@ class CompileWorker(QObject):
 
     @Slot()
     def run(self) -> None:
+        stages = [
+            (10, "Analizando intención"),
+            (25, "Detectando restricciones"),
+            (40, "Seleccionando perfil"),
+            (55, "Generando IR semántica"),
+            (70, "Compilando NSL y prompt"),
+            (85, "Validando preservación"),
+            (95, "Preparando el resultado"),
+        ]
         try:
-            stages = [
-                (10, "Analizando intención"),
-                (25, "Detectando restricciones"),
-                (40, "Seleccionando perfil"),
-                (55, "Generando IR semántica"),
-                (70, "Compilando NSL y prompt de ejecución"),
-                (85, "Validando preservación"),
-                (95, "Generando archivos"),
-            ]
             for value, label in stages[:4]:
                 if self.cancel_requested:
                     self.canceled.emit()
@@ -111,8 +197,21 @@ class CompileWorker(QObject):
                     return
                 self.progress.emit(value, label)
             self.finished.emit(result)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - surfaced to the user verbatim
             self.failed.emit(str(exc))
+
+
+def _combo(items) -> QComboBox:
+    combo = QComboBox()
+    for label, value in items:
+        combo.addItem(label, value)
+    return combo
+
+
+def _label(text: str, name: str = "Muted") -> QLabel:
+    widget = QLabel(text)
+    widget.setObjectName(name)
+    return widget
 
 
 class MainWindow(QMainWindow):
@@ -127,20 +226,18 @@ class MainWindow(QMainWindow):
         self.worker: CompileWorker | None = None
         self.last_saved_dir: Path | None = None
         self.pages: dict[str, QWidget] = {}
-        self.nav_items: dict[str, NavItem] = {}
+        self.nav_items: dict[str, Any] = {}
         self.section_help_buttons: dict[str, ContextHelpButton] = {}
         self.option_help_buttons: dict[str, ContextHelpButton] = {}
 
-        # Variable fill state and managers
         self._variable_values: dict[str, str] = {}
         self._version_history = VersionHistory()
         self._template_manager = TemplateManager()
-
-        # Mode state — default to simple
         self._current_mode: str = MODE_SIMPLE
         self._advanced_sections_dirty = False
+        self._warnings_acknowledged = False
+        self._last_stage = ""
 
-        # Debounce timer for counter updates (avoid estimate_text on every keystroke)
         self._counters_debounce_timer = QTimer(self)
         self._counters_debounce_timer.setSingleShot(True)
         self._counters_debounce_timer.setInterval(150)
@@ -148,486 +245,356 @@ class MainWindow(QMainWindow):
 
         self.setObjectName("NPSCMainWindow")
         self.setWindowTitle("NeuroPrompt Semantic Compiler")
+        self.setMinimumSize(900, 620)
         self.resize(int(self.settings["window_width"]), int(self.settings["window_height"]))
-        if ICON_PATH.exists():
-            self.setWindowIcon(QIcon(str(ICON_PATH)))
-        self.setStyleSheet(get_qss(self.settings.get("theme", "dark")))
+        screen = QApplication.primaryScreen()
+        if screen is not None:
+            area = screen.availableGeometry()
+            self.move(
+                area.x() + (area.width() - self.width()) // 2,
+                area.y() + (area.height() - self.height()) // 2,
+            )
+        icon = ICON_PATH if ICON_PATH.exists() else ICON_SVG
+        if icon.exists():
+            self.setWindowIcon(QIcon(str(icon)))
 
         self._build_ui()
         self._bind_shortcuts()
         self._restore_settings()
         self._update_counters()
-        self._set_header_status("ok", tr("status.ready"))
-
-    def changeEvent(self, event) -> None:  # noqa: N802 — Qt naming
-        """Focus the prompt editor when the window is first activated.
-
-        When the window is activated, Qt assigns initial focus to the first
-        focusable child — the 'Activar modo extremo' header button — so
-        typing right after opening the app did nothing visible. That
-        assignment lands an indeterminate time AFTER the activation event
-        (queued behind it), so any single-shot claim races and loses; a
-        short watcher instead waits until Qt's assignment has landed (focus
-        reaches the default button) and then claims focus for the editor.
-        Applies to whichever mode the app opens in (settings restore may
-        open extreme mode directly).
-        """
-        super().changeEvent(event)
-        if (
-            event.type() == QEvent.Type.ActivationChange
-            and self.isActiveWindow()
-            and self._current_editor() is not None
-            and not getattr(self, "_prompt_focus_watcher", None)
-        ):
-            self._prompt_focus_attempts = 0
-            watcher = QTimer(self)
-            watcher.setInterval(20)
-            watcher.timeout.connect(self._claim_prompt_focus)
-            watcher.start()
-            self._prompt_focus_watcher = watcher
-
-    def _current_editor(self):
-        """The prompt input widget for the active mode (None if absent)."""
-        if self._current_mode == MODE_SIMPLE:
-            return getattr(self, "simple_prompt_edit", None)
-        return getattr(self, "prompt_edit", None)
-
-    def _claim_prompt_focus(self) -> None:
-        """One watcher tick: claim focus once Qt's initial assignment landed."""
-        self._prompt_focus_attempts += 1
-        editor = self._current_editor()
-        current = self.focusWidget()
-        if editor is None or current is editor:
-            self._stop_prompt_focus_watcher()
-        elif current is None or current is self.mode_toggle_btn:
-            if current is self.mode_toggle_btn:
-                # Qt's initial assignment has landed — claim the editor now.
-                editor.setFocus(Qt.OtherFocusReason)
-            if self._prompt_focus_attempts >= 100:
-                self._stop_prompt_focus_watcher()
-            # else: activation assignment has not landed yet; keep waiting
-        else:
-            # the user focused a real target — never fight the user
-            self._stop_prompt_focus_watcher()
-
-    def _stop_prompt_focus_watcher(self) -> None:
-        watcher = getattr(self, "_prompt_focus_watcher", None)
-        if watcher is not None:
-            watcher.stop()
-            watcher.deleteLater()
-            self._prompt_focus_watcher = None
+        self.header.set_state("ready", tr("status.ready"))
+        self.status_bar.set_message(tr("status.ready"), "ready")
+        self._retranslate_ui()
 
     # ─── Layout ────────────────────────────────────────────────────
 
     def _build_ui(self) -> None:
         root = QWidget()
-        root_layout = QVBoxLayout(root)
-        root_layout.setContentsMargins(0, 0, 0, 0)
-        root_layout.setSpacing(0)
+        root.setObjectName("RootSurface")
+        layout = QVBoxLayout(root)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
-        # Global header
-        root_layout.addWidget(self._build_header())
+        self.header = Header(self)
+        self.header.mode_toggle_requested.connect(self._toggle_mode)
+        self.header.settings_requested.connect(self._open_settings)
+        self.header.help_requested.connect(self._open_help)
+        self.header.about_requested.connect(self._open_about)
+        layout.addWidget(self.header)
 
-        # Top-level mode stack: index 0 = simple mode, index 1 = extreme mode
         self.mode_stack = QStackedWidget()
         self.mode_stack.addWidget(self._build_simple_mode())
         self.mode_stack.addWidget(self._build_extreme_mode())
-        root_layout.addWidget(self.mode_stack, 1)
+        layout.addWidget(self.mode_stack, 1)
 
-        # Progress strip (3px minimal)
-        self.progress_strip = QProgressBar()
-        self.progress_strip.setRange(0, 100)
-        self.progress_strip.setValue(0)
-        self.progress_strip.setFixedHeight(3)
-        self.progress_strip.setTextVisible(False)
-        root_layout.addWidget(self.progress_strip)
+        self.status_bar = StatusBar(self)
+        self.status_mode = self.status_bar.mode
+        layout.addWidget(self.status_bar)
 
-        root_layout.addWidget(self._build_status_bar())
         self.setCentralWidget(root)
 
-    # ─── Header ────────────────────────────────────────────────────
+        self._toast = ToastHost(self)
+        self.toast_host = self._toast
 
-    def _build_header(self) -> QFrame:
-        frame = QFrame()
-        frame.setObjectName("Header")
-        frame.setFixedHeight(44)
-        layout = QHBoxLayout(frame)
-        layout.setContentsMargins(16, 0, 16, 0)
-        layout.setSpacing(10)
-
-        brand = QLabel("N")
-        brand.setObjectName("BrandGlyph")
-        brand.setFixedSize(28, 28)
-        brand.setAlignment(Qt.AlignCenter)
-
-        title = QLabel("NeuroPrompt")
-        title.setObjectName("AppTitle")
-        sep = QLabel("·")
-        sep.setObjectName("Muted")
-        sub = QLabel(tr("app.subtitle"))
-        sub.setObjectName("Muted")
-
-        layout.addWidget(brand)
-        layout.addWidget(title)
-        layout.addWidget(sep)
-        layout.addWidget(sub)
-
-        # Version label
-        self._header_version = QLabel("v1.0.0")
-        self._header_version.setObjectName("Muted")
-        layout.addWidget(self._header_version)
-
-        layout.addStretch(1)
-
-        self.header_chip = StatusChip(tr("status.ready"), "ok")
-        layout.addWidget(self.header_chip)
-
-        # Mode toggle button — changes label depending on current mode
-        self.mode_toggle_btn = QPushButton(tr("mode.activate_extreme"))
-        self.mode_toggle_btn.setObjectName("ModeToggleBtn")
-        self.mode_toggle_btn.clicked.connect(self._toggle_mode)
-        apply_tooltip(self.mode_toggle_btn, "advanced_mode")
-        layout.addWidget(self.mode_toggle_btn)
-
-        # About button
-        about_btn = QPushButton("i")
-        about_btn.setObjectName("HeaderIconButton")
-        about_btn.setFixedSize(32, 32)
-        about_btn.clicked.connect(self._open_about)
-        apply_tooltip(about_btn, "about")
-        layout.addWidget(about_btn)
-
-        settings_btn = QPushButton("⚙")
-        settings_btn.setObjectName("HeaderIconButton")
-        settings_btn.setFixedSize(32, 32)
-        settings_btn.clicked.connect(self._open_settings)
-        apply_tooltip(settings_btn, "settings")
-
-        help_btn = QPushButton("?")
-        help_btn.setObjectName("HeaderIconButton")
-        help_btn.setFixedSize(32, 32)
-        help_btn.clicked.connect(self._open_help)
-        apply_tooltip(help_btn, "help")
-
-        layout.addWidget(settings_btn)
-        layout.addWidget(help_btn)
-        return frame
-
-    # ═══════════════════════════════════════════════════════════════
-    #  MODO SENCILLO — Simple Mode
-    # ═══════════════════════════════════════════════════════════════
+    # ─── Simple mode ───────────────────────────────────────────────
 
     def _build_simple_mode(self) -> QWidget:
-        """Build the simple mode root: a stacked widget with home (index 0) and result (index 1)."""
         container = QWidget()
         layout = QVBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
         self.simple_stack = QStackedWidget()
-        self.simple_stack.addWidget(self._build_simple_home())
-        self.simple_stack.addWidget(self._build_simple_result())
+        self.simple_home_panel = self._build_simple_home()
+        self.simple_result_panel = self._build_simple_result()
+        self.simple_stack.addWidget(self.simple_home_panel)
+        self.simple_stack.addWidget(self.simple_result_panel)
         layout.addWidget(self.simple_stack, 1)
         return container
 
-    # ─── Simple Home ──────────────────────────────────────────────
+    def _scroll_page(self) -> tuple[QScrollArea, QVBoxLayout]:
+        """A vertically scrollable page with a centred content column."""
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        content = QWidget()
+        content.setObjectName("RootSurface")
+        layout = QVBoxLayout(content)
+        margin = active_theme().spacing
+        layout.setContentsMargins(margin.xxl, margin.xl, margin.xxl, margin.xl)
+        layout.setSpacing(margin.lg)
+        scroll.setWidget(content)
+        return scroll, layout
 
     def _build_simple_home(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(40, 28, 40, 28)
-        layout.setSpacing(16)
+        page, layout = self._scroll_page()
 
-        # Title area
-        title = QLabel("NeuroPrompt Semantic Compiler")
-        title.setObjectName("SimpleTitle")
-        subtitle = QLabel("Convierte una idea en un prompt claro, completo y verificable")
-        subtitle.setObjectName("SimpleSubtitle")
-        subtitle.setWordWrap(True)
-        layout.addWidget(title)
-        layout.addWidget(subtitle)
+        self.home_header = PageHeader()
+        layout.addWidget(self.home_header)
 
-        # Prompt label
-        prompt_label = QLabel("Escribe o pega tu prompt")
-        prompt_label.setObjectName("SimplePromptLabel")
-        layout.addWidget(prompt_label)
+        body = QHBoxLayout()
+        body.setSpacing(active_theme().spacing.lg)
 
-        # Prompt input
+        # ── editor card ───────────────────────────────────────────────
+        editor_card = Card()
+        editor = editor_card.content()
+        editor.setSpacing(active_theme().spacing.md)
+
+        prompt_row = QHBoxLayout()
+        prompt_row.setSpacing(active_theme().spacing.sm)
+        self.simple_prompt_label = _label(tr("home.input_label"), "FieldLabel")
+        prompt_row.addWidget(self.simple_prompt_label)
+        prompt_row.addStretch(1)
+
+        self.example_button = GhostButton(tr("simple.button.example"))
+        self.example_button.clicked.connect(self.load_example)
+        apply_tooltip(self.example_button, "example")
+        self.clear_button = GhostButton(tr("simple.button.clear"))
+        self.clear_button.clicked.connect(self.new_prompt)
+        apply_tooltip(self.clear_button, "reset")
+        self.history_button = GhostButton(tr("simple.button.history"))
+        self.history_button.clicked.connect(self._show_simple_history)
+        prompt_row.addWidget(self.example_button)
+        prompt_row.addWidget(self.clear_button)
+        prompt_row.addWidget(self.history_button)
+        editor.addLayout(prompt_row)
+
         self.simple_prompt_edit = QPlainTextEdit()
-        self.simple_prompt_edit.setPlaceholderText(
-            "Pega aquí tu prompt original.\n\n"
-            "AUTO recomienda el mejor perfil automáticamente."
-        )
-        self.simple_prompt_edit.setMinimumHeight(160)
+        self.simple_prompt_edit.setPlaceholderText(tr("simple.placeholder"))
+        self.simple_prompt_edit.setMinimumHeight(active_theme().metrics.editor_min_height)
         self.simple_prompt_edit.textChanged.connect(self._on_simple_prompt_changed)
-        layout.addWidget(self.simple_prompt_edit, 1)
+        self.simple_prompt_edit.setAccessibleName(tr("home.input_label"))
+        editor.addWidget(self.simple_prompt_edit, 1)
 
-        # Profile status row
-        profile_row = QHBoxLayout()
-        profile_row.setSpacing(8)
-        profile_lbl = QLabel("Perfil:")
-        profile_lbl.setObjectName("Muted")
-        self.simple_profile_label = QLabel("Automático recomendado")
-        self.simple_profile_label.setObjectName("SimpleProfileValue")
-        profile_row.addWidget(profile_lbl)
-        profile_row.addWidget(self.simple_profile_label)
-        profile_row.addStretch(1)
-        layout.addLayout(profile_row)
+        counters = QHBoxLayout()
+        counters.setSpacing(active_theme().spacing.md)
+        self.simple_char_label = _label("", "MicroLabel")
+        self.simple_token_label = _label("", "MicroLabel")
+        self.simple_profile_hint = _label(tr("profile.auto_recommended"), "SimpleProfileValue")
+        counters.addWidget(self.simple_char_label)
+        counters.addWidget(self.simple_token_label)
+        counters.addStretch(1)
+        counters.addWidget(self.simple_profile_hint)
+        editor.addLayout(counters)
+        self.simple_help_text = _label(tr("home.input_help"), "MicroLabel")
+        self.simple_help_text.setWordWrap(True)
+        editor.addWidget(self.simple_help_text)
 
-        # Collapsible advanced options
-        self.adv_toggle_btn = QPushButton("▸ Opciones avanzadas")
-        self.adv_toggle_btn.setObjectName("SimpleAdvToggle")
-        self.adv_toggle_btn.setCheckable(True)
-        self.adv_toggle_btn.setChecked(False)
-        self.adv_toggle_btn.clicked.connect(self._toggle_simple_adv_options)
-        layout.addWidget(self.adv_toggle_btn)
+        self.simple_inline_notice = InlineNotice("", "error")
+        self.simple_inline_notice.hide()
+        editor.addWidget(self.simple_inline_notice)
 
-        self.adv_frame = QFrame()
-        self.adv_frame.setObjectName("SimpleAdvFrame")
-        adv_layout = QVBoxLayout(self.adv_frame)
-        adv_layout.setContentsMargins(16, 8, 16, 8)
-        adv_layout.setSpacing(8)
+        self.simple_progress = ProgressIndicator()
+        self.simple_progress.setVisible(False)
+        editor.addWidget(self.simple_progress)
 
-        # Profile combo
-        p_row = QHBoxLayout()
-        p_row.addWidget(QLabel("Perfil:"))
-        self.simple_profile_combo = QComboBox()
-        self.simple_profile_combo.addItems(supported_profile_names())
-        self.simple_profile_combo.currentTextChanged.connect(self._on_simple_profile_combo_changed)
-        p_row.addWidget(self.simple_profile_combo)
-        p_row.addStretch(1)
-        adv_layout.addLayout(p_row)
-
-        # Model combo
-        m_row = QHBoxLayout()
-        m_row.addWidget(QLabel("Modelo:"))
-        self.simple_target_combo = QComboBox()
-        self.simple_target_combo.addItems(list(load_model_profiles().keys()))
-        self.simple_target_combo.currentTextChanged.connect(self._on_target_changed)
-        m_row.addWidget(self.simple_target_combo)
-        m_row.addStretch(1)
-        adv_layout.addLayout(m_row)
-
-        # Level combo
-        l_row = QHBoxLayout()
-        l_row.addWidget(QLabel("Nivel:"))
-        self.simple_level_combo = QComboBox()
-        for label, value in [
-            ("Automático", "profile_default"),
-            ("Conservador", "safe"),
-            ("Equilibrado", "balanced"),
-            ("Compacto", "aggressive"),
-            ("Todos", "all"),
-        ]:
-            self.simple_level_combo.addItem(label, value)
-        l_row.addWidget(self.simple_level_combo)
-        l_row.addStretch(1)
-        adv_layout.addLayout(l_row)
-
-        # Validation strict
-        self.simple_strict_check = QCheckBox("Validación estricta")
-        adv_layout.addWidget(self.simple_strict_check)
-
-        # Preserve original
-        self.simple_preserve_check = QCheckBox("Permitir original en archivos técnicos")
-        self.simple_preserve_check.setChecked(True)
-        adv_layout.addWidget(self.simple_preserve_check)
-
-        # Privacy mode
-        priv_row = QHBoxLayout()
-        priv_row.addWidget(QLabel("Privacidad:"))
-        self.simple_privacy_combo = QComboBox()
-        for label, value in [
-            ("Guardar original completo", "full_original"),
-            ("Guardar solo huella digital", "hash_only"),
-            ("Guardar vista parcial recortada", "redacted_preview"),
-        ]:
-            self.simple_privacy_combo.addItem(label, value)
-        priv_row.addWidget(self.simple_privacy_combo)
-        priv_row.addStretch(1)
-        adv_layout.addLayout(priv_row)
-
-        self.adv_frame.setVisible(False)
-        layout.addWidget(self.adv_frame)
-
-        # Main compile button — visually dominant
-        self.simple_compile_btn = QPushButton("COMPILAR PROMPT")
-        self.simple_compile_btn.setObjectName("PrimaryButton")
-        self.simple_compile_btn.setMinimumHeight(44)
-        self.simple_compile_btn.clicked.connect(self.compile_current)
-        apply_tooltip(self.simple_compile_btn, "compile")
-        layout.addWidget(self.simple_compile_btn)
-
-        # Secondary actions row
-        secondary = QHBoxLayout()
-        secondary.setSpacing(8)
-
-        load_ex_btn = QPushButton("Cargar ejemplo")
-        load_ex_btn.clicked.connect(self.load_example)
-        apply_tooltip(load_ex_btn, "example")
-        secondary.addWidget(load_ex_btn)
-
-        clear_btn = QPushButton("Limpiar")
-        clear_btn.clicked.connect(self.new_prompt)
-        apply_tooltip(clear_btn, "reset")
-        secondary.addWidget(clear_btn)
-
-        # Cancel button (hidden by default, shown during compilation)
-        self.simple_cancel_btn = QPushButton("Cancelar")
-        self.simple_cancel_btn.setObjectName("DangerButton")
+        working_row = QHBoxLayout()
+        working_row.setSpacing(active_theme().spacing.sm)
+        self.simple_stage_label = _label("", "MicroLabel")
+        working_row.addWidget(self.simple_stage_label, 1)
+        self.simple_cancel_btn = DangerButton(tr("simple.button.cancel"))
         self.simple_cancel_btn.clicked.connect(self.cancel_compile)
+        apply_tooltip(self.simple_cancel_btn, "cancel")
         self.simple_cancel_btn.setVisible(False)
         apply_tooltip(self.simple_cancel_btn, "cancel")
-        secondary.addWidget(self.simple_cancel_btn)
+        working_row.addWidget(self.simple_cancel_btn)
+        editor.addLayout(working_row)
 
-        history_btn = QPushButton("Historial")
-        history_btn.setObjectName("SimpleHistBtn")
-        history_btn.clicked.connect(self._show_simple_history)
-        secondary.addWidget(history_btn)
+        actions = QHBoxLayout()
+        actions.setSpacing(active_theme().spacing.sm)
+        self.simple_compile_btn = PrimaryButton(tr("simple.button.compile"))
+        self.simple_compile_btn.clicked.connect(self.compile_current)
+        self.simple_compile_btn.setAccessibleName(tr("simple.button.compile"))
+        apply_tooltip(self.simple_compile_btn, "compile")
+        actions.addWidget(self.simple_compile_btn)
+        self.simple_shortcut_hint = _label("Ctrl + Enter", "MicroLabel")
+        actions.addWidget(self.simple_shortcut_hint)
+        actions.addStretch(1)
+        editor.addLayout(actions)
 
-        secondary.addStretch(1)
-        layout.addLayout(secondary)
+        body.addWidget(editor_card, 1)
 
-        # Mode switch link
-        mode_link_row = QHBoxLayout()
-        mode_question = QLabel("¿Necesitas control técnico completo?")
-        mode_question.setObjectName("Muted")
-        mode_link_row.addWidget(mode_question)
-        mode_link_row.addStretch(1)
-        layout.addLayout(mode_link_row)
+        # ── configuration rail ────────────────────────────────────────
+        self.home_rail = Card()
+        rail = self.home_rail.content()
+        rail.setSpacing(active_theme().spacing.md)
+        self.rail_title = _label(tr("home.rail.title"), "ResultTitle")
+        rail.addWidget(self.rail_title)
+        self.rail_help = _label(tr("home.rail.help"), "MicroLabel")
+        self.rail_help.setWordWrap(True)
+        rail.addWidget(self.rail_help)
 
-        # ── Premium: compact ScanRing + HealthDashboard ──
-        # (replaces the old centered hero area with a premium inline strip)
-        self.simple_scan_ring = ScanRing(size=52, ring_width=3)
-        self.simple_scan_ring.hide()  # shown only during/after compile
+        self.rail_profile_label = _label(tr("simple.label.profile"), "FieldLabel")
+        rail.addWidget(self.rail_profile_label)
+        self.simple_profile_combo = QComboBox()
+        self.simple_profile_combo.addItems(PROFILES)
+        self.simple_profile_combo.currentTextChanged.connect(self._on_simple_profile_combo_changed)
+        rail.addWidget(self.simple_profile_combo)
 
-        simple_dash_row = QHBoxLayout()
-        simple_dash_row.setSpacing(8)
+        self.rail_profile_help = _label(tr("home.rail.profile_help"), "MicroLabel")
+        self.rail_profile_help.setWordWrap(True)
+        rail.addWidget(self.rail_profile_help)
 
-        # Left: scan ring (compact)
-        self.simple_scan_container = QWidget()
-        scr_layout = QVBoxLayout(self.simple_scan_container)
-        scr_layout.setContentsMargins(0, 0, 0, 0)
-        scr_layout.setSpacing(2)
-        scr_layout.setAlignment(Qt.AlignCenter)
-        scr_layout.addWidget(self.simple_scan_ring)
+        self.rail_model_label = _label(tr("simple.label.model"), "FieldLabel")
+        rail.addWidget(self.rail_model_label)
+        self.simple_target_combo = QComboBox()
+        self.simple_target_combo.addItems(MODELS)
+        self.simple_target_combo.currentTextChanged.connect(self._on_target_changed)
+        rail.addWidget(self.simple_target_combo)
 
-        self.simple_scan_status = QLabel("")
-        self.simple_scan_status.setObjectName("PremiumStatusText")
-        self.simple_scan_status.setAlignment(Qt.AlignCenter)
-        scr_layout.addWidget(self.simple_scan_status)
+        self.rail_level_label = _label(tr("simple.label.level"), "FieldLabel")
+        rail.addWidget(self.rail_level_label)
+        self.simple_level_combo = _combo(_levels())
+        rail.addWidget(self.simple_level_combo)
 
-        self.simple_scan_container.hide()
-        simple_dash_row.addWidget(self.simple_scan_container)
+        self.rail_privacy_label = _label(tr("simple.label.privacy"), "FieldLabel")
+        rail.addWidget(self.rail_privacy_label)
+        self.simple_privacy_combo = _combo(_privacy_modes())
+        rail.addWidget(self.simple_privacy_combo)
 
-        # Right: health dashboard
-        self.simple_health = HealthDashboard()
-        simple_dash_row.addWidget(self.simple_health, 1)
-        layout.addLayout(simple_dash_row)
+        self.simple_strict_check = QCheckBox(tr("simple.check.strict"))
+        rail.addWidget(self.simple_strict_check)
+        self.simple_preserve_check = QCheckBox(tr("simple.check.preserve"))
+        self.simple_preserve_check.setChecked(True)
+        rail.addWidget(self.simple_preserve_check)
+        rail.addStretch(1)
 
-        # Progress bar (visible during compile)
-        self.simple_progress = QProgressBar()
-        self.simple_progress.setRange(0, 100)
-        self.simple_progress.setValue(0)
-        self.simple_progress.setTextVisible(True)
-        self.simple_progress.setVisible(False)
-        layout.addWidget(self.simple_progress)
+        self.home_rail.setFixedWidth(active_theme().metrics.rail_width)
+        body.addWidget(self.home_rail, 0)
 
+        layout.addLayout(body, 1)
         return page
 
-    # ─── Simple Result ─────────────────────────────────────────────
+    # ─── Simple result ─────────────────────────────────────────────
 
     def _build_simple_result(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(40, 28, 40, 28)
-        layout.setSpacing(12)
+        page, layout = self._scroll_page()
+        layout.setSpacing(active_theme().spacing.lg)
 
-        # Success/error header
-        self.simple_result_header = QLabel("✓ Prompt generado correctamente")
-        self.simple_result_header.setObjectName("SimpleResultHeader")
+        self.result_header = PageHeader(tr("result.page.title"), tr("result.page.subtitle"))
+        self.result_new_button = SecondaryButton(tr("result.action.new"))
+        self.result_new_button.clicked.connect(self._simple_new_compilation)
+        self.result_header.add_action(self.result_new_button)
+        layout.addWidget(self.result_header)
+
+        # ── live work strip: stage, real progress and a working cancel ──
+        self.work_strip = QFrame()
+        self.work_strip.setObjectName("NPSCPanel")
+        work_layout = QVBoxLayout(self.work_strip)
+        work_layout.setContentsMargins(
+            active_theme().spacing.lg,
+            active_theme().spacing.sm + 2,
+            active_theme().spacing.lg,
+            active_theme().spacing.sm + 2,
+        )
+        work_layout.setSpacing(active_theme().spacing.sm)
+        work_top = QHBoxLayout()
+        work_top.setSpacing(active_theme().spacing.sm)
+        self.result_stage_label = _label("", "FieldLabel")
+        work_top.addWidget(self.result_stage_label, 1)
+        self.result_cancel_btn = DangerButton(tr("simple.button.cancel"))
+        self.result_cancel_btn.setProperty("compact", "true")
+        self.result_cancel_btn.clicked.connect(self.cancel_compile)
+        apply_tooltip(self.result_cancel_btn, "cancel")
+        work_top.addWidget(self.result_cancel_btn, 0)
+        work_layout.addLayout(work_top)
+        self.result_progress = ProgressIndicator()
+        work_layout.addWidget(self.result_progress)
+        layout.addWidget(self.work_strip)
+        self.work_strip.hide()
+
+        self.simple_result_card = ResultCard()
+        self.simple_result_card.setMinimumHeight(420)
+        self.simple_result_card.copy_button.clicked.connect(self.copy_recommended)
+        self.simple_result_card.new_button.clicked.connect(self._simple_new_compilation)
+        self.simple_result_card.save_button.clicked.connect(self.save_all)
+        layout.addWidget(self.simple_result_card, 1)
+
+        self.simple_empty_state = EmptyState()
+        self.simple_empty_state.hide()
+        layout.addWidget(self.simple_empty_state)
+
+        self.simple_skeleton = Skeleton(lines=5)
+        self.simple_skeleton.hide()
+        layout.addWidget(self.simple_skeleton)
+
+        self.simple_result_header = _label("", "MicroLabel")
+        self.simple_result_header.setVisible(False)
         layout.addWidget(self.simple_result_header)
 
-        # Results tabs
+        # ── metrics: only real values, shown after a compilation ──────
+        self.simple_metrics_panel = QFrame()
+        self.simple_metrics_panel.setObjectName("NPSCPanel")
+        metrics_layout = QVBoxLayout(self.simple_metrics_panel)
+        metrics_layout.setContentsMargins(
+            active_theme().spacing.lg,
+            active_theme().spacing.md,
+            active_theme().spacing.lg,
+            active_theme().spacing.md,
+        )
+        metrics_layout.setSpacing(active_theme().spacing.sm)
+        self.simple_health = HealthDashboard()
+        metrics_layout.addWidget(self.simple_health)
+        layout.addWidget(self.simple_metrics_panel)
+        self.simple_metrics_panel.hide()
+
+        # ── detail tabs: the same result, in technical views ──────────
+        self.simple_detail_card = Card(
+            tr("result.detail.title"), tr("result.detail.help")
+        )
+        detail = self.simple_detail_card.content()
         self.simple_tabs = QTabWidget()
         self.simple_optimized_tab = QPlainTextEdit()
         self.simple_optimized_tab.setReadOnly(True)
-        self.simple_tabs.addTab(self.simple_optimized_tab, "Prompt optimizado")
+        self.simple_tabs.addTab(self.simple_optimized_tab, tr("result.tab.optimized"))
 
         self.simple_report_tab = QPlainTextEdit()
         self.simple_report_tab.setReadOnly(True)
-        self.simple_tabs.addTab(self.simple_report_tab, "Informe")
+        self.simple_tabs.addTab(self.simple_report_tab, tr("result.tab.report"))
 
         self.simple_validation_tab = QPlainTextEdit()
         self.simple_validation_tab.setReadOnly(True)
-        self.simple_tabs.addTab(self.simple_validation_tab, "Validación")
+        self.simple_tabs.addTab(self.simple_validation_tab, tr("result.tab.validation"))
 
-        # B.9: open questions from the compiled result, visible without
-        # opening the exported JSON. Non-blocking by design — whether the
-        # compile itself gates is the caller's clarify-mode decision (B.6).
         self.simple_questions_tab = QPlainTextEdit()
         self.simple_questions_tab.setReadOnly(True)
-        self.simple_tabs.addTab(self.simple_questions_tab, "Preguntas abiertas")
-        layout.addWidget(self.simple_tabs, 1)
+        self.simple_tabs.addTab(self.simple_questions_tab, tr("result.tab.questions"))
+        detail.addWidget(self.simple_tabs)
+        layout.addWidget(self.simple_detail_card)
+        self.simple_detail_card.hide()
 
-        # Primary action — copy
-        copy_row = QHBoxLayout()
-        copy_row.setSpacing(8)
-
-        self.simple_copy_btn = QPushButton("COPIAR PROMPT")
-        self.simple_copy_btn.setObjectName("PrimaryButton")
-        self.simple_copy_btn.setMinimumHeight(40)
-        self.simple_copy_btn.clicked.connect(self.copy_recommended)
-        apply_tooltip(self.simple_copy_btn, "copy")
-        copy_row.addWidget(self.simple_copy_btn)
-
-        save_btn = QPushButton("Guardar")
-        save_btn.clicked.connect(self.save_all)
-        apply_tooltip(save_btn, "save")
-        copy_row.addWidget(save_btn)
-
-        new_btn = QPushButton("Nueva compilación")
-        new_btn.clicked.connect(self._simple_new_compilation)
-        copy_row.addWidget(new_btn)
-
-        copy_row.addStretch(1)
-        layout.addLayout(copy_row)
-
-        # Compact metrics summary (real data only)
-        self.simple_metrics_label = QLabel("")
-        self.simple_metrics_label.setObjectName("Muted")
+        self.simple_metrics_label = _label("", "MicroLabel")
+        self.simple_quality_label = _label("", "MicroLabel")
+        self.simple_quality_label.setWordWrap(True)
         layout.addWidget(self.simple_metrics_label)
-
-        # B.9: deterministic quality score (prompt_quality) + worst issues
-        self.simple_quality_label = QLabel("")
-        self.simple_quality_label.setObjectName("Muted")
         layout.addWidget(self.simple_quality_label)
 
-        # Generated files access (compact)
-        self.simple_files_row = QHBoxLayout()
-        self.simple_files_label = QLabel("")
-        self.simple_files_label.setObjectName("Muted")
-        self.simple_open_files_btn = QPushButton("Abrir carpeta")
+        files_row = QHBoxLayout()
+        files_row.setSpacing(active_theme().spacing.sm)
+        self.simple_files_label = _label("", "MicroLabel")
+        self.simple_open_files_btn = GhostButton(tr("results.button.open_folder"))
         self.simple_open_files_btn.clicked.connect(self.open_last_output)
         self.simple_open_files_btn.setVisible(False)
-        self.simple_files_row.addWidget(self.simple_files_label)
-        self.simple_files_row.addWidget(self.simple_open_files_btn)
-        self.simple_files_row.addStretch(1)
-        layout.addLayout(self.simple_files_row)
+        files_row.addWidget(self.simple_files_label, 1)
+        files_row.addWidget(self.simple_open_files_btn, 0)
+        layout.addLayout(files_row)
 
+        layout.addStretch(1)
         return page
 
-    # ═══════════════════════════════════════════════════════════════
-    #  MODO EXTREMO — Extreme Mode (preserved existing interface)
-    # ═══════════════════════════════════════════════════════════════
+    # ─── Expert mode ───────────────────────────────────────────────
 
     def _build_extreme_mode(self) -> QWidget:
-        """Build the extreme mode: sidebar + stacked pages (all existing UI)."""
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(self._build_sidebar())
+
+        self.sidebar = Sidebar()
+        self.sidebar.page_requested.connect(self._select_page)
+        self.nav_items = self.sidebar.items
+        layout.addWidget(self.sidebar)
 
         self.stack = QStackedWidget()
         self._add_page("resumen", self._build_dashboard())
@@ -643,91 +610,35 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.stack, 1)
         return container
 
-    # ─── Sidebar ───────────────────────────────────────────────────
+    def _add_page(self, name: str, widget: QWidget) -> None:
+        self.pages[name] = widget
+        self.stack.addWidget(widget)
 
-    def _build_sidebar(self) -> QFrame:
-        frame = QFrame()
-        frame.setObjectName("Sidebar")
-        frame.setFixedWidth(190)
-        layout = QVBoxLayout(frame)
-        layout.setContentsMargins(0, 12, 0, 0)
-        layout.setSpacing(0)
+    def _select_page(self, name: str) -> None:
+        close_context_help_popovers()
+        if self._current_mode != MODE_EXTREME:
+            self._switch_to_mode(MODE_EXTREME)
+        widget = self.pages.get(name)
+        if widget is None:
+            return
+        self.stack.setCurrentWidget(widget)
+        self.sidebar.select(name)
+        self.settings["last_section"] = name
+        save_settings(self._collect_settings())
 
-        # Group: Principal
-        grp_main = NavGroup("Principal")
-        self.nav_items["resumen"] = grp_main.add_item("resumen", "Resumen")
-        self.nav_items["compilar"] = grp_main.add_item("compilar", "Compilar")
-        self.nav_items["resultados"] = grp_main.add_item("resultados", "Resultados")
-        self.nav_items["validacion"] = grp_main.add_item("validacion", "Validación")
-        layout.addWidget(grp_main)
-
-        # Group: Herramientas
-        grp_tools = NavGroup("Herramientas")
-        self.nav_items["perfiles"] = grp_tools.add_item("perfiles", "Perfiles")
-        self.nav_items["glosario"] = grp_tools.add_item("glosario", "Glosario")
-        self.nav_items["plantillas"] = grp_tools.add_item("plantillas", "Plantillas")
-        self.nav_items["avanzado"] = grp_tools.add_item("avanzado", "Avanzado")
-        layout.addWidget(grp_tools)
-
-        # Group: Historial
-        grp_hist = NavGroup("Historial")
-        self.nav_items["historial"] = grp_hist.add_item("historial", "Versiones")
-        layout.addWidget(grp_hist)
-
-        # Group: Sistema
-        grp_sys = NavGroup("Sistema")
-        self.nav_items["configuracion"] = grp_sys.add_item("configuracion", "Configuración")
-        layout.addWidget(grp_sys)
-
-        layout.addStretch(1)
-
-        # Connect all nav items
-        for item in self.nav_items.values():
-            item.clicked_page.connect(self._select_page)
-
-        return frame
-
-    # ─── Status Bar ────────────────────────────────────────────────
-
-    def _build_status_bar(self) -> QFrame:
-        frame = QFrame()
-        frame.setObjectName("StatusBar")
-        frame.setFixedHeight(24)
-        layout = QHBoxLayout(frame)
-        layout.setContentsMargins(14, 0, 14, 0)
-        layout.setSpacing(8)
-        self.status_dot = QLabel()
-        self.status_dot.setFixedSize(6, 6)
-        self.status_dot.setStyleSheet("background: #30B87A; border-radius: 3px;")
-        self.status_label = QLabel("Preparado")
-        self.status_label.setObjectName("Muted")
-        self.status_profile = QLabel("Perfil: AUTO")
-        self.status_profile.setObjectName("Muted")
-        self.status_mode = QLabel("Modo: Sencillo")
-        self.status_mode.setObjectName("Muted")
-        self.status_extra = QLabel("Offline · X11")
-        self.status_extra.setObjectName("Muted")
-        layout.addWidget(self.status_dot)
-        layout.addWidget(self.status_label)
-        layout.addWidget(QLabel("·"))
-        layout.addWidget(self.status_profile)
-        layout.addWidget(QLabel("·"))
-        layout.addWidget(self.status_mode)
-        layout.addStretch(1)
-        layout.addWidget(self.status_extra)
-        return frame
-
-    # ─── Helper widgets ────────────────────────────────────────────
+    # ─── Helpers ───────────────────────────────────────────────────
 
     def _help_button(self, key: str) -> ContextHelpButton:
         title, body = help_text(key)
-        button = ContextHelpButton(title, body, self, glossary_term_for(key), self.open_glossary_term)
-        return button
+        return ContextHelpButton(
+            title, body, self, glossary_term_for(key), self.open_glossary_term
+        )
 
     def _section_header(self, title: str, help_key: str | None = None) -> QFrame:
         frame = QFrame()
         layout = QHBoxLayout(frame)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(active_theme().spacing.xs)
         label = QLabel(title)
         label.setObjectName("SectionTitle")
         layout.addWidget(label)
@@ -740,302 +651,296 @@ class MainWindow(QMainWindow):
     def _label_with_help(self, text: str, help_key: str) -> QHBoxLayout:
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        label = QLabel(text)
-        layout.addWidget(label)
+        layout.setSpacing(active_theme().spacing.xs)
+        layout.addWidget(QLabel(text))
         button = self._help_button(help_key)
         self.option_help_buttons[help_key] = button
         layout.addWidget(button)
         layout.addStretch(1)
         return layout
 
-    # ─── Dashboard (Resumen) ───────────────────────────────────────
+    def _page(self, title: str, subtitle: str, header_attr: str) -> tuple:
+        page, layout = self._scroll_page()
+        header = PageHeader(title, subtitle)
+        setattr(self, header_attr, header)
+        layout.addWidget(header)
+        return page, layout
+
+    # ─── Dashboard page ────────────────────────────────────────────
 
     def _build_dashboard(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.setSpacing(16)
+        page, layout = self._page(
+            tr("nav.page.dashboard"), tr("page.dashboard.subtitle"), "dashboard_header"
+        )
 
-        # Hero: Circle + Prompt side by side
-        hero = QHBoxLayout()
-        hero.setSpacing(24)
+        editor_card = Card()
+        editor = editor_card.content()
+        editor.setSpacing(active_theme().spacing.md)
 
-        # Circle column
-        circle_col = QVBoxLayout()
-        circle_col.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
-        self.scan_ring = ScanRing(size=140, ring_width=5)
-        circle_col.addWidget(self.scan_ring, 0, Qt.AlignHCenter)
-
-        self.compile_hero_btn = QPushButton("Mejorar prompt")
-        self.compile_hero_btn.setObjectName("PrimaryButton")
-        self.compile_hero_btn.clicked.connect(self.compile_current)
-        apply_tooltip(self.compile_hero_btn, "compile")
-        circle_col.addWidget(self.compile_hero_btn, 0, Qt.AlignHCenter)
-
-        self.hero_status = QLabel("Pega un prompt y pulsa Mejorar prompt.")
-        self.hero_status.setObjectName("HeroStatus")
-        self.hero_status.setAlignment(Qt.AlignHCenter)
-        circle_col.addWidget(self.hero_status)
-        circle_col.addStretch(1)
-
-        # Prompt panel
-        prompt_col = QVBoxLayout()
-        prompt_col.setSpacing(6)
-
-        # Mini tabs (visual only)
         tab_row = QHBoxLayout()
         tab_row.setSpacing(0)
-        tab_active = QLabel("Prompt original")
-        tab_active.setObjectName("PromptTab")
-        tab_active.setProperty("active", True)
-        tab_active.setStyleSheet("border-bottom: 2px solid #4CB8F5; padding: 6px 12px; font-weight: 600; color: #4CB8F5; font-size: 11px;")
-        tab_row.addWidget(tab_active)
+        self.prompt_tab_label = QLabel(tr("simple.prompt.label"))
+        self.prompt_tab_label.setObjectName("PromptTab")
+        self.prompt_tab_label.setProperty("active", True)
+        tab_row.addWidget(self.prompt_tab_label)
         tab_row.addStretch(1)
-        prompt_col.addLayout(tab_row)
+        editor.addLayout(tab_row)
 
         self.prompt_edit = QPlainTextEdit()
-        self.prompt_edit.setPlaceholderText("Pega aquí tu prompt original. AUTO recomienda el mejor perfil automáticamente.")
+        self.prompt_edit.setPlaceholderText(tr("simple.placeholder"))
+        self.prompt_edit.setMinimumHeight(active_theme().metrics.editor_min_height)
         self.prompt_edit.textChanged.connect(self._on_extreme_prompt_changed)
-        prompt_col.addWidget(self.prompt_edit, 1)
+        editor.addWidget(self.prompt_edit, 1)
 
-        # Footer: counters + selects
         footer = QHBoxLayout()
-        footer.setSpacing(8)
-        self.char_label = QLabel("0 caracteres")
-        self.char_label.setObjectName("Muted")
-        self.token_label = QLabel("0 tokens aprox.")
-        self.token_label.setObjectName("Muted")
+        footer.setSpacing(active_theme().spacing.sm)
+        self.char_label = _label("", "MicroLabel")
+        self.token_label = _label("", "MicroLabel")
         footer.addWidget(self.char_label)
         footer.addWidget(self.token_label)
         footer.addStretch(1)
 
-        footer_label_style = "font-size: 10.5px; color: #6C717A;"
-        sel_style = "font-size: 10.5px;"
-
-        p_lbl = QLabel("Perfil:")
-        p_lbl.setStyleSheet(footer_label_style)
         self.profile_combo = QComboBox()
-        self.profile_combo.addItems(supported_profile_names())
-        self.profile_combo.setStyleSheet(sel_style)
-        m_lbl = QLabel("Modelo:")
-        m_lbl.setStyleSheet(footer_label_style)
+        self.profile_combo.addItems(PROFILES)
         self.target_combo = QComboBox()
-        self.target_combo.addItems(list(load_model_profiles().keys()))
-        self.target_combo.setStyleSheet(sel_style)
+        self.target_combo.addItems(MODELS)
         self.target_combo.currentTextChanged.connect(self._on_target_changed)
-        l_lbl = QLabel("Nivel:")
-        l_lbl.setStyleSheet(footer_label_style)
-        self.level_combo = QComboBox()
-        for label, value in [
-            ("Automático", "profile_default"),
-            ("Conservador", "safe"),
-            ("Equilibrado", "balanced"),
-            ("Compacto", "aggressive"),
-            ("Todos", "all"),
-        ]:
-            self.level_combo.addItem(label, value)
-        self.level_combo.setStyleSheet(sel_style)
-        footer.addWidget(p_lbl)
-        footer.addWidget(self.profile_combo)
-        footer.addWidget(m_lbl)
-        footer.addWidget(self.target_combo)
-        footer.addWidget(l_lbl)
-        footer.addWidget(self.level_combo)
-        prompt_col.addLayout(footer)
+        self.level_combo = _combo(_levels())
+        for text, widget in (
+            (tr("simple.label.profile"), self.profile_combo),
+            (tr("simple.label.model"), self.target_combo),
+            (tr("simple.label.level"), self.level_combo),
+        ):
+            footer.addWidget(_label(text, "MicroLabel"))
+            footer.addWidget(widget)
+        editor.addLayout(footer)
 
-        # Quick action bar (secondary actions only — the primary "Mejorar prompt"
-        # button lives in the hero column above, so we don't duplicate it here)
-        quick = QHBoxLayout()
-        quick.setSpacing(6)
+        actions = QHBoxLayout()
+        actions.setSpacing(active_theme().spacing.sm)
+        self.compile_hero_btn = PrimaryButton(tr("simple.button.compile"))
+        self.compile_hero_btn.clicked.connect(self.compile_current)
+        apply_tooltip(self.compile_hero_btn, "compile")
+        actions.addWidget(self.compile_hero_btn)
 
-        clear_btn = QPushButton("Limpiar")
-        clear_btn.clicked.connect(self.new_prompt)
-        apply_tooltip(clear_btn, "reset")
-        quick.addWidget(clear_btn)
+        self.render_file_btn = SecondaryButton(tr("simple.button.load_file"))
+        self.render_file_btn.clicked.connect(self.load_file)
+        apply_tooltip(self.render_file_btn, "load_file")
+        actions.addWidget(self.render_file_btn)
 
-        load_btn = QPushButton("Cargar archivo")
-        load_btn.clicked.connect(self.load_file)
-        apply_tooltip(load_btn, "load_file")
-        quick.addWidget(load_btn)
+        self.render_example_btn = SecondaryButton(tr("simple.button.example"))
+        self.render_example_btn.clicked.connect(self.load_example)
+        apply_tooltip(self.render_example_btn, "example")
+        actions.addWidget(self.render_example_btn)
 
-        ex_btn = QPushButton("Ejemplo")
-        ex_btn.clicked.connect(self.load_example)
-        apply_tooltip(ex_btn, "example")
-        quick.addWidget(ex_btn)
+        self.render_clear_btn = SecondaryButton(tr("simple.button.clear"))
+        self.render_clear_btn.clicked.connect(self.new_prompt)
+        apply_tooltip(self.render_clear_btn, "reset")
+        actions.addWidget(self.render_clear_btn)
 
-        quick.addStretch(1)
-
-        self.cancel_button = QPushButton("Cancelar")
-        self.cancel_button.setObjectName("DangerButton")
-        self.cancel_button.setEnabled(False)
+        actions.addStretch(1)
+        self.cancel_button = DangerButton(tr("simple.button.cancel"))
         self.cancel_button.clicked.connect(self.cancel_compile)
-        apply_tooltip(self.cancel_button, "cancel")
         self.cancel_button.setVisible(False)
-        quick.addWidget(self.cancel_button)
+        apply_tooltip(self.cancel_button, "cancel")
+        actions.addWidget(self.cancel_button)
+        editor.addLayout(actions)
 
-        prompt_col.addLayout(quick)
-        hero.addLayout(circle_col)
-        hero.addLayout(prompt_col, 1)
-        layout.addLayout(hero, 1)
+        self.progress = ProgressIndicator()
+        self.progress.setVisible(False)
+        editor.addWidget(self.progress)
 
-        # Health dashboard (single source of truth for result metrics)
-        # NOTE: Was previously duplicated with a row of 4 ResultCard widgets below;
-        # the duplication was removed in the 2026-06-11 visual polish pass.
+        self.hero_status = _label("", "MicroLabel")
+        editor.addWidget(self.hero_status)
+        layout.addWidget(editor_card)
+
+        self.extreme_health_panel = QFrame()
+        self.extreme_health_panel.setObjectName("NPSCPanel")
+        health_layout = QVBoxLayout(self.extreme_health_panel)
+        health_layout.setContentsMargins(
+            active_theme().spacing.lg,
+            active_theme().spacing.md,
+            active_theme().spacing.lg,
+            active_theme().spacing.md,
+        )
         self.extreme_health = HealthDashboard()
-        layout.addWidget(self.extreme_health)
+        health_layout.addWidget(self.extreme_health)
+        layout.addWidget(self.extreme_health_panel)
+        self.extreme_health_panel.hide()
 
-        # Tool cards
-        tools_title = QLabel("Herramientas")
-        tools_title.setObjectName("SectionTitle")
-        layout.addWidget(tools_title)
+        self.tools_title = _label(tr("section.tools"), "SectionTitle")
+        layout.addWidget(self.tools_title)
 
         tools_row = QHBoxLayout()
-        tools_row.setSpacing(10)
-
-        # Glyphs: technical Unicode consistent with monospace UI typography.
-        # Replaces the previous 🔍/✅/📄 emojis (looked improvised).
-        t1 = ToolCard("Analizar semántica", "Extrae intención y restricciones sin compilar.")
-        t1.set_icon_text("⌕")  # U+2315 telephone recorder — search-like
-        t2 = ToolCard("Validar preservación", "Verifica pérdidas y restricciones críticas.")
-        t2.set_icon_text("✓")  # U+2713 check mark
-        t3 = ToolCard("Copiar y guardar", "Copia prompt listo o exporta resultados completos.")
-        t3.set_icon_text("⎘")  # U+2398 next page
-        t1.mousePressEvent = lambda e: self.analyze_only()
-        t2.mousePressEvent = lambda e: self._select_page("validacion")
-        t3.mousePressEvent = lambda e: self.copy_recommended()
-        for t in (t1, t2, t3):
-            tools_row.addWidget(t)
+        tools_row.setSpacing(active_theme().spacing.md)
+        t1 = ToolCard(tr("tool.analyze"), tr("tool.analyze.desc"))
+        t1.set_icon_text("⌕")
+        t2 = ToolCard(tr("tool.validate"), tr("tool.validate.desc"))
+        t2.set_icon_text("✓")
+        t3 = ToolCard(tr("tool.copy_save"), tr("tool.copy_save.desc"))
+        t3.set_icon_text("⎘")
+        t1.clicked.connect(self.analyze_only)
+        t2.clicked.connect(lambda: self._select_page("validacion"))
+        t3.clicked.connect(self.copy_recommended)
+        for card in (t1, t2, t3):
+            tools_row.addWidget(card)
         tools_row.addStretch(1)
         layout.addLayout(tools_row)
-
         layout.addStretch(1)
         return page
 
     # ─── Compiler page ─────────────────────────────────────────────
 
     def _build_compiler(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.setSpacing(10)
-        layout.addWidget(self._section_header("Compilador"))
+        page, layout = self._page(
+            tr("nav.page.compiler"), tr("page.compiler.subtitle"), "compiler_header"
+        )
+        self.compiler_header_help = self._help_button("Compilador")
+        self.compiler_header.add_action(self.compiler_header_help)
 
-        # Advanced options grid (strict, privacy, custom model)
-        top = QGridLayout()
-        self.custom_model_edit = QLineEdit()
-        self.custom_model_edit.setPlaceholderText("Nombre del modelo personalizado")
-        self.strict_check = QCheckBox("Validación estricta")
-        self.preserve_check = QCheckBox("Permitir original en archivos técnicos")
+        options = Card()
+        options_body = options.content()
+        options_body.setSpacing(active_theme().spacing.md)
+
+        # Each option is one row: label + help on the left, control on the right.
+        def _row(label_layout, control) -> QWidget:
+            row = QWidget()
+            row_layout = QHBoxLayout(row)
+            row_layout.setContentsMargins(0, 0, 0, 0)
+            row_layout.setSpacing(active_theme().spacing.md)
+            row_layout.addLayout(label_layout, 1)
+            row_layout.addWidget(control, 2)
+            return row
+
+        self.strict_check = QCheckBox(tr("simple.check.enable"))
+        options_body.addWidget(
+            _row(self._label_with_help(tr("simple.check.strict"), "strict"), self.strict_check)
+        )
+
+        self.preserve_check = QCheckBox(tr("simple.check.enable"))
         self.preserve_check.setChecked(True)
-        self.privacy_combo = QComboBox()
-        for label, value in [
-            ("Guardar original completo", "full_original"),
-            ("Guardar solo huella digital", "hash_only"),
-            ("Guardar vista parcial recortada", "redacted_preview"),
-        ]:
-            self.privacy_combo.addItem(label, value)
+        options_body.addWidget(
+            _row(
+                self._label_with_help(tr("simple.check.preserve"), "privacy"),
+                self.preserve_check,
+            )
+        )
 
-        strict_row = QHBoxLayout()
-        strict_row.setContentsMargins(0, 0, 0, 0)
-        strict_row.addWidget(self.strict_check)
-        strict_row.addWidget(self._help_button("strict"))
-        strict_row.addStretch(1)
-        top.addLayout(strict_row, 0, 0)
-        top.addWidget(self.preserve_check, 0, 1)
-        top.addLayout(self._label_with_help("Privacidad", "privacy"), 1, 0)
-        top.addWidget(self.privacy_combo, 1, 1)
-        top.addLayout(self._label_with_help("Modelo personalizado", "custom_model"), 2, 0)
-        top.addWidget(self.custom_model_edit, 2, 1)
-        layout.addLayout(top)
-        self._on_target_changed(self.target_combo.currentText())
+        self.privacy_combo = _combo(_privacy_modes())
+        options_body.addWidget(
+            _row(self._label_with_help(tr("simple.label.privacy"), "privacy"), self.privacy_combo)
+        )
 
-        # Prompt display (read-only mirror of dashboard's prompt_edit)
+        self.custom_model_edit = QLineEdit()
+        self.custom_model_edit.setPlaceholderText(tr("simple.label.custom_model_hint"))
+        self._custom_model_row = _row(
+            self._label_with_help(tr("simple.label.custom_model"), "custom_model"),
+            self.custom_model_edit,
+        )
+        options_body.addWidget(self._custom_model_row)
+        layout.addWidget(options)
+
+        prompt_card = Card()
+        prompt_body = prompt_card.content()
         self.compiler_prompt = QPlainTextEdit()
         self.compiler_prompt.setReadOnly(True)
-        self.compiler_prompt.setPlaceholderText("El prompt se muestra aquí. Edítalo en la pestaña Resumen.")
-        layout.addWidget(self.compiler_prompt, 1)
+        self.compiler_prompt.setPlaceholderText(tr("result.empty_prompt"))
+        prompt_body.addWidget(self.compiler_prompt)
+
         counter_row = QHBoxLayout()
-        self.char_label2 = QLabel("0 caracteres")
-        self.char_label2.setObjectName("Muted")
-        self.token_label2 = QLabel("0 tokens aprox.")
-        self.token_label2.setObjectName("Muted")
+        counter_row.setSpacing(active_theme().spacing.md)
+        self.char_label2 = _label("", "MicroLabel")
+        self.token_label2 = _label("", "MicroLabel")
         counter_row.addWidget(self.char_label2)
         counter_row.addWidget(self.token_label2)
         counter_row.addStretch(1)
-        layout.addLayout(counter_row)
+        prompt_body.addLayout(counter_row)
+        layout.addWidget(prompt_card, 1)
 
-        # Action row
-        action_row = QHBoxLayout()
-        self.compile_button = QPushButton("Mejorar prompt")
-        self.compile_button.setObjectName("PrimaryButton")
-        apply_tooltip(self.compile_button, "compile")
+        actions = QHBoxLayout()
+        actions.setSpacing(active_theme().spacing.sm)
+        self.compile_button = PrimaryButton(tr("simple.button.compile"))
         self.compile_button.clicked.connect(self.compile_current)
-        action_row.addWidget(self.compile_button)
+        apply_tooltip(self.compile_button, "compile")
+        actions.addWidget(self.compile_button)
 
-        for text, handler in [
-            ("Analizar solamente", self.analyze_only),
-            ("Limpiar", self.new_prompt),
-            ("Cargar archivo", self.load_file),
-            ("Pegar", self.paste_prompt),
-            ("Cargar ejemplo", self.load_example),
-            ("Guardar resultados", self.save_all),
-        ]:
-            button = QPushButton(text)
+        for text, handler, key in (
+            (tr("compiler.button.analyze"), self.analyze_only, "analyze"),
+            (tr("simple.button.clear"), self.new_prompt, "reset"),
+            (tr("simple.button.load_file"), self.load_file, "load_file"),
+            (tr("compiler.button.paste"), self.paste_prompt, "paste"),
+            (tr("simple.button.example"), self.load_example, "example"),
+            (tr("results.button.save"), self.save_all, "save"),
+        ):
+            button = SecondaryButton(text)
             button.clicked.connect(handler)
-            key = {
-                "Analizar solamente": "analyze",
-                "Limpiar": "reset",
-                "Cargar archivo": "load_file",
-                "Pegar": "paste",
-                "Cargar ejemplo": "example",
-                "Guardar resultados": "save",
-            }[text]
             apply_tooltip(button, key)
-            action_row.addWidget(button)
-        layout.addLayout(action_row)
-
-        self.progress = QProgressBar()
-        self.progress.setRange(0, 100)
-        layout.addWidget(self.progress)
+            actions.addWidget(button)
+        actions.addStretch(1)
+        layout.addLayout(actions)
         layout.addStretch(1)
+        self._on_target_changed(self.target_combo.currentText())
+        self.section_help_buttons["Compilador"] = self.compiler_header_help
         return page
 
     # ─── Results page ──────────────────────────────────────────────
 
     def _build_results(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.addWidget(self._section_header("Resultados", "results_tab"))
-        buttons = QHBoxLayout()
-        copy_button = QPushButton("Copiar prompt listo")
-        copy_button.clicked.connect(self.copy_recommended)
-        apply_tooltip(copy_button, "copy")
-        json_button = QPushButton("Copiar JSON para programas")
-        json_button.clicked.connect(self.copy_json)
-        apply_tooltip(json_button, "copy_json")
-        save_button = QPushButton("Guardar resultados")
-        save_button.clicked.connect(self.save_all)
-        apply_tooltip(save_button, "save")
-        open_button = QPushButton("Abrir carpeta de resultados")
-        open_button.clicked.connect(self.open_last_output)
-        apply_tooltip(open_button, "open_folder")
-        buttons.addWidget(copy_button)
-        buttons.addWidget(json_button)
-        buttons.addWidget(save_button)
-        buttons.addWidget(open_button)
+        page, layout = self._page(
+            tr("nav.page.results"), tr("page.results.subtitle"), "results_header"
+        )
 
-        # Export preview button
-        preview_btn = QPushButton("Vista previa exportacion")
-        preview_btn.clicked.connect(self._open_export_preview)
-        apply_tooltip(preview_btn, "export_preview")
-        buttons.addWidget(preview_btn)
+        # ── primary actions: one dominant, the rest clearly secondary ──
+        actions = QHBoxLayout()
+        actions.setSpacing(active_theme().spacing.sm)
+        self.copy_button = PrimaryButton(tr("results.button.copy_prompt"))
+        self.copy_button.clicked.connect(self.copy_recommended)
+        apply_tooltip(self.copy_button, "copy")
+        actions.addWidget(self.copy_button)
 
-        buttons.addStretch(1)
-        for key in ["complete_report", "compact_nsl", "json_programs", "semantic_rules", "constraints_origin"]:
-            buttons.addWidget(self._help_button(key))
-        layout.addLayout(buttons)
+        for text, handler, key in (
+            (tr("results.button.save"), self.save_all, "save"),
+            (tr("results.button.open_folder"), self.open_last_output, "open_folder"),
+        ):
+            button = SecondaryButton(text)
+            button.clicked.connect(handler)
+            apply_tooltip(button, key)
+            actions.addWidget(button)
+        actions.addStretch(1)
+
+        # ── technical actions live in a single, quiet menu ─────────────
+        self.results_more_button = GhostButton("⋯ " + tr("results.button.more"))
+        self.results_more_menu = QMenu(self)
+        self._add_result_menu_action(
+            self.results_more_menu, tr("results.button.copy_json"), self.copy_json, "copy_json"
+        )
+        self._add_result_menu_action(
+            self.results_more_menu,
+            tr("results.button.export_preview"),
+            self._open_export_preview,
+            "export_preview",
+        )
+        self.results_more_button.setMenu(self.results_more_menu)
+        actions.addWidget(self.results_more_button)
+
+        self.results_help = self._help_button("results_tab")
+        self.section_help_buttons[tr("section.results")] = self.results_help
+        actions.addWidget(self.results_help)
+        layout.addLayout(actions)
+
+        self.extreme_skeleton = Skeleton(lines=6)
+        self.extreme_skeleton.hide()
+        layout.addWidget(self.extreme_skeleton)
+
+        # ── tabs grouped by intent, not by data source ────────────────
+        self.results_empty = EmptyState(
+            tr("result.empty.title"), tr("result.empty.hint")
+        )
+        layout.addWidget(self.results_empty)
+
         self.tabs = QTabWidget()
+        self.tabs.setDocumentMode(True)
+        self.tabs.setUsesScrollButtons(True)
+        self.tabs.setElideMode(Qt.TextElideMode.ElideRight)
         self.summary_text = self._text_tab("Resumen")
         self.optimized_text = self._text_tab("Prompt listo para usar")
         self.hybrid_text = self._text_tab("Informe completo")
@@ -1043,12 +948,23 @@ class MainWindow(QMainWindow):
         self.validation_text = self._text_tab("Validación")
         self.nsl_text = self._text_tab("NSL compacto")
         self.json_text = self._text_tab("JSON para programas")
-        self.seeds_text = self._text_tab("Reglas semánticas")
+        self.seeds_text = self._text_tab(tr("result.rules"))
         self.constraints_text = self._text_tab("Restricciones y origen")
         self.profile_text = self._text_tab("Perfil aplicado")
         self.tabs.currentChanged.connect(lambda _index: close_context_help_popovers())
         layout.addWidget(self.tabs, 1)
+        self.tabs.hide()
         return page
+
+    def _add_result_menu_action(self, menu: QMenu, text: str, handler, tooltip_key: str) -> None:
+        action = menu.addAction(text)
+        action.triggered.connect(handler)
+        action.setToolTip(self._tooltip_text(tooltip_key))
+
+    def _tooltip_text(self, key: str) -> str:
+        from npsc_gui.tooltips import BRIEF_TOOLTIPS
+
+        return BRIEF_TOOLTIPS.get(key, "")
 
     def _text_tab(self, title: str) -> QPlainTextEdit:
         editor = QPlainTextEdit()
@@ -1056,496 +972,485 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(editor, title)
         return editor
 
-    # ─── Validation ────────────────────────────────────────────────
+    # ─── Validation / profiles / glossary / settings ───────────────
 
     def _build_validation(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.addWidget(self._section_header("Validación"))
+        page, layout = self._page(
+            tr("nav.page.validation"), tr("page.validation.subtitle"), "validation_header"
+        )
+        self.validation_header_help = self._help_button("Validación")
+        self.validation_header.add_action(self.validation_header_help)
+        self.section_help_buttons["Validación"] = self.validation_header_help
+        card = Card()
         self.validation_detail = QTextEdit()
         self.validation_detail.setReadOnly(True)
-        layout.addWidget(self.validation_detail)
+        card.content().addWidget(self.validation_detail)
+        layout.addWidget(card, 1)
         return page
-
-    # ─── Profiles ──────────────────────────────────────────────────
 
     def _build_profiles(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.addWidget(self._section_header("Perfiles"))
-        text = QTextEdit()
-        text.setReadOnly(True)
-        text.setPlainText(
-            "AUTO: analiza el prompt y elige el perfil más adecuado.\n\n"
-            "FAST: ideal para tareas rápidas y sencillas. Genera una salida compacta.\n\n"
-            "STANDARD: equilibrio entre claridad, tamaño y preservación de información.\n\n"
-            "ADVANCED: recomendado para programación, arquitectura y tareas con varias condiciones.\n\n"
-            "ROP: Reality Optimization Protocol para decisiones complejas con hipótesis, escenarios, evidencias y autocrítica.\n\n"
-            "RESEARCH_MAX: máxima preservación y trazabilidad para investigación profunda."
+        page, layout = self._page(
+            tr("nav.page.profiles"), tr("page.profiles.subtitle"), "profiles_header"
         )
-        layout.addWidget(text)
+        self.profiles_header_help = self._help_button("Perfiles")
+        self.profiles_header.add_action(self.profiles_header_help)
+        self.section_help_buttons["Perfiles"] = self.profiles_header_help
+        self.profile_cards: list[Card] = []
+        for name, description_key in PROFILE_DEFINITIONS:
+            card = Card()
+            body = card.content()
+            title = QLabel(name)
+            title.setObjectName("ValueStrong")
+            body.addWidget(title)
+            text = _label(tr(description_key), "MicroLabel")
+            text.setWordWrap(True)
+            body.addWidget(text)
+            page_layout = body
+            page_layout.addStretch(1)
+            layout.addWidget(card)
+            self.profile_cards.append(card)
+        layout.addStretch(1)
         return page
 
-    # ─── Glossary ──────────────────────────────────────────────────
-
     def _build_glossary(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.addWidget(self._section_header("Glosario"))
-        title = QLabel("Diccionario fácil")
-        title.setObjectName("SectionTitle")
-        subtitle = QLabel("Consulta palabras y abreviaturas de la aplicación con explicaciones sencillas.")
-        subtitle.setObjectName("Muted")
-        subtitle.setWordWrap(True)
-        layout.addWidget(title)
-        layout.addWidget(subtitle)
+        page, layout = self._page(
+            tr("nav.page.glossary"), tr("page.glossary.subtitle"), "glossary_header"
+        )
+
+        self.glossary_header_help = self._help_button("Glosario")
+        self.glossary_header.add_action(self.glossary_header_help)
+        self.section_help_buttons["Glosario"] = self.glossary_header_help
 
         controls = QHBoxLayout()
+        controls.setSpacing(active_theme().spacing.sm)
         self.glossary_search = QLineEdit()
-        self.glossary_search.setPlaceholderText("Buscar una palabra...")
+        self.glossary_search.setPlaceholderText(tr("glossary.search_placeholder"))
         self.glossary_search.textChanged.connect(self._refresh_glossary)
         self.glossary_category = QComboBox()
         self.glossary_category.addItems(CATEGORIES)
         self.glossary_category.currentTextChanged.connect(self._refresh_glossary)
-        self.glossary_count = QLabel("")
-        self.glossary_count.setObjectName("Muted")
+        self.glossary_count = _label("", "MicroLabel")
         controls.addWidget(self.glossary_search, 1)
         controls.addWidget(self.glossary_category)
         controls.addWidget(self.glossary_count)
         layout.addLayout(controls)
 
-        splitter = QSplitter(Qt.Horizontal)
+        split = QHBoxLayout()
+        split.setSpacing(active_theme().spacing.md)
+        list_card = Card()
         self.glossary_list = QListWidget()
-        self.glossary_list.setMinimumWidth(270)
+        self.glossary_list.setMinimumWidth(280)
         self.glossary_list.currentItemChanged.connect(self._on_glossary_selection_changed)
+        list_card.content().addWidget(self.glossary_list)
+        split.addWidget(list_card, 0)
+
+        detail_card = Card()
         self.glossary_detail = QTextEdit()
         self.glossary_detail.setReadOnly(True)
-        self.glossary_detail.setPlainText("Escribe una palabra o selecciona un término.")
-        splitter.addWidget(self.glossary_list)
-        splitter.addWidget(self.glossary_detail)
-        splitter.setStretchFactor(0, 0)
-        splitter.setStretchFactor(1, 1)
-        layout.addWidget(splitter, 1)
+        self.glossary_detail.setPlainText(tr("glossary.search"))
+        detail_card.content().addWidget(self.glossary_detail)
+        split.addWidget(detail_card, 1)
+        layout.addLayout(split, 1)
 
         bottom = QHBoxLayout()
-        self.copy_glossary_button = QPushButton("Copiar explicación")
-        self.copy_glossary_button.clicked.connect(self.copy_glossary_explanation)
         bottom.addStretch(1)
+        self.copy_glossary_button = SecondaryButton(tr("glossary.copy"))
+        self.copy_glossary_button.clicked.connect(self.copy_glossary_explanation)
         bottom.addWidget(self.copy_glossary_button)
         layout.addLayout(bottom)
         self._refresh_glossary()
         return page
 
-    # ─── Settings ──────────────────────────────────────────────────
-
     def _build_settings_page(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.addWidget(self._section_header(tr("settings.title")))
+        page, layout = self._page(
+            tr("nav.page.settings"), tr("page.settings.subtitle"), "settings_header"
+        )
+
+        self.settings_header_help = self._help_button("Configuración")
+        self.settings_header.add_action(self.settings_header_help)
+        self.section_help_buttons["Configuración"] = self.settings_header_help
+
+        appearance = Card()
+        appearance_body = appearance.content()
+        self.appearance_title = _label(tr("settings.appearance"), "SectionTitle")
+        appearance_body.addWidget(self.appearance_title)
+
         theme_row = QHBoxLayout()
-        theme_label = QLabel(tr("settings.theme"))
+        theme_row.setSpacing(active_theme().spacing.md)
+        theme_row.addWidget(_label(tr("settings.theme"), "FieldLabel"))
         self.theme_combo = QComboBox()
         self.theme_combo.addItem(tr("settings.theme.dark"), "dark")
         self.theme_combo.addItem(tr("settings.theme.light"), "light")
-        self.theme_combo.setCurrentIndex(0 if self.settings.get("theme", "dark") == "dark" else 1)
+        self.theme_combo.setCurrentIndex(
+            0 if self.settings.get("theme", "dark") == "dark" else 1
+        )
         self.theme_combo.currentIndexChanged.connect(self._on_theme_changed)
-        theme_row.addWidget(theme_label)
-        theme_row.addWidget(self.theme_combo)
-        theme_row.addStretch(1)
-        layout.addLayout(theme_row)
+        theme_row.addWidget(self.theme_combo, 1)
+        appearance_body.addLayout(theme_row)
 
         language_row = QHBoxLayout()
-        language_label = QLabel(tr("settings.language"))
+        language_row.setSpacing(active_theme().spacing.md)
+        language_row.addWidget(_label(tr("settings.language"), "FieldLabel"))
         self.language_combo = QComboBox()
-        self.language_combo.addItem(tr("settings.language.es"), "es")
-        self.language_combo.addItem(tr("settings.language.en"), "en")
-        self.language_combo.setCurrentIndex(0 if self.settings.get("language", "es") == "es" else 1)
+        self.LANGUAGE_LABELS = (
+            ("Español", "es"),
+            ("English", "en"),
+            ("Français", "fr"),
+            ("Deutsch", "de"),
+            ("Русский", "ru"),
+            ("한국어", "ko"),
+            ("中文", "zh"),
+        )
+        for label, value in self.LANGUAGE_LABELS:
+            self.language_combo.addItem(label, value)
+        stored_language = normalize_language(str(self.settings.get("language", "es")))
+        self.language_combo.setCurrentIndex(LANGUAGES.index(stored_language))
         self.language_combo.currentIndexChanged.connect(self._on_language_changed)
-        language_row.addWidget(language_label)
-        language_row.addWidget(self.language_combo)
-        language_row.addStretch(1)
-        layout.addLayout(language_row)
+        language_row.addWidget(self.language_combo, 1)
+        appearance_body.addLayout(language_row)
 
-        # Startup mode setting
+        self.theme_combo.setCurrentIndex(
+            0 if self.settings.get("theme", "dark") == "dark" else 1
+        )
+
+        self.reduce_motion_check = QCheckBox(tr("settings.reduce_motion"))
+        self.reduce_motion_check.setChecked(motion.reduce_motion())
+        self.reduce_motion_check.toggled.connect(self._on_reduce_motion_toggled)
+        appearance_body.addWidget(self.reduce_motion_check)
+        self.reduce_motion_help = _label(tr("settings.reduce_motion.help"), "MicroLabel")
+        self.reduce_motion_help.setWordWrap(True)
+        appearance_body.addWidget(self.reduce_motion_help)
+        layout.addWidget(appearance)
+
+        behaviour = Card()
+        behaviour_body = behaviour.content()
+        self.behaviour_title = _label(tr("settings.behavior"), "SectionTitle")
+        behaviour_body.addWidget(self.behaviour_title)
+
         mode_row = QHBoxLayout()
-        mode_label = QLabel(tr("settings.startup_mode"))
+        mode_row.setSpacing(active_theme().spacing.md)
+        mode_row.addWidget(_label(tr("settings.startup_mode"), "FieldLabel"))
         self.startup_mode_combo = QComboBox()
-        self.startup_mode_combo.addItems(["Sencillo", "Extremo"])
-        self.startup_mode_combo.setCurrentIndex(0 if self.settings.get("startup_mode", MODE_SIMPLE) == MODE_SIMPLE else 1)
-        mode_row.addWidget(mode_label)
-        mode_row.addWidget(self.startup_mode_combo)
-        mode_row.addStretch(1)
-        layout.addLayout(mode_row)
+        self.startup_mode_combo.addItem(tr("status.mode_simple"), MODE_SIMPLE)
+        self.startup_mode_combo.addItem(tr("status.mode_extreme"), MODE_EXTREME)
+        self.startup_mode_combo.setCurrentIndex(
+            0 if self.settings.get("startup_mode", MODE_SIMPLE) == MODE_SIMPLE else 1
+        )
+        mode_row.addWidget(self.startup_mode_combo, 1)
+        behaviour_body.addLayout(mode_row)
 
-        reset = QPushButton(tr("settings.reset"))
-        reset.clicked.connect(self.reset_configuration)
-        apply_tooltip(reset, "settings_reset")
-        layout.addWidget(QLabel(tr("settings.xdg_note")))
-        layout.addWidget(reset)
+        data_card = Card()
+        data_body = data_card.content()
+        self.data_title = _label(tr("settings.data_location"), "SectionTitle")
+        data_body.addWidget(self.data_title)
+        self.data_help = _label(tr("settings.data_location.help"), "MicroLabel")
+        self.data_help.setWordWrap(True)
+        data_body.addWidget(self.data_help)
+        self.data_path_label = _label(str(data_dir()), "MonoText")
+        self.data_path_label.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
+        )
+        data_body.addWidget(self.data_path_label)
+        layout.addWidget(data_card)
+
+        reset_card = Card()
+        reset_body = reset_card.content()
+        hint = _label(tr("settings.reset.help"), "MicroLabel")
+        hint.setWordWrap(True)
+        reset_body.addWidget(hint)
+        self.reset_button = SecondaryButton(tr("settings.reset"))
+        self.reset_button.clicked.connect(self.reset_configuration)
+        apply_tooltip(self.reset_button, "settings_reset")
+        reset_body.addWidget(self.reset_button, 0, Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(reset_card)
+
+        layout.addWidget(behaviour)
         layout.addStretch(1)
         return page
 
-    # ─── Template page ──────────────────────────────────────────────
+    # ─── Template / history / advanced ─────────────────────────────
 
     def _build_template_page(self) -> QWidget:
         return build_template_page(self)
 
-    # ─── History page ───────────────────────────────────────────────
-
     def _build_history_page(self) -> QWidget:
         return build_history_page(self)
 
-    # ─── Advanced Editable Sections page ────────────────────────────
-
     def _build_advanced_editable(self) -> QWidget:
-        """Build the advanced editable sections page with 6 fields."""
         self._advanced_page = AdvancedModePage()
         self._advanced_page.compile_requested.connect(self._compile_from_advanced)
         self._advanced_page.sections_changed.connect(self._on_advanced_sections_changed)
         return self._advanced_page
 
-    def _compile_from_advanced(self) -> None:
-        """Compile using the advanced page's combined prompt."""
-        if not hasattr(self, '_advanced_page'):
-            return
-        combined = self._advanced_page.get_combined_prompt().strip()
-        if not combined:
-            QMessageBox.warning(self, "Entrada vacia",
-                                "Escribe algo en las secciones o pega un prompt informal antes de compilar.")
-            return
-        # Set the combined prompt into the extreme mode's prompt edit
-        self.prompt_edit.setPlainText(combined)
-        # Also sync to simple mode
-        if hasattr(self, 'simple_prompt_edit'):
-            self.simple_prompt_edit.blockSignals(True)
-            self.simple_prompt_edit.setPlainText(combined)
-            self.simple_prompt_edit.blockSignals(False)
-        # Switch to compile page and compile
-        self._select_page("compilar")
-        self.compile_current()
-
-    def _on_advanced_sections_changed(self, data: dict) -> None:
-        """Track unsaved changes in advanced sections."""
-        self._advanced_sections_dirty = True
-
-    # ─── Page management ───────────────────────────────────────────
-
-    def _add_page(self, name: str, widget: QWidget) -> None:
-        self.pages[name] = widget
-        self.stack.addWidget(widget)
-
-    def _select_page(self, name: str) -> None:
-        close_context_help_popovers()
-        # Ensure we are in extreme mode when selecting pages
-        if self._current_mode != MODE_EXTREME:
-            self._switch_to_mode(MODE_EXTREME)
-        if name not in self.pages:
-            return
-        widget = self.pages[name]
-        self.stack.setCurrentWidget(widget)
-        for key, item in self.nav_items.items():
-            item.setChecked(key == name)
-        self.settings["last_section"] = name
-        save_settings(self._collect_settings())
-
     # ─── Mode switching ────────────────────────────────────────────
 
     def _toggle_mode(self) -> None:
-        if self._current_mode == MODE_SIMPLE:
-            self._switch_to_mode(MODE_EXTREME)
-        else:
-            self._switch_to_mode(MODE_SIMPLE)
+        target = MODE_EXTREME if self._current_mode == MODE_SIMPLE else MODE_SIMPLE
+        self._switch_to_mode(target)
 
     def _switch_to_mode(self, mode: str) -> None:
         close_context_help_popovers()
         self._current_mode = mode
-
         if mode == MODE_SIMPLE:
             self.mode_stack.setCurrentIndex(0)
-            self.mode_toggle_btn.setText(tr("mode.activate_extreme"))
-            self.status_mode.setText(tr("mode.simple_status"))
-            self._set_header_status("ok", tr("mode.simple_header"))
-            # Sync prompt from extreme to simple
-            if hasattr(self, "prompt_edit") and hasattr(self, "simple_prompt_edit"):
-                extreme_text = self.prompt_edit.toPlainText()
-                simple_text = self.simple_prompt_edit.toPlainText()
-                # If only one side has text, sync to the other
-                if extreme_text and not simple_text:
-                    self.simple_prompt_edit.setPlainText(extreme_text)
-                elif simple_text and not extreme_text:
-                    self.prompt_edit.blockSignals(True)
-                    self.prompt_edit.setPlainText(simple_text)
-                    self.prompt_edit.blockSignals(False)
-                elif extreme_text and simple_text:
-                    # Both have text — if they differ, the extreme mode is more recent
-                    # (user was just editing there). BUT only overwrite simple if
-                    # the texts actually differ, to avoid unnecessary clears.
-                    if extreme_text != simple_text:
-                        self.simple_prompt_edit.setPlainText(extreme_text)
-            # Sync combos from extreme to simple
+            self.status_mode.setText(tr("status.mode_simple"))
+            self._sync_prompts(simple_wins=True)
             self._sync_combos_extreme_to_simple()
-            # Show simple home if no result
-            if not self.result:
-                self.simple_stack.setCurrentIndex(0)
-            else:
-                self.simple_stack.setCurrentIndex(1)
         else:
             self.mode_stack.setCurrentIndex(1)
-            self.mode_toggle_btn.setText(tr("mode.activate_simple"))
-            self.status_mode.setText(tr("mode.extreme_status"))
-            self._set_header_status("ok", tr("mode.extreme_header"))
-            # Sync prompt from simple to extreme
-            if hasattr(self, "simple_prompt_edit") and hasattr(self, "prompt_edit"):
-                simple_text = self.simple_prompt_edit.toPlainText()
-                extreme_text = self.prompt_edit.toPlainText()
-                if simple_text:
-                    self.prompt_edit.setPlainText(simple_text)
-            # Sync combos from simple to extreme
+            self.status_mode.setText(tr("status.mode_extreme"))
+            self._sync_prompts(simple_wins=False)
             self._sync_combos_simple_to_extreme()
-            # If there's a result, go to results page
-            if self.result:
-                self._select_page("resultados")
-            else:
-                self._select_page("resumen")
-            self._apply_mode_visibility()
-            # Ensure counters are updated immediately after mode switch (sync used blockSignals)
-            self._update_counters()
-
-        # Sync prompt to advanced page whenever mode changes
-        if hasattr(self, '_advanced_page') and hasattr(self, 'prompt_edit'):
+            self._select_page("resultados" if self.result else "resumen")
+        self.header.set_mode(mode)
+        self.status_bar.set_mode(mode)
+        if self._advanced_page_present():
             self._advanced_page.set_informal_input(self.prompt_edit.toPlainText())
-
         save_settings(self._collect_settings())
 
+    def _advanced_page_present(self) -> bool:
+        return hasattr(self, "_advanced_page") and hasattr(self, "prompt_edit")
+
+    def _sync_prompts(self, *, simple_wins: bool) -> None:
+        if not (hasattr(self, "prompt_edit") and hasattr(self, "simple_prompt_edit")):
+            return
+        simple_text = self.simple_prompt_edit.toPlainText()
+        extreme_text = self.prompt_edit.toPlainText()
+        if simple_wins:
+            if simple_text and simple_text != extreme_text:
+                self.prompt_edit.blockSignals(True)
+                self.prompt_edit.setPlainText(simple_text)
+                self.prompt_edit.blockSignals(False)
+            elif extreme_text and not simple_text:
+                self.simple_prompt_edit.setPlainText(extreme_text)
+        else:
+            if extreme_text and extreme_text != simple_text:
+                self.simple_prompt_edit.blockSignals(True)
+                self.simple_prompt_edit.setPlainText(extreme_text)
+                self.simple_prompt_edit.blockSignals(False)
+            elif simple_text and not extreme_text:
+                self.prompt_edit.blockSignals(True)
+                self.prompt_edit.setPlainText(simple_text)
+                self.prompt_edit.blockSignals(False)
+
     def _sync_combos_simple_to_extreme(self) -> None:
-        """Sync combo selections from simple mode to extreme mode."""
         if not hasattr(self, "simple_profile_combo"):
             return
         self.profile_combo.setCurrentText(self.simple_profile_combo.currentText())
         self.target_combo.setCurrentText(self.simple_target_combo.currentText())
-        # Sync level
-        level_data = self.simple_level_combo.currentData()
-        self._set_combo_value(self.level_combo, str(level_data) if level_data else "profile_default")
+        level = self.simple_level_combo.currentData()
+        self._set_combo_value(self.level_combo, str(level or "profile_default"))
         self.strict_check.setChecked(self.simple_strict_check.isChecked())
         self.preserve_check.setChecked(self.simple_preserve_check.isChecked())
-        # Sync privacy
-        priv_data = self.simple_privacy_combo.currentData()
-        self._set_combo_value(self.privacy_combo, str(priv_data) if priv_data else "full_original")
+        privacy = self.simple_privacy_combo.currentData()
+        self._set_combo_value(self.privacy_combo, str(privacy or "full_original"))
 
     def _sync_combos_extreme_to_simple(self) -> None:
-        """Sync combo selections from extreme mode to simple mode."""
         if not hasattr(self, "simple_profile_combo"):
             return
         self.simple_profile_combo.setCurrentText(self.profile_combo.currentText())
         self.simple_target_combo.setCurrentText(self.target_combo.currentText())
-        # Sync level
-        level_data = self.level_combo.currentData()
-        self._set_combo_value(self.simple_level_combo, str(level_data) if level_data else "profile_default")
+        level = self.level_combo.currentData()
+        self._set_combo_value(self.simple_level_combo, str(level or "profile_default"))
         self.simple_strict_check.setChecked(self.strict_check.isChecked())
         self.simple_preserve_check.setChecked(self.preserve_check.isChecked())
-        # Sync privacy
-        priv_data = self.privacy_combo.currentData()
-        self._set_combo_value(self.simple_privacy_combo, str(priv_data) if priv_data else "full_original")
+        privacy = self.privacy_combo.currentData()
+        self._set_combo_value(self.simple_privacy_combo, str(privacy or "full_original"))
 
-    # ─── Simple mode helpers ───────────────────────────────────────
+    # ─── Prompt sync ───────────────────────────────────────────────
 
     def _on_simple_prompt_changed(self) -> None:
-        """When the simple mode prompt text changes, sync to extreme mode."""
         text = self.simple_prompt_edit.toPlainText()
         if hasattr(self, "prompt_edit"):
             self.prompt_edit.blockSignals(True)
             self.prompt_edit.setPlainText(text)
             self.prompt_edit.blockSignals(False)
-        # Debounce counter updates to avoid estimate_text() on every keystroke
         self._counters_debounce_timer.start()
-        self._sync_simple_combos_to_extreme_on_change()
-        # Update profile label
-        profile = self.simple_profile_combo.currentText() if hasattr(self, "simple_profile_combo") else "AUTO"
-        if profile == "AUTO":
-            self.simple_profile_label.setText("Automático recomendado")
-        else:
-            self.simple_profile_label.setText(profile)
-
-    def _sync_simple_combos_to_extreme_on_change(self) -> None:
-        """Lightweight sync of combos from simple to extreme during typing.
-        Ensures that if user changed profile/target/level in simple mode
-        and then switches to extreme, the values are already there."""
-        if not hasattr(self, "simple_profile_combo"):
-            return
-        self.profile_combo.blockSignals(True)
-        self.profile_combo.setCurrentText(self.simple_profile_combo.currentText())
-        self.profile_combo.blockSignals(False)
+        profile = (
+            self.simple_profile_combo.currentText()
+            if hasattr(self, "simple_profile_combo")
+            else "AUTO"
+        )
+        self.simple_profile_hint.setText(
+            tr("profile.auto_recommended") if profile == "AUTO" else profile
+        )
 
     def _on_extreme_prompt_changed(self) -> None:
-        """When the extreme mode prompt text changes, sync to simple mode."""
-        # Only sync if we're actually in extreme mode (not during init)
         if self._current_mode != MODE_EXTREME:
             return
         text = self.prompt_edit.toPlainText()
         if hasattr(self, "simple_prompt_edit"):
-            # Avoid overwriting if simple already has different content
-            # that the user hasn't confirmed (simple is the "safer" source)
-            current_simple = self.simple_prompt_edit.toPlainText()
-            if text != current_simple:
+            if text != self.simple_prompt_edit.toPlainText():
                 self.simple_prompt_edit.blockSignals(True)
                 self.simple_prompt_edit.setPlainText(text)
                 self.simple_prompt_edit.blockSignals(False)
-        # Debounce counter updates to avoid estimate_text() on every keystroke
         self._counters_debounce_timer.start()
 
-    def _toggle_simple_adv_options(self, checked: bool) -> None:
-        self.adv_frame.setVisible(checked)
-        if checked:
-            self.adv_toggle_btn.setText("▾ Opciones avanzadas")
-        else:
-            self.adv_toggle_btn.setText("▸ Opciones avanzadas")
-
     def _on_simple_profile_combo_changed(self, text: str) -> None:
-        if text == "AUTO":
-            self.simple_profile_label.setText("Automático recomendado")
-        else:
-            self.simple_profile_label.setText(text)
+        self.simple_profile_hint.setText(
+            tr("profile.auto_recommended") if text == "AUTO" else text
+        )
+        if hasattr(self, "profile_combo"):
+            self.profile_combo.blockSignals(True)
+            self.profile_combo.setCurrentText(text)
+            self.profile_combo.blockSignals(False)
+
+    def _on_target_changed(self, target: str) -> None:
+        visible = target == "custom"
+        if hasattr(self, "custom_model_edit"):
+            self.custom_model_edit.setVisible(visible)
+        if hasattr(self, "_custom_model_row"):
+            self._custom_model_row.setVisible(visible)
+
+    # ─── Simple-mode result state ──────────────────────────────────
+
+    def _show_results(self) -> None:
+        self.simple_stack.setCurrentWidget(self.simple_result_panel)
+
+    def _show_home(self) -> None:
+        self.simple_stack.setCurrentWidget(self.simple_home_panel)
 
     def _simple_new_compilation(self) -> None:
-        """New compilation in simple mode: clear and go back to home."""
         self.result = None
         self.simple_prompt_edit.clear()
-        self.simple_stack.setCurrentIndex(0)
+        if hasattr(self, "simple_result_card"):
+            self.simple_result_card.clear()
+        self.simple_result_panel.setVisible(True)
+        self.simple_metrics_panel.hide()
+        self.simple_detail_card.hide()
+        self.simple_skeleton.hide()
         self.simple_progress.setVisible(False)
         self.simple_progress.setValue(0)
+        self.simple_cancel_btn.setVisible(False)
+        self.simple_stage_label.setText("")
+        self._show_home()
+        self.simple_prompt_edit.setFocus(Qt.FocusReason.OtherFocusReason)
 
     def _show_simple_history(self) -> None:
-        """Show history — open extreme mode history / recent results."""
-        # The app doesn't have a dedicated history page, but we can
-        # show the results page in extreme mode if there's a result.
         if self.result:
             self._switch_to_mode(MODE_EXTREME)
             self._select_page("resultados")
         else:
-            QMessageBox.information(self, "Historial", "No hay compilaciones previas en esta sesión.")
+            self._toast.show_message(tr("history.none"), "info")
+
+    # ─── Settings, dialogs, language ───────────────────────────────
 
     def _open_settings(self) -> None:
-        """Open settings — route to the appropriate settings view."""
-        if self._current_mode == MODE_EXTREME:
-            self._select_page("configuracion")
-        else:
-            # Switch to extreme mode and go to settings
-            self._switch_to_mode(MODE_EXTREME)
-            self._select_page("configuracion")
+        self._switch_to_mode(MODE_EXTREME)
+        self._select_page("configuracion")
 
     def _open_help(self) -> None:
-        """Open help — route to the appropriate help view."""
-        if self._current_mode == MODE_EXTREME:
-            self._select_page("glosario")
-        else:
-            self._switch_to_mode(MODE_EXTREME)
-            self._select_page("glosario")
+        self._switch_to_mode(MODE_EXTREME)
+        self._select_page("glosario")
 
     def _open_about(self) -> None:
-        """Open the About dialog."""
-        lang = self.settings.get("language", "es")
-        dlg = AboutDialog(self, language=lang)
-        dlg.exec()
+        dialog = AboutDialog(self, language=str(self.settings.get("language", "es")))
+        dialog.exec()
 
     def _open_export_preview(self) -> None:
-        """Open the Export Preview dialog."""
         result = getattr(self, "result", None)
         if not result:
-            QMessageBox.information(self, "Sin resultado",
-                                    "No hay ningun resultado que previsualizar. Compila un prompt primero.")
+            self._toast.show_message(tr("error.no_result"), "warning")
             return
-        dlg = ExportPreviewDialog(result, self)
-        dlg.exec()
-
-    # ─── Settings persistence ──────────────────────────────────────
+        ExportPreviewDialog(result, self).exec()
 
     def _on_theme_changed(self, index: int) -> None:
-        theme = "dark" if index == 0 else "light"
-        self.settings["theme"] = theme
-        self.setStyleSheet(get_qss(theme))
+        theme_name = "dark" if index == 0 else "light"
+        self.settings["theme"] = theme_name
+        app = QApplication.instance()
+        if app is not None:
+            apply_design(app, get_theme(theme_name))
+            self.setStyleSheet("")
+        # Keep the selector truthful when the theme is changed from code too.
+        if hasattr(self, "theme_combo") and self.theme_combo.currentIndex() != index:
+            self.theme_combo.blockSignals(True)
+            self.theme_combo.setCurrentIndex(index)
+            self.theme_combo.blockSignals(False)
+        self._restyle_dynamic_widgets()
         save_settings(self._collect_settings())
 
+    def _restyle_dynamic_widgets(self) -> None:
+        for widget in (
+            getattr(self, "simple_metrics_panel", None),
+            getattr(self, "extreme_health_panel", None),
+            getattr(self, "simple_detail_card", None),
+            getattr(self, "home_rail", None),
+        ):
+            if widget is not None:
+                widget.style().unpolish(widget)
+                widget.style().polish(widget)
+        self.header.set_state(
+            "working" if self._is_compiling() else "ready",
+            tr("status.working") if self._is_compiling() else tr("status.ready"),
+        )
+        self.status_bar.set_message(self.status_bar.message.text(), "idle")
+        self.update()
+
     def _on_language_changed(self, index: int) -> None:
-        language = "es" if index == 0 else "en"
+        language = LANGUAGES[index] if 0 <= index < len(LANGUAGES) else "es"
         self.settings["language"] = set_language(language)
-        # Keep this intentionally lightweight: full widgets are rebuilt on next launch.
-        if hasattr(self, "mode_toggle_btn"):
-            self.mode_toggle_btn.setText(tr("mode.activate_extreme") if self._current_mode == MODE_SIMPLE else tr("mode.activate_simple"))
-        self._set_header_status("ok", tr("status.ready"))
         save_settings(self._collect_settings())
+        self._retranslate_ui()
+        self._toast.show_message(tr("toast.language_changed"), "info")
+
+    def _on_reduce_motion_toggled(self, checked: bool) -> None:
+        motion.set_motion_enabled(not checked)
+
+    # ─── Settings persistence ──────────────────────────────────────
 
     def _restore_settings(self) -> None:
         self.profile_combo.setCurrentText(str(self.settings["profile"]))
         self.target_combo.setCurrentText(str(self.settings["target"]))
-        self.level_combo.setCurrentText(str(self.settings["level"]))
         self._set_combo_value(self.level_combo, str(self.settings["level"]))
         self.strict_check.setChecked(bool(self.settings["strict_validation"]))
         self.preserve_check.setChecked(bool(self.settings["preserve_original"]))
-        if hasattr(self, "privacy_combo"):
-            self.privacy_combo.setCurrentText(str(self.settings.get("privacy_mode", "full_original")))
-            self._set_combo_value(self.privacy_combo, str(self.settings.get("privacy_mode", "full_original")))
-        if hasattr(self, "custom_model_edit"):
-            self.custom_model_edit.setText(str(self.settings.get("custom_model_name", "")))
+        self._set_combo_value(
+            self.privacy_combo,
+            str(self.settings.get("privacy_mode", "full_original")),
+        )
+        self.custom_model_edit.setText(str(self.settings.get("custom_model_name", "")))
         output_dir = str(self.settings.get("output_dir", ""))
         self.last_saved_dir = Path(output_dir) if output_dir else None
-
-        # Sync extreme combos to simple combos
         self._sync_combos_extreme_to_simple()
 
-        # Restore mode — default to simple (redesign default)
-        # Legacy advanced_mode is respected only if startup_mode is also set to extreme
         startup_mode = str(self.settings.get("startup_mode", MODE_SIMPLE))
-        # Only consider legacy advanced_mode if no startup_mode was ever explicitly set
-        if startup_mode == MODE_SIMPLE and bool(self.settings.get("advanced_mode", False)):
-            # Legacy user had advanced on, but redesign default is simple.
-            # Respect their preference only if they explicitly chose extreme before.
-            if self.settings.get("startup_mode", "") == "":
-                startup_mode = MODE_EXTREME
+        if startup_mode not in (MODE_SIMPLE, MODE_EXTREME):
+            startup_mode = MODE_SIMPLE
         self._switch_to_mode(startup_mode)
-
-        self._apply_mode_visibility()
-
-        # Restore last section only in extreme mode
         if self._current_mode == MODE_EXTREME:
             last_section = str(self.settings.get("last_section", "resumen"))
-            _legacy_map = {
-                "Panel principal": "resumen",
-                "Compilador": "compilar",
-                "Resultados": "resultados",
-                "Validación": "validacion",
-                "Perfiles": "perfiles",
-                "Reglas y modelos": "compilar",
-                "Configuración": "configuracion",
-                "Ayuda": "glosario",
-                "Glosario": "glosario",
-                "Acerca de": "configuracion",
-                "Seeds y modelos": "compilar",
-            }
-            last_section = _legacy_map.get(last_section, last_section)
             if last_section not in self.pages:
                 last_section = "resumen"
             self._select_page(last_section)
 
     def _collect_settings(self) -> dict:
+        if self.isMaximized():
+            normal = self.normalGeometry()
+            width, height = normal.width(), normal.height()
+        else:
+            width, height = self.width(), self.height()
         return {
             "advanced_mode": self._current_mode == MODE_EXTREME,
             "startup_mode": self._current_mode,
             "theme": self.settings.get("theme", "dark"),
             "language": self.settings.get("language", "es"),
-            "profile": self.profile_combo.currentText() if hasattr(self, "profile_combo") else "AUTO",
-            "target": self.target_combo.currentText() if hasattr(self, "target_combo") else "codex",
-            "level": self._combo_value(self.level_combo) if hasattr(self, "level_combo") else "profile_default",
-            "strict_validation": self.strict_check.isChecked() if hasattr(self, "strict_check") else False,
-            "preserve_original": self.preserve_check.isChecked() if hasattr(self, "preserve_check") else True,
-            "privacy_mode": self._combo_value(self.privacy_combo) if hasattr(self, "privacy_combo") else "full_original",
-            "custom_model_name": self.custom_model_edit.text() if hasattr(self, "custom_model_edit") else "",
-            "last_section": next((name for name, widget in self.pages.items() if widget is self.stack.currentWidget()), "resumen") if hasattr(self, "stack") else "resumen",
-            "window_width": self.width(),
-            "window_height": self.height(),
+            "profile": self.profile_combo.currentText(),
+            "target": self.target_combo.currentText(),
+            "level": self._combo_value(self.level_combo),
+            "strict_validation": self.strict_check.isChecked(),
+            "preserve_original": self.preserve_check.isChecked(),
+            "privacy_mode": self._combo_value(self.privacy_combo),
+            "custom_model_name": self.custom_model_edit.text(),
+            "last_section": next(
+                (
+                    name
+                    for name, widget in self.pages.items()
+                    if widget is self.stack.currentWidget()
+                ),
+                "resumen",
+            ),
+            "window_width": width,
+            "window_height": height,
             "output_dir": self.settings.get("output_dir", ""),
         }
 
@@ -1556,72 +1461,84 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence("Ctrl+O"), self, activated=self.load_file)
         QShortcut(QKeySequence("Ctrl+S"), self, activated=self.save_all)
         QShortcut(QKeySequence("Ctrl+Return"), self, activated=self.compile_current)
+        QShortcut(QKeySequence("Ctrl+Enter"), self, activated=self.compile_current)
         QShortcut(QKeySequence("Ctrl+Shift+C"), self, activated=self.copy_recommended)
         QShortcut(QKeySequence("Ctrl+L"), self, activated=self.new_prompt)
-        QShortcut(QKeySequence("F1"), self, activated=lambda: self._open_help())
+        QShortcut(QKeySequence("F1"), self, activated=self._open_help)
         QShortcut(QKeySequence("Ctrl+M"), self, activated=self._toggle_mode)
-        # Project and variable shortcuts
         QShortcut(QKeySequence("Ctrl+G"), self, activated=self._save_project)
         QShortcut(QKeySequence("Ctrl+Shift+O"), self, activated=self._load_project)
         QShortcut(QKeySequence("Ctrl+Shift+V"), self, activated=self._show_variable_dialog)
 
-    # ─── Mode visibility (extreme mode tab filtering) ──────────────
+    def _escape(self) -> None:
+        if self._is_compiling():
+            self.cancel_compile()
 
-    def _apply_mode_visibility(self) -> None:
-        """In extreme mode, always show all tabs. Legacy compatibility."""
-        if not hasattr(self, "tabs"):
+    def keyPressEvent(self, event) -> None:  # noqa: N802 (Qt API)
+        # Escape is deliberately NOT a global QShortcut: that would swallow the
+        # key in text editors, dialogs and help popovers. It only cancels a
+        # running compilation and only when nothing else consumed it.
+        if (
+            event.key() == Qt.Key.Key_Escape
+            and self._is_compiling()
+            and not event.isAccepted()
+        ):
+            self.cancel_compile()
+            event.accept()
             return
-        # All tabs visible in extreme mode
-        for index in range(self.tabs.count()):
-            self.tabs.setTabVisible(index, True)
+        super().keyPressEvent(event)
 
-    # ─── Counters ──────────────────────────────────────────────────
+    # ─── Counters & status ─────────────────────────────────────────
 
     def _update_counters(self) -> None:
-        # Determine which prompt edit is the active one
-        text = ""
-        if self._current_mode == MODE_SIMPLE and hasattr(self, "simple_prompt_edit"):
-            text = self.simple_prompt_edit.toPlainText()
-        elif hasattr(self, "prompt_edit"):
-            text = self.prompt_edit.toPlainText()
-
+        text = self._get_current_prompt()
         chars, tokens = estimate_counters(text)
-        for lbl in (self.char_label, getattr(self, "char_label2", None)):
-            if lbl:
-                lbl.setText(f"{chars} caracteres")
-        for lbl in (self.token_label, getattr(self, "token_label2", None)):
-            if lbl:
-                lbl.setText(f"{tokens} tokens aprox.")
-        # Sync compiler_prompt mirror
+        for label in (
+            getattr(self, "char_label", None),
+            getattr(self, "char_label2", None),
+            getattr(self, "simple_char_label", None),
+        ):
+            if label is not None:
+                label.setText(tr("home.characters").format(count=chars))
+        for label in (
+            getattr(self, "token_label", None),
+            getattr(self, "token_label2", None),
+            getattr(self, "simple_token_label", None),
+        ):
+            if label is not None:
+                label.setText(tr("home.tokens").format(count=tokens))
         if hasattr(self, "compiler_prompt"):
             self.compiler_prompt.setPlainText(text)
 
-    # ─── Status ────────────────────────────────────────────────────
-
     def _set_header_status(self, state: str, text: str) -> None:
-        self.header_chip.set_state(state)
-        self.header_chip.set_text(text)
+        self.header.set_state(state, text)
 
-    def _set_status(self, message: str, profile: str, validation: str, path: str) -> None:
-        self.status_label.setText(message)
-        self.status_profile.setText(f"Perfil: {profile}")
+    def _set_status(
+        self,
+        message: str,
+        profile: str,
+        validation: str,
+        path: str,
+    ) -> None:
         state = validation.lower().strip().replace(" ", "_") or "normal"
+        semantic = "idle"
         if state in ("normal", "pass"):
-            self._set_header_status("ok", message)
-            self.status_dot.setStyleSheet("background: #30B87A; border-radius: 3px;")
+            semantic = "success"
         elif state in ("procesando", "warning"):
-            self._set_header_status("info", message)
-            self.status_dot.setStyleSheet("background: #4CB8F5; border-radius: 3px;")
+            semantic = "warning"
         elif state in ("error", "bloqueado", "blocked", "fail"):
-            self._set_header_status("error", message)
-            self.status_dot.setStyleSheet("background: #E04E65; border-radius: 3px;")
-        elif state == "cancelado":
-            self._set_header_status("warn", message)
-            self.status_dot.setStyleSheet("background: #E5A51A; border-radius: 3px;")
-        else:
-            self._set_header_status("ok", message)
-
-    # ─── Combo helpers ─────────────────────────────────────────────
+            semantic = "error"
+        elif state in ("cancelado", "canceled"):
+            semantic = "idle"
+        self.status_bar.set_message(message, semantic)
+        self.status_bar.set_profile(profile)
+        chip_state = {
+            "idle": "idle",
+            "success": "success",
+            "warning": "warning",
+            "error": "error",
+        }[semantic]
+        self._set_header_status(chip_state, message)
 
     def _combo_value(self, combo: QComboBox) -> str:
         value = combo.currentData()
@@ -1633,19 +1550,14 @@ class MainWindow(QMainWindow):
                 combo.setCurrentIndex(index)
                 return
 
-    def _on_target_changed(self, target: str) -> None:
-        if hasattr(self, "custom_model_edit"):
-            self.custom_model_edit.setVisible(target == "custom")
-
-    # ─── Compile request building ──────────────────────────────────
+    # ─── Compile workflow ──────────────────────────────────────────
 
     def _build_compile_request(self) -> dict | None:
-        """Build a compile request from the current mode's UI state."""
+        prompt = self._get_current_prompt().strip()
+        if not prompt:
+            self._show_inline_error(tr("error.empty_input"), tr("error.empty_hint"))
+            return None
         if self._current_mode == MODE_SIMPLE:
-            prompt = self.simple_prompt_edit.toPlainText().strip()
-            if not prompt:
-                QMessageBox.warning(self, "Entrada vacía", "Escribe o carga un prompt antes de compilar.")
-                return None
             return {
                 "prompt": prompt,
                 "target": self.simple_target_combo.currentText(),
@@ -1654,155 +1566,85 @@ class MainWindow(QMainWindow):
                 "strict": self.simple_strict_check.isChecked(),
                 "preserve_original": self.simple_preserve_check.isChecked(),
                 "privacy_mode": self._combo_value(self.simple_privacy_combo),
-                "custom_model_name": "",  # not exposed in simple advanced options
+                "custom_model_name": "",
             }
-        else:
-            prompt = self.prompt_edit.toPlainText().strip()
-            if not prompt:
-                QMessageBox.warning(self, "Entrada vacía", "Escribe o carga un prompt antes de compilar.")
-                return None
-            return {
-                "prompt": prompt,
-                "target": self.target_combo.currentText(),
-                "profile": self.profile_combo.currentText(),
-                "level": self._combo_value(self.level_combo),
-                "strict": self.strict_check.isChecked(),
-                "preserve_original": self.preserve_check.isChecked(),
-                "privacy_mode": self._combo_value(self.privacy_combo),
-                "custom_model_name": self.custom_model_edit.text(),
-            }
+        return {
+            "prompt": prompt,
+            "target": self.target_combo.currentText(),
+            "profile": self.profile_combo.currentText(),
+            "level": self._combo_value(self.level_combo),
+            "strict": self.strict_check.isChecked(),
+            "preserve_original": self.preserve_check.isChecked(),
+            "privacy_mode": self._combo_value(self.privacy_combo),
+            "custom_model_name": self.custom_model_edit.text(),
+        }
 
-    # ─── Actions ───────────────────────────────────────────────────
-
-    def new_prompt(self) -> None:
-        self.result = None
-        # Always reset both modes' UI
-        if hasattr(self, "simple_prompt_edit"):
-            self.simple_prompt_edit.clear()
-        if hasattr(self, "simple_stack"):
-            self.simple_stack.setCurrentIndex(0)
-        if hasattr(self, "simple_progress"):
-            self.simple_progress.setVisible(False)
-            self.simple_progress.setValue(0)
-        if hasattr(self, "prompt_edit"):
-            self.prompt_edit.clear()
-        if hasattr(self, "progress"):
-            self.progress.setValue(0)
-        self.progress_strip.setValue(0)
-        if hasattr(self, "scan_ring"):
-            self.scan_ring.set_value("—")
-            self.scan_ring.set_state("idle")
-        self._set_status("Nuevo prompt", self._get_current_profile(), "normal", "")
-
-    def paste_prompt(self) -> None:
-        text = QApplication.clipboard().text()
+    def _show_inline_error(self, title: str, message: str) -> None:
+        self.simple_inline_notice.set_state("error")
+        self.simple_inline_notice.set_message(f"{title}. {message}" if message else title)
+        self.simple_inline_notice.show()
         if self._current_mode == MODE_SIMPLE:
-            self.simple_prompt_edit.insertPlainText(text)
-        else:
-            self.prompt_edit.insertPlainText(text)
+            self.simple_prompt_edit.setFocus(Qt.FocusReason.OtherFocusReason)
 
-    def load_example(self) -> None:
-        if EXAMPLE_PATH.exists():
-            content = EXAMPLE_PATH.read_text(encoding="utf-8")
-            if self._current_mode == MODE_SIMPLE:
-                self.simple_prompt_edit.setPlainText(content)
-            else:
-                self.prompt_edit.setPlainText(content)
-                self._select_page("compilar")
+    def _clear_inline_error(self) -> None:
+        self.simple_inline_notice.hide()
+        self.simple_inline_notice.set_message("")
 
-    def load_file(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(self, "Cargar prompt", str(ROOT), "Textos (*.txt *.md);;Todos (*)")
-        if path:
-            content = Path(path).read_text(encoding="utf-8")
-            if self._current_mode == MODE_SIMPLE:
-                self.simple_prompt_edit.setPlainText(content)
-            else:
-                self.prompt_edit.setPlainText(content)
-
-    def analyze_only(self) -> None:
-        self.compile_current()
-        self._switch_to_mode(MODE_EXTREME)
-        self._select_page("validacion")
-
-    def compile_auto(self) -> None:
-        if self._current_mode == MODE_SIMPLE:
-            self.simple_profile_combo.setCurrentText("AUTO")
-        else:
-            self.profile_combo.setCurrentText("AUTO")
-        if self._current_mode == MODE_SIMPLE:
-            self._switch_to_mode(MODE_SIMPLE)
-        else:
-            self._select_page("resumen")
-        prompt = self._get_current_prompt()
-        if prompt.strip():
-            self.compile_current()
+    def _is_compiling(self) -> bool:
+        return bool(self.worker_thread and self.worker_thread.isRunning())
 
     def compile_current(self) -> None:
         prompt = self._get_current_prompt().strip()
         if not prompt:
-            QMessageBox.warning(self, "Entrada vacía", "Escribe o carga un prompt antes de compilar.")
+            self._show_inline_error(tr("error.empty_input"), tr("error.empty_hint"))
             return
-        if self.worker_thread and self.worker_thread.isRunning():
+        if self._is_compiling():
             return
+        self._clear_inline_error()
 
-        # ── Variable detection and substitution ──
-        detected_vars = extract_variables(prompt)
-        if detected_vars:
-            unfilled = [v for v in detected_vars if not self._variable_values.get(v, "").strip()]
+        detected = extract_variables(prompt)
+        if detected:
+            unfilled = [v for v in detected if not self._variable_values.get(v, "").strip()]
             if unfilled:
-                QMessageBox.information(
-                    self, "Variables detectadas",
-                    f"Variables sin rellenar: {', '. join(unfilled)}\n\n"
-                    "Usa Editar → Rellenar variables o completa las variables antes de compilar."
+                self._toast.show_message(
+                    tr("error.variables_unfilled").format(
+                        variables=", ".join(unfilled)
+                    ),
+                    "warning",
+                    4200,
                 )
+                self._show_variable_dialog()
                 return
-            prompt, _unfilled = fill_variables(prompt, self._variable_values, strict=False)
+            prompt, _ = fill_variables(prompt, self._variable_values, strict=False)
 
-        # ── Pre-compilation validation ──
         validation = validate_compile_form(
-            prompt,
-            variables=self._variable_values,
-            strict=False,
+            prompt, variables=self._variable_values, strict=False
         )
         if validation.errors:
-            error_msgs = "\n".join(f"• {e['message']}" for e in validation.errors)
-            QMessageBox.warning(
-                self, "Errores de validación",
-                f"No se puede compilar:\n\n{error_msgs}"
+            self._show_inline_error(
+                tr("error.validation"),
+                " · ".join(str(e["message"]) for e in validation.errors),
             )
             return
-        if validation.warnings:
-            warn_msgs = "\n".join(f"• {w['message']}" for w in validation.warnings)
-            reply = QMessageBox.question(
-                self, "Advertencias",
-                f"Advertencias antes de compilar:\n\n{warn_msgs}\n\n¿Continuar?",
-                QMessageBox.Yes | QMessageBox.No,
+        if validation.warnings and not self._warnings_acknowledged:
+            self._warnings_acknowledged = True
+            self._toast.show_message(
+                tr("warning.compiling_with_warnings").format(
+                    count=len(validation.warnings)
+                ),
+                "warning",
+                3600,
             )
-            if reply != QMessageBox.Yes:
-                return
-
-        self.cancel_requested = False
 
         request = self._build_compile_request()
         if request is None:
             return
-
-        # If variables were substituted, update the prompt in the request
-        if detected_vars:
+        if detected:
             request["prompt"] = prompt
 
-        # Show progress in the current mode
-        if self._current_mode == MODE_SIMPLE:
-            self.simple_progress.setVisible(True)
-            self.simple_progress.setValue(0)
-            self.simple_compile_btn.setEnabled(False)
-            self.simple_cancel_btn.setVisible(True)
-            self.simple_cancel_btn.setEnabled(True)
-        else:
-            self.cancel_button.setVisible(True)
-            self.cancel_button.setEnabled(True)
-            self.compile_button.setEnabled(False)
-            self.compile_hero_btn.setEnabled(False)
+        self.cancel_requested = False
+        self._warnings_acknowledged = False
+        self._enter_working_state()
 
         self.worker_thread = QThread(self)
         self.worker = CompileWorker(self.controller, request)
@@ -1821,25 +1663,158 @@ class MainWindow(QMainWindow):
         self.worker_thread.finished.connect(self.worker_thread.deleteLater)
         self.worker_thread.start()
 
+    def _enter_working_state(self) -> None:
+        self._last_stage = ""
+        self.simple_compile_btn.set_loading(True)
+        self.simple_compile_btn.setText(tr("status.working"))
+        if hasattr(self, "compile_button"):
+            self.compile_button.set_loading(True)
+        if hasattr(self, "compile_hero_btn"):
+            self.compile_hero_btn.set_loading(True)
+        self.simple_cancel_btn.setVisible(True)
+        self.simple_cancel_btn.setEnabled(True)
+        if hasattr(self, "cancel_button"):
+            self.cancel_button.setVisible(True)
+            self.cancel_button.setEnabled(True)
+        self.simple_progress.set_indeterminate(True)
+        self.simple_progress.set_variant("info")
+        self.simple_progress.setVisible(True)
+        if hasattr(self, "progress"):
+            self.progress.set_indeterminate(True)
+            self.progress.setVisible(True)
+        self.simple_stage_label.setText(tr("toast.compile_started"))
+        # The result page is what the user sees while compiling: give it the
+        # stage, the progress and a working cancel button.
+        self.work_strip.show()
+        self.result_stage_label.setText(tr("toast.compile_started"))
+        self.result_progress.set_indeterminate(True)
+        self.result_progress.set_variant("info")
+        self.result_cancel_btn.setEnabled(True)
+        self.result_cancel_btn.setVisible(True)
+        self.simple_result_card.set_working()
+        self.simple_skeleton.show()
+        self.simple_result_card.hide()
+        self.simple_detail_card.hide()
+        self.simple_metrics_panel.hide()
+        self._show_results()
+        if hasattr(self, "extreme_skeleton"):
+            self.extreme_skeleton.show()
+            self.tabs.hide()
+            self.results_empty.hide()
+        self._set_header_status("working", tr("status.working"))
+        self.status_bar.set_message(tr("status.working"), "working")
+        self._working_toast = self._toast.show_message(
+            tr("toast.compile_started"), "info", 20000
+        )
+
+    def _dismiss_working_toast(self) -> None:
+        toast = getattr(self, "_working_toast", None)
+        if toast is not None:
+            try:
+                toast.hide_now()
+            except RuntimeError:
+                pass
+            self._working_toast = None
+
+    def _exit_working_state(self) -> None:
+        self._dismiss_working_toast()
+        self.simple_compile_btn.set_loading(False, tr("simple.button.compile"))
+        if hasattr(self, "compile_button"):
+            self.compile_button.set_loading(False, tr("simple.button.compile"))
+        if hasattr(self, "compile_hero_btn"):
+            self.compile_hero_btn.set_loading(False, tr("simple.button.compile"))
+        self.simple_cancel_btn.setVisible(False)
+        if hasattr(self, "cancel_button"):
+            self.cancel_button.setVisible(False)
+        self.simple_progress.set_indeterminate(False)
+        self.simple_progress.setVisible(False)
+        if hasattr(self, "progress"):
+            self.progress.set_indeterminate(False)
+            self.progress.setVisible(False)
+        if hasattr(self, "work_strip"):
+            self.work_strip.hide()
+            self.result_progress.set_indeterminate(False)
+            self.result_progress.setRange(0, 100)
+            self.result_progress.setValue(0)
+        self.simple_skeleton.hide()
+        self.worker = None
+        self.worker_thread = None
+
     def cancel_compile(self) -> None:
+        if not self._is_compiling():
+            return
         self.cancel_requested = True
         if self.worker:
             self.worker.cancel()
-        self._set_status("Cancelación solicitada", self._get_current_profile(), "procesando", "")
+        self.simple_stage_label.setText(tr("status.cancelling"))
+        if hasattr(self, "result_stage_label"):
+            self.result_stage_label.setText(tr("status.cancelling"))
+            self.result_cancel_btn.setEnabled(False)
+        self.status_bar.set_message(tr("status.cancelling"), "warning")
 
     # ─── Current state helpers ─────────────────────────────────────
 
+    def _current_editor(self):
+        if self._current_mode == MODE_SIMPLE:
+            return getattr(self, "simple_prompt_edit", None)
+        return getattr(self, "prompt_edit", None)
+
+    # ─── Initial focus ─────────────────────────────────────────────
+
+    def changeEvent(self, event) -> None:
+        """Claim the prompt editor when the window is first activated.
+
+        Qt assigns initial focus to the first focusable child (a header button
+        here), and that assignment is queued AFTER the activation event. A
+        short watcher waits for it, then moves focus to the editor. If the user
+        focuses something else afterwards, the watcher stops immediately.
+        """
+        super().changeEvent(event)
+        if (
+            event.type() == QEvent.Type.ActivationChange
+            and self.isActiveWindow()
+            and self._current_editor() is not None
+            and not getattr(self, "_prompt_focus_watcher", None)
+        ):
+            self._prompt_focus_attempts = 0
+            self._prompt_focus_claimed = False
+            watcher = QTimer(self)
+            watcher.setInterval(20)
+            watcher.timeout.connect(self._claim_prompt_focus)
+            watcher.start()
+            self._prompt_focus_watcher = watcher
+
+    def _claim_prompt_focus(self) -> None:
+        self._prompt_focus_attempts += 1
+        editor = self._current_editor()
+        current = self.focusWidget()
+        if editor is None or current is editor:
+            self._stop_prompt_focus_watcher()
+            return
+        if current is None or not getattr(self, "_prompt_focus_claimed", False):
+            editor.setFocus(Qt.FocusReason.OtherFocusReason)
+            self._prompt_focus_claimed = True
+        else:
+            self._stop_prompt_focus_watcher()
+            return
+        if self._prompt_focus_attempts >= 100:
+            self._stop_prompt_focus_watcher()
+
+    def _stop_prompt_focus_watcher(self) -> None:
+        watcher = getattr(self, "_prompt_focus_watcher", None)
+        if watcher is not None:
+            watcher.stop()
+            watcher.deleteLater()
+            self._prompt_focus_watcher = None
+
     def _get_current_prompt(self) -> str:
-        if self._current_mode == MODE_SIMPLE and hasattr(self, "simple_prompt_edit"):
-            return self.simple_prompt_edit.toPlainText()
-        elif hasattr(self, "prompt_edit"):
-            return self.prompt_edit.toPlainText()
-        return ""
+        editor = self._current_editor()
+        return editor.toPlainText() if editor is not None else ""
 
     def _get_current_profile(self) -> str:
         if self._current_mode == MODE_SIMPLE and hasattr(self, "simple_profile_combo"):
             return self.simple_profile_combo.currentText()
-        elif hasattr(self, "profile_combo"):
+        if hasattr(self, "profile_combo"):
             return self.profile_combo.currentText()
         return "AUTO"
 
@@ -1847,131 +1822,115 @@ class MainWindow(QMainWindow):
 
     @Slot(int, str)
     def _on_worker_progress(self, value: int, label: str) -> None:
-        # Guard: skip GUI updates if cancellation was requested or the
-        # window is being closed — avoids writing to destroyed widgets.
         if self.cancel_requested:
             return
+        self._last_stage = label
         if hasattr(self, "progress"):
+            self.progress.set_variant("info")
             self.progress.setValue(value)
-        self.progress_strip.setValue(value)
-        if hasattr(self, "scan_ring"):
-            self.scan_ring.scanning_progress(value)
+        self.simple_progress.set_variant("info")
+        self.simple_progress.setValue(value)
+        self.simple_stage_label.setText(f"{label} · {value}%")
+        if hasattr(self, "result_progress"):
+            self.result_progress.set_indeterminate(False)
+            self.result_progress.setRange(0, 100)
+            self.result_progress.setValue(value)
+            self.result_stage_label.setText(f"{label} · {value}%")
         if hasattr(self, "hero_status"):
-            self.hero_status.setText(f"Progreso: {value}%")
-        if self._current_mode == MODE_SIMPLE and hasattr(self, "simple_progress"):
-            self.simple_progress.setValue(value)
-        if self._current_mode == MODE_SIMPLE and hasattr(self, "simple_scan_ring"):
-            self.simple_scan_container.show()
-            self.simple_scan_ring.show()
-            self.simple_scan_ring.scanning_progress(value)
-            self.simple_scan_status.setText(f"{value}%")
-        self._set_status(label, self._get_current_profile(), "procesando", "")
+            self.hero_status.setText(f"{label} · {value}%")
+        self.status_bar.set_message(label, "working")
 
     @Slot(dict)
     def _on_worker_finished(self, result: dict) -> None:
         self.result = result
-        if hasattr(self, "progress"):
-            self.progress.setValue(100)
-        self.progress_strip.setValue(100)
         self._render_result()
-
-        # ── Auto-save to version history ──
         try:
-            compiled_text = result.get("optimized_prompt", result.get("chosen_nsl", ""))
-            if compiled_text:
-                prompt_text = self._get_current_prompt()[:80]
+            compiled = result.get("optimized_prompt", result.get("chosen_nsl", ""))
+            if compiled:
+                summary = self._get_current_prompt()[:80]
                 self._version_history.create_version(
-                    name=prompt_text or "Compilación",
-                    content=compiled_text,
+                    name=summary or "Compilación",
+                    content=compiled,
                     informal_input=result.get("original", ""),
                     target=result.get("target", "auto"),
                     profile=result.get("applied_profile", "AUTO"),
                 )
         except Exception:
-            pass  # Non-critical: don't break the UI for history failures
-
+            pass
         save_settings(self._collect_settings())
-
-        if self._current_mode == MODE_SIMPLE:
-            # Show simple result view
-            self.simple_stack.setCurrentIndex(1)
-            self.simple_progress.setVisible(False)
-            self.simple_compile_btn.setEnabled(True)
-            self.simple_cancel_btn.setVisible(False)
-        else:
+        self._exit_working_state()
+        self._show_results()
+        if self._current_mode == MODE_EXTREME:
             self._select_page("resultados")
-            self.cancel_button.setVisible(False)
-            self.compile_button.setEnabled(True)
-            self.compile_hero_btn.setEnabled(True)
-
-        self.worker = None
-        self.worker_thread = None
 
     @Slot(str)
     def _on_worker_failed(self, message: str) -> None:
-        if hasattr(self, "progress"):
-            self.progress.setValue(0)
-        self.progress_strip.setValue(0)
-        if hasattr(self, "scan_ring"):
-            self.scan_ring.set_state("error")
-        self._set_status("Error", self._get_current_profile(), "error", "")
+        self._exit_working_state()
+        self._toast.clear()
+        self.simple_progress.set_variant("error")
+        self.simple_progress.set_indeterminate(False)
+        self.simple_progress.setRange(0, 100)
+        self.simple_progress.setValue(100)
+        self.simple_progress.setVisible(True)
+        self.simple_stage_label.setText("")
 
-        if self._current_mode == MODE_SIMPLE:
-            self.simple_progress.setVisible(False)
-            self.simple_compile_btn.setEnabled(True)
-            self.simple_cancel_btn.setVisible(False)
-            # Show error in simple result header
-            self.simple_result_header.setText("✗ Error al compilar")
-            self.simple_result_header.setProperty("errorState", True)
-            for w in (self.simple_result_header,):
-                w.style().unpolish(w)
-                w.style().polish(w)
-            self.simple_optimized_tab.setPlainText(message)
-            self.simple_stack.setCurrentIndex(1)
-        else:
-            self.cancel_button.setVisible(False)
-            self.compile_button.setEnabled(True)
-            self.compile_hero_btn.setEnabled(True)
+        card = self.simple_result_card
+        card.clear()
+        card.chip.set_state("error")
+        card.chip.set_text(tr("result.state.error"))
+        card.title_label.setText(tr("toast.compile_failed"))
+        card.meta_label.setText(tr("error.compile_failed"))
+        card.body.setPlainText(message)
+        card.show()
+        self.simple_skeleton.hide()
+        self.simple_detail_card.hide()
+        self.simple_metrics_panel.hide()
+        # Never leave numbers from a previous compilation under an error.
+        self.simple_metrics_label.setText("")
+        self.simple_quality_label.setText("")
+        self.simple_files_label.setText("")
+        self.simple_open_files_btn.setVisible(False)
+        self._show_results()
 
-        self.worker = None
-        self.worker_thread = None
-        QMessageBox.critical(self, "Error al compilar", message)
+        if self._current_mode == MODE_EXTREME:
+            if hasattr(self, "extreme_skeleton"):
+                self.extreme_skeleton.hide()
+            self.tabs.show()
+            self.results_empty.hide()
+        self._set_header_status("error", tr("toast.compile_failed"))
+        self._set_status(tr("toast.compile_failed"), self._get_current_profile(), "error", "")
+        self._toast.show_message(tr("toast.compile_failed"), "error", 4200)
 
     @Slot()
     def _on_worker_canceled(self) -> None:
-        if hasattr(self, "progress"):
-            self.progress.setValue(0)
-        self.progress_strip.setValue(0)
-        if hasattr(self, "scan_ring"):
-            self.scan_ring.set_value("—")
-            self.scan_ring.set_state("idle")
+        self._exit_working_state()
+        self._toast.clear()
+        self.simple_progress.set_indeterminate(False)
+        self.simple_progress.setVisible(False)
+        self.simple_stage_label.setText("")
+        self.simple_result_card.clear()
+        self.simple_result_card.chip.set_state("idle")
+        self.simple_result_card.chip.set_text(tr("result.state.canceled"))
+        self.simple_result_card.title_label.setText(tr("result.state.canceled"))
+        self.simple_result_card.meta_label.setText(tr("result.canceled.hint"))
+        self.simple_result_card.show()
+        self.simple_skeleton.hide()
+        self.simple_detail_card.hide()
+        self.simple_metrics_panel.hide()
+        self.simple_metrics_label.setText("")
+        self.simple_quality_label.setText("")
+        self.simple_files_label.setText("")
+        self.simple_open_files_btn.setVisible(False)
+        self._show_results()
         if hasattr(self, "hero_status"):
-            self.hero_status.setText("Cancelado.")
-
-        if self._current_mode == MODE_SIMPLE:
-            self.simple_progress.setVisible(False)
-            self.simple_compile_btn.setEnabled(True)
-            self.simple_cancel_btn.setVisible(False)
-        else:
-            self.cancel_button.setVisible(False)
-            self.compile_button.setEnabled(True)
-            self.compile_hero_btn.setEnabled(True)
-
-        self._set_status("Cancelado", self._get_current_profile(), "cancelado", "")
-        self.worker = None
-        self.worker_thread = None
+            self.hero_status.setText(tr("result.state.canceled"))
+        self._set_header_status("warning", tr("toast.compile_canceled"))
+        self._set_status(tr("toast.compile_canceled"), self._get_current_profile(), "cancelado", "")
+        self._toast.show_message(tr("toast.compile_canceled"), "warning", 2600)
 
     # ─── Result rendering ──────────────────────────────────────────
 
     def _render_b9_fields(self, result: dict[str, Any]) -> None:
-        """B.9: surface quality score + open questions in the simple result view.
-
-        Read-only visibility: nothing here blocks or changes compilation
-        behaviour (that is the clarify mode's job, B.6). Missing fields
-        degrade to informative placeholders — the widget works with any
-        result shape, pre- or post-B.2.
-        """
-        # Quality score + highest-severity issues (deterministic evaluator, B.3)
         quality = result.get("quality_report") or {}
         score = quality.get("score")
         issues = quality.get("issues") or []
@@ -1983,22 +1942,33 @@ class MainWindow(QMainWindow):
             top = sorted(issues, key=lambda i: severity_rank.get(i.get("severity"), 3))[:8]
             counts = {"error": 0, "warning": 0, "info": 0}
             for issue in issues:
-                sev = issue.get("severity", "info")
-                counts[sev] = counts.get(sev, 0) + 1
-            self.simple_quality_label.setText(
-                f"Calidad: {score}/100"
-                f" · {counts['error']} errores · {counts['warning']} avisos · {counts['info']} notas"
-            )
+                severity = issue.get("severity", "info")
+                counts[severity] = counts.get(severity, 0) + 1
+            # Kept in the historical "Calidad: N/100 · …" shape: this label is a
+            # documented contract (see tests/test_gui_b9.py) and is also parsed
+            # by users' own scripts.
+            prefix = "Quality" if tr("result.quality").startswith("Quality") else "Calidad"
+            if prefix == "Calidad":
+                self.simple_quality_label.setText(
+                    f"Calidad: {score}/100 · {counts['error']} errores · "
+                    f"{counts['warning']} avisos · {counts['info']} notas"
+                )
+            else:
+                self.simple_quality_label.setText(
+                    f"Quality: {score}/100 · {counts['error']} errors · "
+                    f"{counts['warning']} warnings · {counts['info']} notes"
+                )
             if top:
-                tooltip = "\n".join(f"[{i.get('severity', '?')}] {i.get('message', '')}" for i in top)
+                tooltip = "\n".join(
+                    f"[{i.get('severity', '?')}] {i.get('message', '')}" for i in top
+                )
                 more = len(issues) - len(top)
                 if more > 0:
-                    tooltip += f"\n… y {more} más (ver hybrid_semantic_prompt.json)"
+                    tooltip += "\n… " + tr("result.quality_more").format(count=more)
                 self.simple_quality_label.setToolTip(tooltip)
             else:
-                self.simple_quality_label.setToolTip("Sin incidencias detectadas por el evaluador.")
+                self.simple_quality_label.setToolTip(tr("result.quality_clean"))
 
-        # Open questions: clarification gate (B.6) first, raw IR fallback (B.2)
         clarification = result.get("clarification") or {}
         questions = list(clarification.get("questions") or [])
         if not questions:
@@ -2008,20 +1978,16 @@ class MainWindow(QMainWindow):
         if questions:
             body = "\n".join(f"{i}. {q}" for i, q in enumerate(questions, start=1))
             if clarification.get("required"):
-                body = (
-                    "⚠ Estas preguntas superan el umbral del perfil activo. "
-                    "Respóndelas y vuelve a compilar para un resultado fiable.\n\n" + body
-                )
+                body = tr("result.questions_required") + "\n\n" + body
         else:
-            body = (
-                "Sin preguntas abiertas: la entrada cubre objetivo, salida, "
-                "criterios de aceptación y modelo objetivo."
-            )
+            body = tr("result.questions_none")
         self.simple_questions_tab.setPlainText(body)
 
-        questions_count = len(questions)
+        count = len(questions)
         tab_title = (
-            f"Preguntas abiertas ({questions_count})" if questions_count else "Preguntas abiertas ✓"
+            tr("result.tab.questions_count").format(count=count)
+            if count
+            else tr("result.tab.questions_none")
         )
         index = self.simple_tabs.indexOf(self.simple_questions_tab)
         if index >= 0:
@@ -2035,40 +2001,50 @@ class MainWindow(QMainWindow):
         validation = result["context_loss_report"]
         score = validation.get("score", 0)
         profile = result["applied_profile"]
+        warnings = len(validation.get("warnings", []))
+        errors = len(validation.get("critical_losses", []))
+        constraints = len(validation.get("critical_constraints_preserved", []))
 
-        # Circle (extreme mode)
-        if hasattr(self, "scan_ring"):
-            self.scan_ring.scanning_finish(score)
-        if hasattr(self, "hero_status"):
-            self.hero_status.setText(f"{score}/100 — Copia el prompt listo para usar.")
+        # ── simple mode ───────────────────────────────────────────────
+        self.simple_result_card.set_result(result)
+        self.simple_result_card.show()
+        self.simple_empty_state.hide()
+        self.simple_skeleton.hide()
+        self.simple_detail_card.show()
+        # The result card already owns score + counts; the separate health panel
+        # would duplicate the same numbers on the same screen.
+        self.simple_metrics_panel.hide()
 
-        # Result cards (extreme mode)
-        if hasattr(self, "extreme_health"):
-            warnings_count_r = len(validation.get("warnings", []))
-            errors_count_r = len(validation.get("critical_losses", []))
-            constraints_count_r = len(validation.get("critical_constraints_preserved", []))
-            self.extreme_health.update_metrics(
-                score=score,
-                constraints=constraints_count_r,
-                warnings=warnings_count_r,
-                errors=errors_count_r,
+        state = "error" if errors else "warning" if warnings else "success"
+        self.simple_result_header.setText(tr("toast.compile_done"))
+        self.simple_metrics_label.setText(
+            tr("result.summary").format(
+                score=score, constraints=constraints, files=self._generated_file_count()
             )
-        if hasattr(self, "card_preservation"):  # legacy: removed in 2026-06-11 polish
-            self.card_preservation.set_value(str(score))
-            self.card_preservation.set_semantic("success" if score >= 85 else "warning" if score >= 60 else "error")
-        if hasattr(self, "card_constraints"):  # legacy
-            constraints_count = len(validation.get("critical_constraints_preserved", []))
-            self.card_constraints.set_value(str(constraints_count))
-            self.card_constraints.set_semantic("success" if constraints_count > 0 else "muted")
-        if hasattr(self, "card_warnings"):  # legacy
-            warnings_count = len(validation.get("warnings", []))
-            self.card_warnings.set_value(str(warnings_count))
-            self.card_warnings.set_semantic("warning" if warnings_count > 0 else "muted")
-        if hasattr(self, "card_errors"):  # legacy
-            self.card_errors.set_value("0")
-            self.card_errors.set_semantic("muted")
+        )
 
-        # Extreme mode text tabs
+        self.simple_optimized_tab.setPlainText(result.get("optimized_prompt", ""))
+        self.simple_report_tab.setPlainText(result.get("hybrid_markdown", ""))
+        self.simple_validation_tab.setPlainText(result.get("context_loss_markdown", ""))
+        self._render_b9_fields(result)
+
+        self.simple_health.update_metrics(
+            score=score, constraints=constraints, warnings=warnings, errors=errors
+        )
+
+        if self.last_saved_dir and self.last_saved_dir.exists():
+            self.simple_files_label.setText(str(self.last_saved_dir))
+            self.simple_open_files_btn.setVisible(True)
+        else:
+            self.simple_files_label.setText("")
+            self.simple_open_files_btn.setVisible(False)
+
+        # ── expert mode ───────────────────────────────────────────────
+        self.extreme_health.update_metrics(
+            score=score, constraints=constraints, warnings=warnings, errors=errors
+        )
+        self.extreme_health_panel.show()
+
         if hasattr(self, "summary_text"):
             self.summary_text.setPlainText(
                 f"Perfil solicitado: {result['requested_profile']}\n"
@@ -2083,76 +2059,62 @@ class MainWindow(QMainWindow):
                 f"execution_size_ratio: {validation.get('execution_size_ratio', validation.get('expansion_ratio_execution_prompt', 0))}\n"
                 f"Restricciones preservadas: {', '.join(validation.get('critical_constraints_preserved', [])) or 'ninguna detectada'}\n"
                 f"Advertencias: {', '.join(validation.get('warnings', [])) or 'ninguna'}\n"
-                "Siguiente acción recomendada: copia el Prompt listo para usar."
+                "Siguiente acción recomendada: copia el Prompt listo para usar.",
             )
         if hasattr(self, "original_text"):
-            self.original_text.setPlainText(result["original"] if result.get("privacy_mode") == "full_original" else "[omitido por modo de privacidad]")
-        if hasattr(self, "hybrid_text"):
-            self.hybrid_text.setPlainText(result["hybrid_markdown"])
-        if hasattr(self, "optimized_text"):
-            self.optimized_text.setPlainText(result["optimized_prompt"])
-        if hasattr(self, "nsl_text"):
-            self.nsl_text.setPlainText(result["chosen_nsl"])
-        if hasattr(self, "json_text"):
-            self.json_text.setPlainText(json.dumps(result["hybrid_json"], indent=2, ensure_ascii=False))
-        if hasattr(self, "seeds_text"):
-            self.seeds_text.setPlainText(json.dumps(result["seeds"], indent=2, ensure_ascii=False))
-        if hasattr(self, "constraints_text"):
-            self.constraints_text.setPlainText(json.dumps(result["semantic_ir"].get("effective_prompt_ir", {}), indent=2, ensure_ascii=False))
-        if hasattr(self, "validation_text"):
-            self.validation_text.setPlainText(result["context_loss_markdown"])
-        if hasattr(self, "validation_detail"):
-            self.validation_detail.setPlainText(result["context_loss_markdown"])
-        if hasattr(self, "profile_text"):
-            self.profile_text.setPlainText(json.dumps(result["profile_status"], indent=2, ensure_ascii=False))
-
-        # ─── Simple mode result rendering ──────────────────────────
-        self.simple_result_header.setText("✓ Prompt generado correctamente")
-        self.simple_result_header.setProperty("errorState", False)
-        for w in (self.simple_result_header,):
-            w.style().unpolish(w)
-            w.style().polish(w)
-
-        self.simple_optimized_tab.setPlainText(result["optimized_prompt"])
-        self.simple_report_tab.setPlainText(result["hybrid_markdown"])
-        self.simple_validation_tab.setPlainText(result["context_loss_markdown"])
-        self._render_b9_fields(result)
-
-        # Compact metrics
-        constraints_count = len(validation.get("critical_constraints_preserved", []))
-        files_count = len(self.controller.last_result.get("generated_files", [])) if self.controller.last_result else 0
-        self.simple_metrics_label.setText(
-            f"Preservación: {score} % · {constraints_count} restricciones · {files_count} archivos"
-        )
-
-        # ── Premium: update compact scan ring + health dashboard ──
-        if hasattr(self, "simple_scan_ring"):
-            self.simple_scan_ring.scanning_finish(score)
-            self.simple_scan_status.setText(f"{score}/100")
-        if hasattr(self, "simple_health"):
-            warnings_count = len(validation.get("warnings", []))
-            errors_count = len(validation.get("critical_losses", []))
-            self.simple_health.update_metrics(
-                score=score,
-                constraints=constraints_count,
-                warnings=warnings_count,
-                errors=errors_count,
+            self.original_text.setPlainText(
+                result["original"]
+                if result.get("privacy_mode") == "full_original"
+                else "[omitido por modo de privacidad]"
             )
-
-        # Generated files info
-        if self.last_saved_dir and self.last_saved_dir.exists():
-            self.simple_files_label.setText(f"Carpeta: {self.last_saved_dir}")
-            self.simple_open_files_btn.setVisible(True)
-        else:
-            self.simple_files_label.setText("")
-            self.simple_open_files_btn.setVisible(False)
+        if hasattr(self, "hybrid_text"):
+            self.hybrid_text.setPlainText(result.get("hybrid_markdown", ""))
+        if hasattr(self, "optimized_text"):
+            self.optimized_text.setPlainText(result.get("optimized_prompt", ""))
+        if hasattr(self, "nsl_text"):
+            self.nsl_text.setPlainText(result.get("chosen_nsl", ""))
+        if hasattr(self, "json_text"):
+            self.json_text.setPlainText(
+                json.dumps(result.get("hybrid_json", {}), indent=2, ensure_ascii=False)
+            )
+        if hasattr(self, "seeds_text"):
+            self.seeds_text.setPlainText(
+                json.dumps(result.get("seeds", []), indent=2, ensure_ascii=False)
+            )
+        if hasattr(self, "constraints_text"):
+            self.constraints_text.setPlainText(
+                json.dumps(
+                    result.get("semantic_ir", {}).get("effective_prompt_ir", {}),
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            )
+        if hasattr(self, "validation_text"):
+            self.validation_text.setPlainText(result.get("context_loss_markdown", ""))
+        if hasattr(self, "validation_detail"):
+            self.validation_detail.setPlainText(result.get("context_loss_markdown", ""))
+        if hasattr(self, "profile_text"):
+            self.profile_text.setPlainText(
+                json.dumps(result.get("profile_status", {}), indent=2, ensure_ascii=False)
+            )
+        if hasattr(self, "extreme_skeleton"):
+            self.extreme_skeleton.hide()
+            self.tabs.show()
+            self.results_empty.hide()
 
         if validation.get("strict_status") == "blocked":
-            self._set_status("Bloqueado por strict", profile, "bloqueado", "")
+            self._set_status(tr("status.blocked"), profile, "bloqueado", "")
         else:
-            self._set_status("Completado", profile, validation.get("profile_status", "pass"), "")
+            self._set_status(tr("status.done"), profile, validation.get("profile_status", "pass"), "")
+        self._toast.show_message(tr("toast.compile_done"), "success")
 
-    # ─── Clip/save ─────────────────────────────────────────────────
+    def _generated_file_count(self) -> int:
+        last = self.controller.last_result
+        if not last:
+            return 0
+        return len(last.get("generated_files", []) or [])
+
+    # ─── Clipboard / save ──────────────────────────────────────────
 
     def copy_recommended(self) -> None:
         if self.result:
@@ -2161,114 +2123,361 @@ class MainWindow(QMainWindow):
             text = self.optimized_text.toPlainText()
         else:
             text = ""
-        if text:
-            QApplication.clipboard().setText(text)
-            self._set_status("Prompt listo copiado", self._get_current_profile(), "normal", "")
+        if not text:
+            self._toast.show_message(tr("toast.nothing_to_copy"), "warning")
+            return
+        QApplication.clipboard().setText(text)
+        self.simple_result_card.copy_button.set_idle_text(tr("toast.copied"))
+        self.simple_result_card.copy_button.setText(tr("toast.copied"))
+        QTimer.singleShot(
+            1600,
+            lambda: self.simple_result_card.copy_button.set_idle_text(
+                tr("result.action.copy")
+            ),
+        )
+        self._set_status(tr("toast.copied"), self._get_current_profile(), "normal", "")
+        self._toast.show_message(tr("toast.copied"), "success")
 
     def copy_json(self) -> None:
+        if not hasattr(self, "json_text") or not self.json_text.toPlainText():
+            self._toast.show_message(tr("toast.nothing_to_copy"), "warning")
+            return
         QApplication.clipboard().setText(self.json_text.toPlainText())
-        self._set_status("JSON para programas copiado", self._get_current_profile(), "normal", "")
+        self._set_status(tr("toast.copied"), self._get_current_profile(), "normal", "")
+        self._toast.show_message(tr("toast.copied"), "success")
 
     def save_all(self) -> None:
         if not self.result:
-            QMessageBox.warning(self, "Sin resultado", "Compila un prompt antes de guardar.")
+            self._toast.show_message(tr("toast.compile_first"), "warning")
             return
         default = self.settings.get("output_dir") or str(data_dir() / "outputs")
-        path = QFileDialog.getExistingDirectory(self, "Carpeta de salida", default)
+        path = QFileDialog.getExistingDirectory(self, tr("results.button.save"), default)
         if not path:
             return
         artifacts = self.controller.save_all(path)
         self.settings["output_dir"] = path
         self.last_saved_dir = Path(path)
         save_settings(self._collect_settings())
-
-        # Update simple mode file info
-        if hasattr(self, "simple_files_label"):
-            self.simple_files_label.setText(f"Carpeta: {path}")
-            self.simple_open_files_btn.setVisible(True)
-        if hasattr(self, "simple_metrics_label") and self.result:
-            validation = self.result["context_loss_report"]
-            score = validation.get("score", 0)
-            constraints_count = len(validation.get("critical_constraints_preserved", []))
-            self.simple_metrics_label.setText(
-                f"Preservación: {score} % · {constraints_count} restricciones · {len(artifacts)} archivos"
+        self.simple_files_label.setText(path)
+        self.simple_open_files_btn.setVisible(True)
+        self.simple_metrics_label.setText(
+            tr("result.summary").format(
+                score=self.result["context_loss_report"].get("score", 0),
+                constraints=len(
+                    self.result["context_loss_report"].get(
+                        "critical_constraints_preserved", []
+                    )
+                ),
+                files=len(artifacts),
             )
-
-        self._set_status(f"{len(artifacts)} archivos generados", self.result["applied_profile"], self.result["context_loss_report"].get("profile_status", "pass"), path)
+        )
+        self._toast.show_message(
+            tr("toast.saved_path").format(path=path), "success", 3400
+        )
+        self._set_status(
+            tr("toast.saved"),
+            self.result["applied_profile"],
+            self.result["context_loss_report"].get("profile_status", "pass"),
+            path,
+        )
 
     def open_last_output(self) -> None:
-        configured_output = str(self.settings.get("output_dir", "")).strip()
-        candidate = self.last_saved_dir or (Path(configured_output) if configured_output else None)
+        configured = str(self.settings.get("output_dir", "")).strip()
+        candidate = self.last_saved_dir or (Path(configured) if configured else None)
         if candidate is None or not candidate.exists():
-            QMessageBox.information(self, "Sin carpeta exportada", "Guarda primero los resultados para abrir la carpeta.")
+            self._toast.show_message(tr("toast.no_folder"), "warning")
             return
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(candidate)))
-        self._set_status("Carpeta abierta", self._get_current_profile(), "normal", str(candidate))
+        self._set_status(tr("toast.folder_opened"), self._get_current_profile(), "normal", "")
 
     def reset_configuration(self) -> None:
         reset_settings()
         self.settings = load_settings()
         self._restore_settings()
-        self._set_status("Configuración restablecida", self._get_current_profile(), "normal", "")
+        self._set_status(tr("config.reset"), self._get_current_profile(), "normal", "")
+        self._toast.show_message(tr("config.reset"), "success")
+
+    # ─── Prompt actions ────────────────────────────────────────────
+
+    def new_prompt(self) -> None:
+        self.result = None
+        self.simple_prompt_edit.clear()
+        self.prompt_edit.clear()
+        self.simple_result_card.clear()
+        self.simple_metrics_panel.hide()
+        self.simple_detail_card.hide()
+        self.simple_skeleton.hide()
+        self.simple_progress.set_indeterminate(False)
+        self.simple_progress.setVisible(False)
+        self.simple_stage_label.setText("")
+        self._clear_inline_error()
+        self._show_home()
+        self.progress_strip_reset()
+        self.extreme_health_panel.hide()
+        self._set_status(tr("status.new_prompt"), self._get_current_profile(), "normal", "")
+
+    def progress_strip_reset(self) -> None:
+        if hasattr(self, "progress"):
+            self.progress.set_indeterminate(False)
+            self.progress.setRange(0, 100)
+            self.progress.setValue(0)
+            self.progress.setVisible(False)
+        if hasattr(self, "hero_status"):
+            self.hero_status.setText(tr("status.ready_prompt"))
+
+    def paste_prompt(self) -> None:
+        text = QApplication.clipboard().text()
+        editor = self._current_editor()
+        if editor is not None and text:
+            editor.insertPlainText(text)
+            self._toast.show_message(tr("toast.pasted"), "info", 1800)
+
+    def load_example(self) -> None:
+        if not EXAMPLE_PATH.exists():
+            return
+        content = EXAMPLE_PATH.read_text(encoding="utf-8")
+        self._load_prompt_text(content, tr("toast.example_loaded"))
+
+    def load_file(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(
+            self, tr("simple.button.load_file"), str(ROOT), "Textos (*.txt *.md);;Todos (*)"
+        )
+        if not path:
+            return
+        try:
+            content = Path(path).read_text(encoding="utf-8")
+        except OSError as exc:
+            self._toast.show_message(str(exc), "error")
+            return
+        self._load_prompt_text(content, tr("toast.file_loaded").format(name=Path(path).name))
+
+    def _load_prompt_text(self, content: str, confirmation: str) -> None:
+        editor = self._current_editor()
+        if editor is not None:
+            editor.setPlainText(content)
+            editor.setFocus(Qt.FocusReason.OtherFocusReason)
+        if self._current_mode == MODE_EXTREME:
+            self._select_page("compilar")
+        self._toast.show_message(confirmation, "info", 2000)
+
+    def analyze_only(self) -> None:
+        had_result = bool(self.result)
+        self.compile_current()
+        if had_result:
+            self._switch_to_mode(MODE_EXTREME)
+            self._select_page("validacion")
+
+    def compile_auto(self) -> None:
+        self.simple_profile_combo.setCurrentText("AUTO")
+        self.profile_combo.setCurrentText("AUTO")
+        if self._get_current_prompt().strip():
+            self.compile_current()
 
     # ─── Glossary ──────────────────────────────────────────────────
 
     def _refresh_glossary(self) -> None:
         if not hasattr(self, "glossary_list"):
             return
-        current_id = self.glossary_list.currentItem().data(Qt.UserRole) if self.glossary_list.currentItem() else ""
+        current = self.glossary_list.currentItem()
+        current_id = current.data(Qt.ItemDataRole.UserRole) if current else ""
         query = self.glossary_search.text() if hasattr(self, "glossary_search") else ""
-        category = self.glossary_category.currentText() if hasattr(self, "glossary_category") else "Todas"
+        category = (
+            self.glossary_category.currentText()
+            if hasattr(self, "glossary_category")
+            else "Todas"
+        )
         matches = search_glossary(query, category)
+        self.glossary_list.blockSignals(True)
         self.glossary_list.clear()
         for entry in matches:
             item = QListWidgetItem(f"{entry['term']}  ·  {entry['simple_name']}")
-            item.setData(Qt.UserRole, entry["id"])
+            item.setData(Qt.ItemDataRole.UserRole, entry["id"])
             self.glossary_list.addItem(item)
             if entry["id"] == current_id:
                 self.glossary_list.setCurrentItem(item)
-        self.glossary_count.setText(f"{len(load_glossary())} términos disponibles")
+        self.glossary_list.blockSignals(False)
+        self.glossary_count.setText(
+            tr("glossary.count").format(count=len(load_glossary()))
+        )
         if not matches:
-            self.glossary_detail.setPlainText("No se encontraron términos. Prueba otra palabra.")
+            self.glossary_detail.setPlainText(tr("glossary.empty"))
             return
-        if not self.glossary_list.currentItem() and query:
+        if not self.glossary_list.currentItem():
             self.glossary_list.setCurrentRow(0)
-        elif not query and not self.glossary_list.currentItem():
-            self.glossary_detail.setPlainText("Escribe una palabra o selecciona un término.")
 
-    def _on_glossary_selection_changed(self, current: QListWidgetItem | None, _previous: QListWidgetItem | None) -> None:
+    def _on_glossary_selection_changed(
+        self, current: QListWidgetItem | None, _previous: QListWidgetItem | None
+    ) -> None:
         if current is None:
             return
-        entry = get_entry(str(current.data(Qt.UserRole)))
+        entry = get_entry(str(current.data(Qt.ItemDataRole.UserRole)))
         if entry:
-            self.glossary_detail.setPlainText(format_entry(entry, self._current_mode == MODE_EXTREME))
+            self.glossary_detail.setPlainText(
+                format_entry(entry, self._current_mode == MODE_EXTREME)
+            )
 
     def open_glossary_term(self, term_id: str | None) -> None:
         self._switch_to_mode(MODE_EXTREME)
         self._select_page("glosario")
         if not term_id:
-            self.glossary_search.setFocus(Qt.OtherFocusReason)
+            self.glossary_search.setFocus(Qt.FocusReason.OtherFocusReason)
             return
         entry = get_entry(term_id)
         self.glossary_search.setText(entry["term"] if entry else term_id)
         self._refresh_glossary()
         for index in range(self.glossary_list.count()):
             item = self.glossary_list.item(index)
-            if item.data(Qt.UserRole) == (entry["id"] if entry else term_id):
+            if item.data(Qt.ItemDataRole.UserRole) == (entry["id"] if entry else term_id):
                 self.glossary_list.setCurrentItem(item)
                 break
-        self.glossary_search.setFocus(Qt.OtherFocusReason)
+        self.glossary_search.setFocus(Qt.FocusReason.OtherFocusReason)
 
     def copy_glossary_explanation(self) -> None:
         QApplication.clipboard().setText(self.glossary_detail.toPlainText())
-        self._set_status("Explicación copiada", self._get_current_profile(), "normal", "")
+        self._toast.show_message(tr("glossary.copied"), "success")
 
-    # ─── Close ─────────────────────────────────────────────────────
+    # ─── Advanced mode bridge ──────────────────────────────────────
+
+    def _compile_from_advanced(self) -> None:
+        if not hasattr(self, "_advanced_page"):
+            return
+        combined = self._advanced_page.get_combined_prompt().strip()
+        if not combined:
+            self._toast.show_message(tr("mode.advanced.no_content"), "warning")
+            return
+        self.prompt_edit.setPlainText(combined)
+        self.simple_prompt_edit.blockSignals(True)
+        self.simple_prompt_edit.setPlainText(combined)
+        self.simple_prompt_edit.blockSignals(False)
+        self._select_page("compilar")
+        self.compile_current()
+
+    def _on_advanced_sections_changed(self, data: dict) -> None:
+        self._advanced_sections_dirty = True
+
+    # ─── i18n ──────────────────────────────────────────────────────
+
+    def _retranslate_ui(self) -> None:
+        self.header.set_mode(self._current_mode)
+        self.sidebar.retranslate()
+        self.status_bar.set_mode(self._current_mode)
+        self.status_bar.set_profile(self._get_current_profile())
+
+        self.home_header.set_title(tr("simple.title"))
+        self.home_header.set_subtitle(tr("simple.subtitle"))
+        self.dashboard_header.set_title(tr("nav.page.dashboard"))
+        self.dashboard_header.set_subtitle(tr("page.dashboard.subtitle"))
+        self.compiler_header.set_title(tr("nav.page.compiler"))
+        self.compiler_header.set_subtitle(tr("page.compiler.subtitle"))
+        self.results_header.set_title(tr("nav.page.results"))
+        self.results_header.set_subtitle(tr("page.results.subtitle"))
+        self.validation_header.set_title(tr("nav.page.validation"))
+        self.validation_header.set_subtitle(tr("page.validation.subtitle"))
+        self.profiles_header.set_title(tr("nav.page.profiles"))
+        self.profiles_header.set_subtitle(tr("page.profiles.subtitle"))
+        self.glossary_header.set_title(tr("nav.page.glossary"))
+        self.glossary_header.set_subtitle(tr("page.glossary.subtitle"))
+        self.settings_header.set_title(tr("nav.page.settings"))
+        self.settings_header.set_subtitle(tr("page.settings.subtitle"))
+
+        self.simple_prompt_label.setText(tr("home.input_label"))
+        self.simple_prompt_edit.setPlaceholderText(tr("simple.placeholder"))
+        self.simple_help_text.setText(tr("home.input_help"))
+        self.example_button.setText(tr("simple.button.example"))
+        self.clear_button.setText(tr("simple.button.clear"))
+        self.history_button.setText(tr("simple.button.history"))
+        self.simple_compile_btn.setText(tr("simple.button.compile"))
+        self.simple_cancel_btn.setText(tr("simple.button.cancel"))
+        self.rail_title.setText(tr("home.rail.title"))
+        self.rail_help.setText(tr("home.rail.help"))
+        self.rail_profile_label.setText(tr("simple.label.profile"))
+        self.rail_profile_help.setText(tr("home.rail.profile_help"))
+        self.rail_model_label.setText(tr("simple.label.model"))
+        self.rail_level_label.setText(tr("simple.label.level"))
+        self.rail_privacy_label.setText(tr("simple.label.privacy"))
+        self.simple_strict_check.setText(tr("simple.check.strict"))
+        self.simple_preserve_check.setText(tr("simple.check.preserve"))
+        profile = self._get_current_profile()
+        self.simple_profile_hint.setText(
+            tr("profile.auto_recommended") if profile == "AUTO" else profile
+        )
+
+        self.simple_result_card.copy_button.set_idle_text(tr("result.action.copy"))
+        self.simple_result_card.copy_button.setText(tr("result.action.copy"))
+        self.simple_result_card.save_button.setText(tr("result.action.save"))
+        self.simple_result_card.new_button.setText(tr("result.action.new"))
+        self.result_header.set_title(tr("result.page.title"))
+        self.result_header.set_subtitle(tr("result.page.subtitle"))
+        self.result_new_button.setText(tr("result.action.new"))
+        self.simple_detail_card._title_label.setText(tr("result.detail.title"))
+        self.simple_detail_card._subtitle_label.setText(tr("result.detail.help"))
+        self.simple_tabs.setTabText(0, tr("result.tab.optimized"))
+        self.simple_tabs.setTabText(1, tr("result.tab.report"))
+        self.simple_tabs.setTabText(2, tr("result.tab.validation"))
+        self.simple_tabs.setTabText(3, tr("result.tab.questions_none"))
+        if self.result:
+            self._render_b9_fields(self.result)
+
+        self.tools_title.setText(tr("section.tools"))
+        self.strict_check.setText(tr("simple.check.strict"))
+        self.preserve_check.setText(tr("simple.check.preserve"))
+        self.appearance_title.setText(tr("settings.appearance"))
+        self.behaviour_title.setText(tr("settings.behavior"))
+        self.data_title.setText(tr("settings.data_location"))
+        self.data_help.setText(tr("settings.data_location.help"))
+        self.reduce_motion_check.setText(tr("settings.reduce_motion"))
+        self.reduce_motion_help.setText(tr("settings.reduce_motion.help"))
+        self.reset_button.setText(tr("settings.reset"))
+        self.startup_mode_combo.setItemText(0, tr("status.mode_simple"))
+        self.startup_mode_combo.setItemText(1, tr("status.mode_extreme"))
+        self.theme_combo.setItemText(0, tr("settings.theme.dark"))
+        self.theme_combo.setItemText(1, tr("settings.theme.light"))
+        _fill_combo(self.level_combo, _levels())
+        _fill_combo(self.simple_level_combo, _levels())
+        _fill_combo(self.privacy_combo, _privacy_modes())
+        _fill_combo(self.simple_privacy_combo, _privacy_modes())
+        for card, (_name, description_key) in zip(
+            self.profile_cards, PROFILE_DEFINITIONS
+        ):
+            body = card.content()
+            labels = body.itemAt(1).widget()
+            if labels is not None:
+                labels.setText(tr(description_key))
+        self.copy_button.setText(tr("results.button.copy_prompt"))
+        self.copy_glossary_button.setText(tr("glossary.copy"))
+        self.glossary_search.setPlaceholderText(tr("glossary.search_placeholder"))
+        self._counters_retranslate()
+
+    def _counters_retranslate(self) -> None:
+        text = self._get_current_prompt()
+        chars, tokens = estimate_counters(text)
+        for label in (
+            getattr(self, "char_label", None),
+            getattr(self, "char_label2", None),
+            getattr(self, "simple_char_label", None),
+        ):
+            if label is not None:
+                label.setText(tr("home.characters").format(count=chars))
+        for label in (
+            getattr(self, "token_label", None),
+            getattr(self, "token_label2", None),
+            getattr(self, "simple_token_label", None),
+        ):
+            if label is not None:
+                label.setText(tr("home.tokens").format(count=tokens))
+
+    # ─── Window events ─────────────────────────────────────────────
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        if hasattr(self, "_toast"):
+            self._toast.reposition()
+        if hasattr(self, "sidebar"):
+            # Keep the content area usable: below ~1060 px the sidebar folds.
+            self.sidebar.set_collapsed(self.width() < 1060)
 
     def closeEvent(self, event) -> None:
-        # Cancel any running worker thread before closing to avoid
-        # signals hitting destroyed widgets or zombie threads.
-        if self.worker_thread and self.worker_thread.isRunning():
+        if self._is_compiling():
             self.cancel_requested = True
             if self.worker:
                 self.worker.cancel()
@@ -2277,27 +2486,24 @@ class MainWindow(QMainWindow):
         save_settings(self._collect_settings())
         super().closeEvent(event)
 
-    # ─── Project save/load ──────────────────────────────────────────
+    # ─── Project save / load ───────────────────────────────────────
 
     def _save_project(self) -> None:
-        """Save current state as a project JSON file."""
-        from PySide6.QtWidgets import QFileDialog
-        import json as _json
         from datetime import datetime, timezone
 
         prompt = self._get_current_prompt()
         if not prompt.strip():
-            QMessageBox.warning(self, "Sin contenido", "Escribe un prompt antes de guardar el proyecto.")
+            self._toast.show_message(tr("error.empty_input"), "warning")
             return
-
         default = str(data_dir() / "projects")
-        path, _ = QFileDialog.getSaveFileName(self, "Guardar proyecto", default, "Proyecto NPSC (*.npsc.json)")
+        path, _ = QFileDialog.getSaveFileName(
+            self, tr("project.save"), default, "Proyecto NPSC (*.npsc.json)"
+        )
         if not path:
             return
         if not path.endswith(".npsc.json"):
             path += ".npsc.json"
-
-        project_data = {
+        project = {
             "schema_version": "1.0",
             "project_name": Path(path).stem,
             "prompt_version": "1",
@@ -2311,88 +2517,100 @@ class MainWindow(QMainWindow):
             "tags": [],
             "history": [],
         }
-
         if self.result:
-            project_data["last_result"] = {
+            project["last_result"] = {
                 "optimized_prompt": self.result.get("optimized_prompt", ""),
                 "applied_profile": self.result.get("applied_profile", ""),
                 "target": self.result.get("target", "auto"),
             }
-
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-        Path(path).write_text(_json.dumps(project_data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        self._set_status(f"Proyecto guardado: {Path(path).name}", self._get_current_profile(), "normal", "")
+        Path(path).write_text(
+            json.dumps(project, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+        self._toast.show_message(
+            tr("toast.project_saved").format(name=Path(path).name), "success"
+        )
 
     def _load_project(self) -> None:
-        """Load a project from a JSON file."""
-        from PySide6.QtWidgets import QFileDialog
-        import json as _json
-
         default = str(data_dir() / "projects")
-        path, _ = QFileDialog.getOpenFileName(self, "Cargar proyecto", default, "Proyecto NPSC (*.npsc.json)")
+        path, _ = QFileDialog.getOpenFileName(
+            self, tr("project.load"), default, "Proyecto NPSC (*.npsc.json)"
+        )
         if not path:
             return
-
         try:
-            data = _json.loads(Path(path).read_text(encoding="utf-8"))
-        except Exception as exc:
-            QMessageBox.critical(self, "Error", f"No se pudo cargar el proyecto:\n{exc}")
+            data = json.loads(Path(path).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            self._toast.show_message(str(exc), "error")
             return
-
         informal = data.get("informal_input", "")
         if informal:
-            if hasattr(self, "simple_prompt_edit"):
-                self.simple_prompt_edit.setPlainText(informal)
-            if hasattr(self, "prompt_edit"):
-                self.prompt_edit.setPlainText(informal)
-
+            self.simple_prompt_edit.setPlainText(informal)
+            self.prompt_edit.setPlainText(informal)
         self._variable_values = data.get("variables", {})
-
-        target_profile = data.get("target_profile", "AUTO")
-        if hasattr(self, "simple_profile_combo"):
-            self.simple_profile_combo.setCurrentText(target_profile)
-        if hasattr(self, "profile_combo"):
-            self.profile_combo.setCurrentText(target_profile)
-
-        self._set_status(f"Proyecto cargado: {data.get('project_name', Path(path).name)}", target_profile, "normal", "")
-
-    # ─── Variable dialog ────────────────────────────────────────────
+        profile = data.get("target_profile", "AUTO")
+        self.simple_profile_combo.setCurrentText(profile)
+        self.profile_combo.setCurrentText(profile)
+        self._toast.show_message(
+            tr("toast.project_loaded").format(
+                name=data.get("project_name", Path(path).name)
+            ),
+            "success",
+        )
 
     def _show_variable_dialog(self) -> None:
-        """Show a dialog to fill detected {{variables}} in the current prompt."""
         from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFormLayout, QLineEdit
 
         prompt = self._get_current_prompt()
-        vars_found = extract_variables(prompt)
-        if not vars_found:
-            QMessageBox.information(self, "Variables", "No se detectaron variables {{variable}} en el prompt actual.")
+        found = extract_variables(prompt)
+        if not found:
+            self._toast.show_message(tr("variables.none"), "info")
             return
-
-        dlg = QDialog(self)
-        dlg.setWindowTitle("Rellenar variables")
-        dlg.setMinimumSize(400, 150)
-        layout = QFormLayout(dlg)
-
+        dialog = QDialog(self)
+        dialog.setWindowTitle(tr("variables.title"))
+        dialog.setMinimumSize(420, 180)
+        layout = QFormLayout(dialog)
         edits: dict[str, QLineEdit] = {}
-        for var_name in vars_found:
+        for name in found:
             edit = QLineEdit()
-            edit.setPlaceholderText(f"Valor para {{{{{var_name}}}}}")
-            edit.setText(self._variable_values.get(var_name, ""))
-            layout.addRow(f"{{{{{var_name}}}}}", edit)
-            edits[var_name] = edit
-
-        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttons.accepted.connect(dlg.accept)
-        buttons.rejected.connect(dlg.reject)
+            edit.setPlaceholderText(tr("variables.placeholder").format(name=name))
+            edit.setText(self._variable_values.get(name, ""))
+            layout.addRow(f"{{{{{name}}}}}", edit)
+            edits[name] = edit
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)
-
-        if dlg.exec() != QDialog.Accepted:
+        if dialog.exec() != QDialog.DialogCode.Accepted:
             return
-
-        for var_name, edit in edits.items():
+        for name, edit in edits.items():
             value = edit.text().strip()
             if value:
-                self._variable_values[var_name] = value
+                self._variable_values[name] = value
+        filled = sum(1 for name in found if self._variable_values.get(name, "").strip())
+        self._toast.show_message(
+            tr("variables.filled").format(filled=filled, total=len(found)), "success"
+        )
 
-        filled_count = sum(1 for v in vars_found if self._variable_values.get(v, "").strip())
-        self._set_status(f"Variables rellenadas: {filled_count}/{len(vars_found)}", self._get_current_profile(), "normal", "")
+
+def create_application(argv: list[str] | None = None) -> tuple[QApplication, MainWindow]:
+    """Build the QApplication + MainWindow with the design system installed."""
+    import sys
+
+    app = QApplication.instance() or QApplication(argv if argv is not None else sys.argv)
+    app.setApplicationName("NeuroPrompt Semantic Compiler")
+    app.setOrganizationName("NPSC")
+    settings = load_settings()
+    apply_design(app, get_theme(str(settings.get("theme", "dark"))))
+    window = MainWindow()
+    return app, window
+
+
+
+
+
+
+
+

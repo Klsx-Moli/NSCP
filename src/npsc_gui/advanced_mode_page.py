@@ -3,12 +3,20 @@ from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
-    QFrame, QHBoxLayout, QLabel, QMessageBox, QPlainTextEdit,
-    QPushButton, QScrollArea, QSizePolicy, QSplitter, QVBoxLayout, QWidget,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPlainTextEdit,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QSplitter,
+    QVBoxLayout,
+    QWidget,
 )
 
 from i18n import tr
-
 
 ADVANCED_SECTION_KEYS = [
     "context_role",
@@ -85,9 +93,10 @@ class EditableSectionCard(QFrame):
         header.addWidget(self._header_lbl)
         header.addStretch(1)
 
-        self._collapse_btn = QPushButton("−")
+        self._collapse_btn = QPushButton("")
         self._collapse_btn.setFixedSize(24, 24)
         self._collapse_btn.setObjectName("CollapseBtn")
+        self._collapse_btn.setToolTip(tr("advanced.collapse"))
         self._collapse_btn.setCheckable(True)
         self._collapse_btn.setChecked(False)
         self._collapse_btn.clicked.connect(self._toggle_collapse)
@@ -103,17 +112,24 @@ class EditableSectionCard(QFrame):
         layout.addWidget(self._editor)
 
         # Word/char count
-        self._stats_lbl = QLabel("0 chars")
+        self._stats_lbl = QLabel(self._stats_text(0))
         self._stats_lbl.setObjectName("Muted")
         layout.addWidget(self._stats_lbl)
+
+    @staticmethod
+    def _stats_text(count: int) -> str:
+        return tr("advanced.characters").format(count=count)
 
     def _toggle_collapse(self, checked: bool) -> None:
         self._editor.setVisible(not checked)
         self._collapse_btn.setText("+" if checked else "−")
+        self._collapse_btn.setToolTip(
+            tr("advanced.expand") if checked else tr("advanced.collapse")
+        )
 
     def _on_text_changed(self) -> None:
         text = self._editor.toPlainText()
-        self._stats_lbl.setText(f"{len(text)} chars")
+        self._stats_lbl.setText(self._stats_text(len(text)))
         self.content_changed.emit(self._section_key, text)
 
     def get_text(self) -> str:
@@ -123,7 +139,7 @@ class EditableSectionCard(QFrame):
         self._editor.blockSignals(True)
         self._editor.setPlainText(text)
         self._editor.blockSignals(False)
-        self._stats_lbl.setText(f"{len(text)} chars")
+        self._stats_lbl.setText(self._stats_text(len(text)))
 
     def set_label(self, text: str) -> None:
         self._header_lbl.setText(text)
@@ -151,12 +167,12 @@ class AdvancedModePage(QWidget):
 
         # Title
         title_row = QHBoxLayout()
-        title = QLabel(tr("mode.advanced.title") if hasattr(tr, "__call__") else "Modo Avanzable — Secciones editables")
+        title = QLabel(tr("mode.advanced.title") if callable(tr) else "Modo Avanzable — Secciones editables")
         title.setObjectName("SimpleTitle")
         title_row.addWidget(title)
         title_row.addStretch(1)
 
-        self._mode_indicator = QLabel("ADVANCED")
+        self._mode_indicator = QLabel(tr("mode.advanced.indicator"))
         self._mode_indicator.setObjectName("ModeIndicator")
         title_row.addWidget(self._mode_indicator)
         layout.addLayout(title_row)
@@ -309,10 +325,11 @@ class AdvancedModePage(QWidget):
             QMessageBox.information(self, "Revision de campos", "\n\n".join(msg_parts))
 
     def _save_sections(self) -> None:
-        from PySide6.QtWidgets import QFileDialog
         import json
-        from pathlib import Path
         from datetime import datetime, timezone
+        from pathlib import Path
+
+        from PySide6.QtWidgets import QFileDialog
 
         from npsc_gui.settings import data_dir
 
@@ -343,9 +360,10 @@ class AdvancedModePage(QWidget):
         Path(path).write_text(json.dumps(project, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     def _load_sections(self) -> None:
-        from PySide6.QtWidgets import QFileDialog
         import json
         from pathlib import Path
+
+        from PySide6.QtWidgets import QFileDialog
 
         from npsc_gui.settings import data_dir
 

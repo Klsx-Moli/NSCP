@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 ROP_VERSION = "ROP/1.0"
 
 REQUIRED_ROP_SECTIONS = [

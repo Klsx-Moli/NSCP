@@ -1,0 +1,246 @@
+{
+  "schema": "npsc.ab_eval.cases.v1",
+  "cases": [
+    {
+      "id": "app_prompt_improver_es",
+      "language": "es",
+      "task_type": "coding",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Quiero que me hagas una app local para mejorar prompts, pero no una tontería de resumir, quiero que detecte intención, roles, contexto, restricciones, lo convierta a algo compacto tipo R/G/CTX/T/C/P/OUT, que no pierda seguridad, que sirva para Codex, Hermes y GPT, que genere reportes y tests, sin sudo, sin APIs, en Ubuntu, sin tocar fuera del proyecto y nada destructivo.",
+      "key_requirements": [
+        "Deliver a local application/tool, not merely advice, a plan, or a summary.",
+        "Detect intent, roles, context, and constraints from a prompt.",
+        "Produce a compact R/G/CTX/T/C/P/OUT representation.",
+        "Support Codex, Hermes, and GPT targets.",
+        "Generate reports and automated tests.",
+        "No sudo, no external APIs, nothing destructive, and do not touch anything outside the project root.",
+        "Target environment is Ubuntu and the solution must be local."
+      ],
+      "checks": {
+        "language": "es",
+        "contains_any": [
+          ["reporte", "informe", "report"],
+          ["test", "prueba"],
+          ["R/G/CTX", "R:G:CTX", "R / G / CTX"]
+        ],
+        "contains_none": ["sudo "],
+        "max_words": 900
+      }
+    },
+    {
+      "id": "json_contract_es",
+      "language": "es",
+      "task_type": "coding",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Hazme el endpoint /api/v1/tickets para crear tickets en un backend Python. Debe aceptar JSON con title y priority (low|medium|high), validar con jsonschema, responder 201 con el ticket creado y 422 con errores de validación. Devuelve SOLO el JSON de ejemplo de request y response, sin explicación.",
+      "key_requirements": [
+        "Output only valid JSON: example request and example response, with no prose.",
+        "Request body contains title and priority with the enum low|medium|high.",
+        "Validation uses jsonschema.",
+        "Success response is HTTP 201 and returns the created ticket.",
+        "Validation failure is HTTP 422 with validation errors.",
+        "The endpoint is /api/v1/tickets on a Python backend."
+      ],
+      "checks": {
+        "json_parse": true,
+        "contains_all": ["title", "priority", "201", "422"],
+        "max_words": 250
+      }
+    },
+    {
+      "id": "research_state_of_art_es",
+      "language": "es",
+      "task_type": "research",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Necesito investigar el estado del arte de compiladores semánticos de prompts y darme un análisis con fuentes, comparando al menos 3 enfoques y señalando qué evidencia es sólida y qué es especulación. Sin APIs externas, todo local; incluye referencias.",
+      "key_requirements": [
+        "Compare at least three approaches to semantic prompt compilation.",
+        "Cite sources or references.",
+        "Explicitly separate solid evidence from speculation.",
+        "Provide a structured analysis, not a list of opinions.",
+        "The work must be local and must not call external APIs."
+      ],
+      "checks": {
+        "language": "es",
+        "contains_any": [
+          ["fuente", "referencia", "source", "reference"]
+        ],
+        "min_citations": 2,
+        "min_bullets": 3,
+        "max_words": 900
+      }
+    },
+    {
+      "id": "email_no_promises_es",
+      "language": "es",
+      "task_type": "writing",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Escribe una respuesta breve y cordial a un cliente que se queja de que la app se cierra al exportar. No prometas fechas ni compensaciones, reconoce el problema, pide los pasos para reproducirlo y ofrece una solución temporal. Máximo 120 palabras, en español.",
+      "key_requirements": [
+        "Write a brief, cordial reply in Spanish.",
+        "Acknowledge the crash on export.",
+        "Ask for reproduction steps.",
+        "Offer a temporary workaround.",
+        "Do not promise dates or compensation.",
+        "Stay at or below 120 words."
+      ],
+      "checks": {
+        "language": "es",
+        "max_words": 135,
+        "contains_any": [
+          ["pasos", "reproducir", "reproducción"],
+          ["solución temporal", "workaround", "alternativa temporal"]
+        ],
+        "contains_none": [
+          "reembolso", "compensación", "compensacion", "gratis",
+          "el lunes", "el martes", "el miércoles", "el jueves", "el viernes"
+        ]
+      }
+    },
+    {
+      "id": "sql_readonly_en",
+      "language": "en",
+      "task_type": "data",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Write a read-only PostgreSQL query for the orders table (id, customer_id, status, total_cents, created_at) that returns each customer's total revenue for 2025, only customers with at least 3 orders, sorted descending. Do not use SELECT *, do not modify data. Output only the SQL.",
+      "key_requirements": [
+        "Output only SQL.",
+        "Read-only query; no INSERT, UPDATE, DELETE, DROP, or other mutation.",
+        "Use the orders table with columns id, customer_id, status, total_cents, created_at.",
+        "Return each customer's total revenue for 2025.",
+        "Keep only customers with at least 3 orders.",
+        "Sort by total revenue descending.",
+        "Do not use SELECT *."
+      ],
+      "checks": {
+        "language": "en",
+        "contains_all": ["SELECT", "GROUP BY", "HAVING", "ORDER BY", "2025"],
+        "contains_none": ["SELECT *", "DELETE", "UPDATE ", "INSERT", "DROP", "ALTER"],
+        "max_words": 160
+      }
+    },
+    {
+      "id": "security_checklist_es",
+      "language": "es",
+      "task_type": "analysis",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Revisa la seguridad de una app de escritorio local que procesa archivos CSV de clientes. Dame un checklist priorizado de riesgos, cómo verificarlos y qué hacer sin usar servicios externos ni sudo. Incluye al menos riesgos de datos, permisos de archivos y dependencias.",
+      "key_requirements": [
+        "Provide a prioritized risk checklist.",
+        "Cover data risks, file permissions, and dependencies.",
+        "Explain how to verify each risk.",
+        "Give concrete remediation actions.",
+        "Do not use external services or sudo."
+      ],
+      "checks": {
+        "language": "es",
+        "contains_any": [
+          ["checklist", "lista de verificación", "lista de verificacion"],
+          ["permisos", "permissions"],
+          ["dependencias", "dependencies"]
+        ],
+        "min_bullets": 5,
+        "contains_none": ["sudo "],
+        "max_words": 900
+      }
+    },
+    {
+      "id": "study_plan_es",
+      "language": "es",
+      "task_type": "planning",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Armame un plan de estudio de 4 semanas para aprender Python desde cero, 1 hora por día, con recursos gratuitos y ejercicios prácticos. No incluyas videos pagos ni certificaciones. Quiero un calendario semanal y un proyecto final.",
+      "key_requirements": [
+        "Cover 4 weeks.",
+        "Assume 1 hour per day.",
+        "Use free resources only.",
+        "Include practical exercises.",
+        "Do not include paid videos or paid certifications.",
+        "Provide a weekly calendar.",
+        "Include a final project."
+      ],
+      "checks": {
+        "language": "es",
+        "contains_all": ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
+        "contains_none": ["certificación paga", "certificacion paga", "video pago", "suscripción paga", "curso pago"],
+        "max_words": 900
+      }
+    },
+    {
+      "id": "python_keyerror_debug_en",
+      "language": "en",
+      "task_type": "coding",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "My Python script crashes with `KeyError: 'user_id'` when reading CSV rows. It uses csv.DictReader and then row['user_id'] in a loop. Some rows are missing the column. I need the root cause, a robust fix that skips/logs bad rows, and a pytest test. Don't use pandas or external APIs. Output the fix and test code.",
+      "key_requirements": [
+        "Explain the root cause of the KeyError.",
+        "Provide a robust fix that skips and logs bad rows.",
+        "Include a pytest test.",
+        "Do not use pandas.",
+        "Do not call external APIs.",
+        "Output the fix and test code."
+      ],
+      "checks": {
+        "language": "en",
+        "contains_all": ["KeyError", "DictReader", "pytest"],
+        "contains_none": ["pandas", "requests.", "http://", "https://"],
+        "max_words": 1100
+      }
+    },
+    {
+      "id": "architecture_decision_es",
+      "language": "es",
+      "task_type": "analysis",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Estoy decidiendo entre dos arquitecturas para mi app local: monolito Python o microservicios. Considera mantenimiento, rendimiento, complejidad y seguridad. No tengo equipo, soy un solo desarrollador, y quiero lanzar en 6 semanas. Dame una recomendación clara, tradeoffs y qué señales me harían cambiar de opinión. Sin APIs externas.",
+      "key_requirements": [
+        "Give a clear recommendation between a Python monolith and microservices.",
+        "Discuss maintenance, performance, complexity, and security.",
+        "Account for a solo developer and a 6-week launch window.",
+        "List tradeoffs.",
+        "Name signals that would justify changing the recommendation.",
+        "Do not rely on external APIs."
+      ],
+      "checks": {
+        "language": "es",
+        "contains_any": [
+          ["recomiendo", "recomendación", "recomendacion", "mi recomendación"],
+          ["tradeoff", "trade-off", "compensación", "ventaja", "desventaja"],
+          ["señal", "señales", "signal"]
+        ],
+        "max_words": 700
+      }
+    },
+    {
+      "id": "excellent_csv_converter_en",
+      "language": "en",
+      "task_type": "coding",
+      "profile": "STANDARD",
+      "target": "generic",
+      "input": "Write a Python 3.11 CSV-to-JSON converter: input from stdin or --input, output to stdout or --output, UTF-8 BOM handling, malformed rows logged to stderr without aborting the batch, pytest tests covering malformed rows, and acceptance criteria: the suite passes and the converter processes 10k rows in under 2 seconds. Compile the result for codex.",
+      "key_requirements": [
+        "Python 3.11 CSV-to-JSON converter.",
+        "Input from stdin or --input.",
+        "Output to stdout or --output.",
+        "Handle UTF-8 BOM.",
+        "Log malformed rows to stderr without aborting the batch.",
+        "Include pytest tests covering malformed rows.",
+        "Acceptance criteria: tests pass and 10k rows process in under 2 seconds."
+      ],
+      "checks": {
+        "language": "en",
+        "contains_all": ["stdin", "--input", "--output", "BOM", "pytest"],
+        "max_words": 1400
+      }
+    }
+  ]
+}

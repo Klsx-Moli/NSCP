@@ -45,7 +45,7 @@ def export_markdown_result(result: dict[str, Any], out_dir: str | Path, basename
         lines.append("")
 
     # Semantic IR
-    if "semantic_ir" in result and result["semantic_ir"]:
+    if result.get("semantic_ir"):
         lines.append("## Semantic IR\n")
         ir = result["semantic_ir"]
         if isinstance(ir, dict):

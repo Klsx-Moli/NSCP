@@ -5,7 +5,6 @@ from typing import Any
 from compilation_profiles import render_rop_template
 from constraint_normalizer import critical_constraints
 
-
 CRITICAL_CONSTRAINTS = [
     "no_sudo",
     "no_external_api",
@@ -45,15 +44,10 @@ def build_profile_optimized_prompt(
     directives = profile.get("prompt_directives", [])
 
     if profile_name == "FAST":
-        lines = [str(semantics.get("goal", "answer the user request")).strip()]
-        user_tasks = [t for t in semantics.get("tasks", []) if not t.startswith(("extract_", "compile_", "verify_", "export_"))]
-        if len(user_tasks) > 1 and len(str(semantics.get("goal", ""))) > 120:
-            lines.append(f"Intent: {', '.join(user_tasks[:3])}")
+        lines = [original.strip()]
         if constraints:
-            lines.append(f"Constraints: {', '.join(constraints)}")
-        outputs = list(semantics.get("output", []))
-        if outputs and outputs != ["direct_answer"] and len(str(semantics.get("goal", ""))) > 120:
-            lines.append(f"Output: {', '.join(outputs[:3])}")
+            lines.append("")
+            lines.append("Constraints: " + ", ".join(constraints))
         return "\n".join(lines).strip() + "\n"
 
     if profile_name == "ROP":
@@ -92,26 +86,34 @@ def build_profile_optimized_prompt(
         lines = [
             "# ADVANCED Semantic Prompt",
             "",
-            reconstructed.strip(),
+            original.strip(),
             "",
-            "Additional structure:",
-            "- Preserve context and output contract.",
-            "- Surface assumptions, risks and verification checks.",
-            "- Keep technical constraints explicit.",
-            "",
-            "Profile directives:",
-            *_list_lines([str(item) for item in directives]),
         ]
+        if constraints:
+            lines.append("Constraints:")
+            lines.extend(f"- {item}" for item in constraints)
+            lines.append("")
+        outputs = list(semantics.get("output", []))
+        if outputs and outputs != ["direct_answer"]:
+            lines.append("Expected output: " + ", ".join(outputs))
+            lines.append("")
+        lines.append("Solve the request completely and accurately. Respect all stated constraints and output requirements. Mark assumptions explicitly.")
         return "\n".join(lines).strip() + "\n"
 
     lines = [
         "# STANDARD Semantic Prompt",
         "",
-        reconstructed.strip(),
+        original.strip(),
         "",
-        "Profile directives:",
-        *_list_lines([str(item) for item in directives]),
     ]
+    if constraints:
+        lines.append("Constraints: " + ", ".join(constraints))
+        lines.append("")
+    outputs = list(semantics.get("output", []))
+    if outputs and outputs != ["direct_answer"]:
+        lines.append("Expected output: " + ", ".join(outputs))
+        lines.append("")
+    lines.append("Solve the request directly and completely. Satisfy every explicit requirement and constraint above. Do not add unrelated content. Mark assumptions explicitly.")
     return "\n".join(lines).strip() + "\n"
 
 

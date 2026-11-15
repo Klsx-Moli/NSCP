@@ -1,107 +1,83 @@
-"""HealthDashboard — Auslogics-style module status panel showing
-compilation health, metrics, and quick-access tool categories.
+"""HealthDashboard — compact row of real compilation metrics.
 
-Displays 4 metric cards with semantic colors.
-Designed for the right sidebar or dashboard bottom strip.
+The dashboard is only meaningful once a compilation exists, so callers show it
+after a result arrives. Before that it is hidden, and the home screen keeps a
+single primary action instead of four placeholders with zeros.
 """
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import (
-    QFrame, QHBoxLayout, QLabel, QVBoxLayout,
-)
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
+
+from i18n import tr
+from npsc_gui.components.cards import MetricTile
+from npsc_gui.design.style import active_theme
 
 
-class MetricPill(QFrame):
-    """Single metric display: large value + small label."""
+class MetricPill(MetricTile):
+    """Backwards-compatible alias of :class:`MetricTile`."""
 
     def __init__(self, label: str, value: str = "—", semantic: str = "muted", parent=None) -> None:
-        super().__init__(parent)
-        self.setObjectName("NPSCMetricPill")
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(10, 8, 10, 8)
-        layout.setAlignment(Qt.AlignCenter)
-        layout.setSpacing(2)
-
-        self._val = QLabel(value)
-        self._val.setAlignment(Qt.AlignCenter)
-        self._val.setObjectName("MetricPillValue")
-        vfont = self._val.font()
-        vfont.setPointSize(18)
-        vfont.setWeight(QFont.Bold)
-        self._val.setFont(vfont)
-
-        self._lbl = QLabel(label)
-        self._lbl.setAlignment(Qt.AlignCenter)
-        self._lbl.setObjectName("MetricPillLabel")
-
-        layout.addWidget(self._val)
-        layout.addWidget(self._lbl)
-        self.set_semantic(semantic)
-
-    def set_value(self, text: str) -> None:
-        self._val.setText(text)
-
-    def set_semantic(self, semantic: str) -> None:
-        colors = {
-            "success": "#30B87A", "info": "#4CB8F5",
-            "warning": "#E5A51A", "error": "#E04E65", "muted": "#6C717A",
-        }
-        c = colors.get(semantic, "#6C717A")
-        self._val.setStyleSheet(f"color: {c}; background: transparent; border: none;")
+        super().__init__(label, value, semantic, parent)
+        self._val = self._value
+        self._lbl = self._caption
 
 
 class HealthDashboard(QFrame):
-    """Dashboard panel with metric pills row."""
+    """Compact panel with metric tiles for the last compilation."""
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setObjectName("NPSCHealthDash")
-        self._metrics: dict[str, MetricPill] = {}
+        self._metrics: dict[str, MetricTile] = {}
         self._build_ui()
 
     def _build_ui(self) -> None:
+        theme = active_theme()
+        s = theme.spacing
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(6)
+        layout.setSpacing(s.sm)
 
-        # Title
-        title = QLabel("Estado del sistema")
+        title = QLabel(tr("health.title"))
         title.setObjectName("HealthSectionTitle")
         layout.addWidget(title)
 
-        # Metrics row
         metrics_row = QHBoxLayout()
-        metrics_row.setSpacing(6)
-        for key, label, val, sem in [
-            ("score", "Preservación", "—/100", "muted"),
-            ("constraints", "Restricciones", "0", "info"),
-            ("warnings", "Avisos", "0", "warning"),
-            ("errors", "Errores", "0", "muted"),
+        metrics_row.setSpacing(s.sm)
+        for key, label, value, semantic in [
+            ("score", tr("health.preservation"), "—", "muted"),
+            ("constraints", tr("result.constraints"), "—", "muted"),
+            ("warnings", tr("result.warnings"), "—", "muted"),
+            ("errors", tr("result.errors"), "—", "muted"),
         ]:
-            pill = MetricPill(label, val, sem)
-            self._metrics[key] = pill
-            metrics_row.addWidget(pill)
+            tile = MetricTile(label, value, semantic)
+            self._metrics[key] = tile
+            metrics_row.addWidget(tile)
         layout.addLayout(metrics_row)
 
-    def get_metric(self, key: str) -> MetricPill | None:
-        """Return the MetricPill for `key`, or None.
-
-        Renamed from `metric()` to avoid clashing with QFrame.metric(int)
-        which returns an int — pitfall #14 of the PySide6 skill.
-        """
+    def get_metric(self, key: str) -> MetricTile | None:
+        """Return the metric tile for ``key``, or None."""
         return self._metrics.get(key)
 
-    def update_metrics(self, score: int, constraints: int, warnings: int, errors: int) -> None:
-        # Score is shown as N/100 to make the scale explicit and reduce ambiguity
-        # with a bare integer (a "0" can mean "no data" or "0% preservation" otherwise).
+    def update_metrics(
+        self,
+        score: int,
+        constraints: int,
+        warnings: int,
+        errors: int,
+    ) -> None:
         self._metrics["score"].set_value(f"{score}/100")
         self._metrics["score"].set_semantic(
             "success" if score >= 85 else "warning" if score >= 60 else "error"
         )
         self._metrics["constraints"].set_value(str(constraints))
+        self._metrics["constraints"].set_semantic("success" if constraints else "muted")
         self._metrics["warnings"].set_value(str(warnings))
-        self._metrics["warnings"].set_semantic("warning" if warnings > 0 else "muted")
+        self._metrics["warnings"].set_semantic("warning" if warnings else "muted")
         self._metrics["errors"].set_value(str(errors))
-        self._metrics["errors"].set_semantic("error" if errors > 0 else "muted")
+        self._metrics["errors"].set_semantic("error" if errors else "muted")
+
+
+__all__ = ["HealthDashboard", "MetricPill"]

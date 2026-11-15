@@ -6,7 +6,6 @@ from typing import Any
 
 from resource_paths import resource_path
 
-
 DEFAULTS_PATH = resource_path("configs/compiler_defaults.json")
 _cached_compiler_defaults: dict[str, Any] | None = None
 

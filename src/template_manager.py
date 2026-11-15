@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -120,7 +120,7 @@ class TemplateManager:
     # ── Categories ──
 
     def categories(self) -> list[str]:
-        cats = sorted(set(t.category for t in self._templates.values()))
+        cats = sorted({t.category for t in self._templates.values()})
         return cats
 
     def by_category(self, category: str) -> list[PromptTemplate]:

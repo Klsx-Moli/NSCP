@@ -4,7 +4,6 @@ from typing import Any
 
 from constraint_normalizer import critical_constraints
 
-
 SCHEMA_VERSION = "NPSC-HYBRID/1.0"
 
 

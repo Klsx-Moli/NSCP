@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import itertools
-
+import re
+from collections.abc import Iterable
 from datetime import datetime, timezone
 from pathlib import Path
-import re
-from typing import Iterable
 
 
 def ensure_dir(path: str | Path) -> Path:

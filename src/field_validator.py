@@ -101,7 +101,7 @@ def validate_compile_form(
         return result  # No point checking further
 
     # Check for unfilled variables
-    from variables import extract_variables, build_fill_form
+    from variables import build_fill_form, extract_variables
     detected = extract_variables(prompt)
     if detected:
         form = build_fill_form(prompt)

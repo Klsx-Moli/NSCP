@@ -94,10 +94,10 @@ def _safety_constraints_to_check(
     # Detected from original text via unified vocabulary
     from_text: set[str] = set(canonical_constraints(original))
     # Declared in semantics (may include profile-injected keys)
-    from_semantics: set[str] = set(
+    from_semantics: set[str] = {
         c for c in (semantics.get("constraints") or [])
         if c in PHRASES
-    )
+    }
     return from_text | from_semantics
 
 
@@ -323,7 +323,7 @@ def verify_context_loss(
         "recommendation": recommendation,
         "objective_preservation": objective_preservation,
         "critical_constraint_preservation": "preserved" if not any(
-            item.startswith("missing_no_") or item.startswith("missing_stay_") or item.startswith("missing_offline_")
+            item.startswith(("missing_no_", "missing_stay_", "missing_offline_"))
             for item in critical_losses
         ) else "missing",
         "deliverable_preservation": deliverable_preservation,

@@ -5,11 +5,25 @@ import os
 from pathlib import Path
 from typing import Any
 
-
 APP_ID = "neuro-prompt-semantic-compiler"
 
 
+def _portable_root() -> Path | None:
+    import sys
+    base = Path(sys.executable).resolve().parent
+    if (base / "portable").exists():
+        return base / "portable_data"
+    # Also support marker next to script in dev
+    base2 = Path(__file__).resolve().parents[2]
+    if (base2 / "portable").exists():
+        return base2 / "portable_data"
+    return None
+
+
 def config_dir() -> Path:
+    portable = _portable_root()
+    if portable is not None:
+        return portable / "config"
     root = os.environ.get("NPSC_CONFIG_HOME")
     if root:
         return Path(root)
@@ -17,6 +31,9 @@ def config_dir() -> Path:
 
 
 def data_dir() -> Path:
+    portable = _portable_root()
+    if portable is not None:
+        return portable / "data"
     root = os.environ.get("NPSC_DATA_HOME")
     if root:
         return Path(root)

@@ -14,7 +14,6 @@ from semantic_extractor import extract_semantics
 from semantic_seed_mapper import suggest_seeds
 from token_estimator import estimate_text
 
-
 LEVELS = ("safe", "balanced", "aggressive")
 EXECUTABLE_TASKS = {
     "extract_semantics",
@@ -173,10 +172,13 @@ if __name__ == "__main__":
 # executability, critical-constraint retention, no degradation of already
 # excellent prompts). Deterministic and local.
 
-import re  # noqa: E402  (case-benchmark helpers)
-from context_loss_verifier import INTERNAL_TERMS  # noqa: E402  (grouped with benchmark helpers)
-from npsc_service import CompileRequest, compile_prompt  # noqa: E402
-from prompt_quality import evaluate_quality  # noqa: E402
+import re
+
+from context_loss_verifier import (
+    INTERNAL_TERMS,
+)
+from npsc_service import CompileRequest, compile_prompt
+from prompt_quality import evaluate_quality
 
 
 def _goal_tokens(text: str) -> set[str]:
@@ -208,7 +210,7 @@ def evaluate_case(case: dict[str, Any]) -> dict[str, Any]:
             checks["fails_controlled"] = False
         except ValueError as exc:
             checks["fails_controlled"] = case["expect_error"] in str(exc) or bool(str(exc))
-        except Exception:  # noqa: BLE001 — any non-ValueError escape is a failure
+        except Exception:
             checks["fails_controlled"] = False
         row["passed"] = checks["fails_controlled"]
         return row

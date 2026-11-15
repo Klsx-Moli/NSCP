@@ -12,9 +12,11 @@ from __future__ import annotations
 
 import math
 
-from PySide6.QtCore import QRectF, QTimer, Qt, Signal
+from PySide6.QtCore import QRectF, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QFont, QPainter, QPen
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout
+from npsc_gui.design.style import active_theme
+from npsc_gui.design.motion import motion_enabled
 
 
 class ScanRing(QFrame):
@@ -40,6 +42,10 @@ class ScanRing(QFrame):
         self.setFixedSize(size, size)
         self.setFrameShape(QFrame.NoFrame)
 
+        theme = active_theme()
+        t = theme.typography
+        primary_family = t.family.split(",")[0].strip().strip('"')
+
         # Value label centered inside the ring
         inner = QVBoxLayout(self)
         inner.setContentsMargins(0, 0, 0, 0)
@@ -48,13 +54,13 @@ class ScanRing(QFrame):
 
         self._val_label = QLabel("—")
         self._val_label.setAlignment(Qt.AlignCenter)
-        vfont = QFont("Inter", 26, QFont.Bold)
+        vfont = QFont(primary_family, t.display_size + 4, t.display_weight)
         vfont.setStyleStrategy(QFont.PreferAntialias)
         self._val_label.setFont(vfont)
 
         self._sub_lbl = QLabel(self._sub_label)
         self._sub_lbl.setAlignment(Qt.AlignCenter)
-        sfont = QFont("Inter", 9, QFont.Medium)
+        sfont = QFont(primary_family, t.caption_size, t.label_weight)
         self._sub_lbl.setFont(sfont)
 
         inner.addWidget(self._val_label)
@@ -87,7 +93,8 @@ class ScanRing(QFrame):
         """ScanRing states: idle, scanning, success, warning, error."""
         self._state = state
         if state == "scanning":
-            self._pulse_timer.start()
+            if motion_enabled():
+                self._pulse_timer.start()
             self._val_label.setText("0")
         else:
             self._pulse_timer.stop()
@@ -137,8 +144,7 @@ class ScanRing(QFrame):
             span = int(-self._value * 3.6 * 16)  # Qt uses 1/16 degree units
             painter.drawArc(rect, 90 * 16, span)
 
-        # Pulse glow during scanning
-        if self._state == "scanning":
+        if self._state == "scanning" and motion_enabled():
             glow_alpha = int(30 + 20 * math.sin(self._pulse))
             glow_color = QColor(self._colors["arc"])
             glow_color.setAlpha(glow_alpha)
@@ -169,13 +175,19 @@ class ScanRing(QFrame):
         self.update()
 
     def _apply_colors(self) -> None:
-        palette = {
-            "idle":    {"track": QColor("#363A42"), "arc": QColor("#4CB8F5"), "text": QColor("#4CB8F5")},
-            "scanning":{"track": QColor("#363A42"), "arc": QColor("#2B8BC8"), "text": QColor("#4CB8F5")},
-            "success": {"track": QColor("#363A42"), "arc": QColor("#30B87A"), "text": QColor("#30B87A")},
-            "warning": {"track": QColor("#363A42"), "arc": QColor("#E5A51A"), "text": QColor("#E5A51A")},
-            "error":   {"track": QColor("#363A42"), "arc": QColor("#E04E65"), "text": QColor("#E04E65")},
-        }
-        self._colors = palette.get(self._state, palette["idle"])
-        self._val_label.setStyleSheet(f"color: {self._colors['text'].name()}; background: transparent; border: none;")
-        self._sub_lbl.setStyleSheet("color: #6C717A; background: transparent; border: None;")
+        theme = active_theme()
+        p = theme.palette
+        arc_color = {
+            "idle": p.accent_brand,
+            "scanning": p.accent_primary,
+            "success": p.success,
+            "warning": p.warning,
+            "error": p.error,
+        }.get(self._state, p.accent_brand)
+        self._colors = {"track": QColor(p.track), "arc": QColor(arc_color)}
+        self._val_label.setStyleSheet(
+            f"color: {arc_color}; background: transparent; border: none;"
+        )
+        self._sub_lbl.setStyleSheet(
+            f"color: {p.text_tertiary}; background: transparent; border: none;"
+        )

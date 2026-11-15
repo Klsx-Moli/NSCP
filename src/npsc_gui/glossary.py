@@ -6,7 +6,6 @@ from functools import lru_cache
 from importlib import resources
 from typing import Any
 
-
 GLOSSARY_RESOURCE = "ui_glossary_es.json"
 GLOSSARY_PACKAGE = "npsc_resources.configs"
 

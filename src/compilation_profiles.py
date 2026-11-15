@@ -6,9 +6,8 @@ from pathlib import Path
 from typing import Any
 
 from constraint_normalizer import CRITICAL_CONSTRAINTS, normalize_constraints
-from rop_template import render_rop
 from resource_paths import resource_path
-
+from rop_template import render_rop
 
 PROFILES_PATH = resource_path("configs/compilation_profiles.json")
 _cached_compilation_profiles: dict[str, Any] | None = None

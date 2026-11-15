@@ -1,11 +1,17 @@
 from __future__ import annotations
 
-from PySide6.QtCore import QEvent, QPoint, QTimer, Qt
+from PySide6.QtCore import QEvent, QPoint, Qt, QTimer
 from PySide6.QtGui import QGuiApplication, QKeyEvent
-from PySide6.QtWidgets import QApplication, QFrame, QLabel, QToolButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QFrame,
+    QLabel,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
-
-_ACTIVE_POPOVERS: list["ContextHelpPopover"] = []
+_ACTIVE_POPOVERS: list[ContextHelpPopover] = []
 
 
 def close_context_help_popovers() -> None:
@@ -13,7 +19,7 @@ def close_context_help_popovers() -> None:
         popover.hide_now()
 
 
-def _active_popovers_safe() -> list["ContextHelpPopover"]:
+def _active_popovers_safe() -> list[ContextHelpPopover]:
     return [popover for popover in _ACTIVE_POPOVERS if popover is not None]
 
 
@@ -30,7 +36,7 @@ class ContextHelpPopover(QFrame):
         self.setObjectName("ContextHelpPopover")
         self.setAttribute(Qt.WA_ShowWithoutActivating, True)
         self.setMaximumWidth(380)
-        self.setMinimumWidth(260)
+        self.setMinimumWidth(240)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 12, 14, 12)
@@ -67,12 +73,10 @@ class ContextHelpPopover(QFrame):
 
         if x + self.width() + margin > available.right():
             x = available.right() - self.width() - margin
-        if x < available.left() + margin:
-            x = available.left() + margin
+        x = max(x, available.left() + margin)
         if y + self.height() + margin > available.bottom():
             y = anchor.mapToGlobal(QPoint(0, -self.height() - 8)).y()
-        if y < available.top() + margin:
-            y = available.top() + margin
+        y = max(y, available.top() + margin)
 
         self.move(x, y)
         self.show()
@@ -182,4 +186,15 @@ class ContextHelpButton(QToolButton):
             if widget is not self and (widget is None or not self._popover.isAncestorOf(widget)):
                 self._pinned = False
                 self._popover.hide_now()
+        # Escape must close the popover even when focus sits on another widget:
+        # the popover never takes focus (WA_ShowWithoutActivating).
+        if (
+            event.type() == QEvent.KeyPress
+            and self._popover.isVisible()
+            and event.key() == Qt.Key.Key_Escape
+        ):
+            self._pinned = False
+            self._popover.hide_now()
+            event.accept()
+            return True
         return False

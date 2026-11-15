@@ -7,14 +7,14 @@ from typing import Any
 def estimate_text(text: str) -> dict[str, Any]:
     chars = len(text)
     words = len([w for w in text.split() if w.strip()])
-    tokens = int(math.ceil(chars / 4))
+    tokens = math.ceil(chars / 4)
     return {"chars": chars, "words": words, "approx_tokens": tokens}
 
 
 def estimate_counters(text: str) -> tuple[int, int]:
     """Return (chars, approx_tokens) with minimal allocation for live UI counters."""
     chars = len(text)
-    tokens = int(math.ceil(chars / 4))
+    tokens = math.ceil(chars / 4)
     return chars, tokens
 
 

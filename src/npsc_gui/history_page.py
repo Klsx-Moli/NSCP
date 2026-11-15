@@ -5,9 +5,18 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QComboBox, QHBoxLayout, QLabel, QListWidget, QListWidgetItem,
-    QMessageBox, QPushButton, QSplitter, QTabWidget, QTextEdit,
-    QVBoxLayout, QWidget,
+    QComboBox,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QPushButton,
+    QSplitter,
+    QTabWidget,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
 
 from i18n import tr
@@ -19,7 +28,7 @@ if TYPE_CHECKING:
     from npsc_gui.main_window import MainWindow
 
 
-def build_history_page(parent: "MainWindow") -> QWidget:
+def build_history_page(parent: MainWindow) -> QWidget:
     """Build the version history page for the extreme mode sidebar."""
     page = QWidget()
     layout = QVBoxLayout(page)
@@ -48,7 +57,7 @@ def build_history_page(parent: "MainWindow") -> QWidget:
 
     # Left: version list
     list_widget = QListWidget()
-    list_widget.setAlternatingRowColors(True)
+    list_widget.setAlternatingRowColors(False)
     list_widget.setMinimumWidth(280)
     splitter.addWidget(list_widget)
 

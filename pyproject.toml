@@ -75,6 +75,9 @@ norecursedirs = [
 ]
 python_files = ["test_*.py"]
 
+[tool.ruff.lint]
+ignore = ["BLE001", "S110", "S112", "SIM102", "PERF402", "TRY004"]
+
 [tool.ruff.lint.per-file-ignores]
 # Tests bootstrap sys.path with the repo's src/ directory BEFORE importing the
 # modules under test; those imports are necessarily not at the top of the file
