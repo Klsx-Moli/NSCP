@@ -93,12 +93,35 @@ def _find_role(text: str, patterns: dict[str, Any]) -> str:
 
 
 def _extract_goal(text: str, patterns: dict[str, Any]) -> str:
+    """Return the objective, keeping the whole request when it spans sentences.
+
+    Using only the first sentence dropped requirements stated later ("responde
+    422", "lee app.py"), which then never reached the reconstructed artifact.
+    The goal therefore starts at the sentence carrying a goal marker and
+    continues through the following sentences, bounded so a long essay does not
+    become the "goal".
+    """
     sentences = _sentence_candidates(text)
+    if not sentences:
+        return "compile semantic instruction from prompt"
+
     lowered_markers = [m.lower() for m in patterns.get("goal_markers", [])]
-    for sentence in sentences:
+    start = 0
+    for index, sentence in enumerate(sentences):
         if any(marker in sentence.lower() for marker in lowered_markers):
-            return sentence
-    return sentences[0] if sentences else "compile semantic instruction from prompt"
+            start = index
+            break
+
+    goal = sentences[start]
+    # The objective is the whole request, not just its first sentence: dropping
+    # what follows loses requirements like "responde 422" or "lee app.py".
+    # It is bounded so a long rambling input does not become an essay.
+    max_chars = 700
+    for sentence in sentences[start + 1:]:
+        if len(goal) + len(sentence) + 2 > max_chars:
+            break
+        goal = f"{goal} {sentence}"
+    return goal
 
 
 def _extract_tasks(text: str, patterns: dict[str, Any]) -> list[str]:

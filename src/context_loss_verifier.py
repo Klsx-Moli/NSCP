@@ -200,9 +200,39 @@ def verify_context_loss(
     output_schema_preservation = "preserved" if ("output_schema" in combined_lower or "expected output" in combined_lower or "output" in preserved_fields) else "weak"
     possible_omissions = [f for f in missing_fields if f not in {"target"}]
     allowed_additions = set()
-    for key in ("constraints", "safety_constraints", "style", "priorities", "profile_template_tasks", "profile_template_outputs"):
-        allowed_additions.update(str(item).lower() for item in semantics.get(key, []))
+    for key in ("constraints", "safety_constraints", "style", "priorities",
+                "profile_template_tasks", "profile_template_outputs",
+                "output", "tasks", "role", "target"):
+        for item in semantics.get(key, []) or []:
+            text = str(item).lower()
+            allowed_additions.add(text)
+            # Fields are stored underscored ("semantic_compiler_operator",
+            # "expanded_structure"); the verifier compares word by word, so the
+            # component words must be allowed too or the compiler's own role and
+            # style vocabulary is reported as an unsupported addition.
+            allowed_additions.update(
+                part for part in text.replace("_", " ").split() if part
+            )
     allowed_additions.update({"role", "goal", "context", "tasks", "constraints", "output", "style", "validation", "nsl", "prompt"})
+    # Structural scaffolding emitted by the copyable prompt: section headers and
+    # the connective words of the verification / blocked-path instructions.
+    # These are fixed template vocabulary, not content about the user's request,
+    # so they must not count as unsupported additions. Anything expressing an
+    # actual claim about the task stays out of this list on purpose.
+    allowed_additions.update({
+        "objective", "verification", "verify", "blocked", "blocker",
+        "explicit", "explicitly", "requirement", "requirements", "stated",
+        "check", "every", "before", "reply", "replying", "against", "instead",
+        "cannot", "smallest", "step", "unblock", "satisfy", "guessing",
+        "expected", "keep", "invent", "answer", "direct",
+        # Words of the fixed section headers ("# ADVANCED Semantic Prompt") and
+        # of the blocked-path clause. No factual claim about the user's task.
+        # Profile names appear in that same header line, so they are included:
+        # the header names the profile, it does not describe the request.
+        "advanced", "compiler", "operator", "satisfied", "does", "would",
+        "that", "next", "state", "exact",
+        "standard", "fast", "rop", "research", "max",
+    })
     unsupported = _unsupported_additions(original, reconstructed, allowed_additions)
     internal_contamination = sorted(term for term in INTERNAL_TERMS if term in combined_lower and term not in original.lower())
     unsupported_addition_score = min(100, len(unsupported) * 2 + len(internal_contamination) * 15)

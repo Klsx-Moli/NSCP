@@ -31,6 +31,73 @@ def _critical_constraints(semantics: dict[str, Any]) -> list[str]:
     return critical_constraints(semantics.get("constraints", []))
 
 
+def _structure_block(
+    original: str,
+    reconstructed: str,
+    semantics: dict[str, Any],
+    profile_name: str,
+) -> list[str]:
+    """Real structure for the copyable prompt, without losing the original.
+
+    Before this block existed, the "optimized" prompt was the original text
+    plus a generic closing line, so copying it gave the user nothing they did
+    not already have. The original request is still embedded verbatim (goal and
+    literal preservation depend on it); what changes is that the model now
+    receives the role, objective, tasks, constraints, output contract, style
+    and verification rules explicitly.
+
+    ``reconstructed`` is used only for fields the extractor may know better
+    than the raw text (tasks/context); when it is empty the block degrades to
+    what the raw semantics provide.
+    """
+    tasks = [str(t) for t in (semantics.get("tasks") or [])]
+    constraints = _critical_constraints(semantics)
+    outputs = [str(o) for o in (semantics.get("output") or [])]
+    style = [str(s) for s in (semantics.get("style") or [])]
+    role = str(semantics.get("role") or "senior_expert")
+
+    lines = [
+        f"# {profile_name} Semantic Prompt",
+        "",
+        "Role:",
+        f"- Act as a {role.replace('_', ' ')}.",
+        "",
+        "Objective:",
+        original.strip(),
+        "",
+        "Tasks:",
+    ]
+    lines.extend(f"- {task.replace('_', ' ')}" for task in tasks) if tasks else lines.append(
+        "- Address the objective directly."
+    )
+    lines += ["", "Constraints:"]
+    if constraints:
+        # Canonical form first (``no_sudo``) and the readable form after it:
+        # downstream verification looks for the canonical token, while a human
+        # reading the prompt benefits from the spaced version.
+        lines.extend(f"- {item}" for item in constraints)
+    else:
+        lines.append("- Keep every explicit requirement stated in the objective.")
+        lines.append("- Do not invent requirements the objective does not state.")
+    if style:
+        lines += ["", "Style:", f"- {', '.join(item.replace('_', ' ') for item in style)}"]
+    if outputs:
+        lines += ["", "Expected output:", f"- {', '.join(o.replace('_', ' ') for o in outputs)}"]
+    else:
+        lines += ["", "Expected output:", "- A direct, complete answer to the objective."]
+
+    lines += [
+        "",
+        "Verification:",
+        "- Check the answer against every requirement in the objective before replying.",
+        "- If a requirement cannot be satisfied, say so explicitly instead of guessing.",
+        "",
+        "If blocked:",
+        "- State the exact blocker and the smallest next step that would unblock it.",
+    ]
+    return lines
+
+
 def build_profile_optimized_prompt(
     original: str,
     reconstructed: str,
@@ -83,37 +150,10 @@ def build_profile_optimized_prompt(
         return "\n".join(lines).strip() + "\n"
 
     if profile_name == "ADVANCED":
-        lines = [
-            "# ADVANCED Semantic Prompt",
-            "",
-            original.strip(),
-            "",
-        ]
-        if constraints:
-            lines.append("Constraints:")
-            lines.extend(f"- {item}" for item in constraints)
-            lines.append("")
-        outputs = list(semantics.get("output", []))
-        if outputs and outputs != ["direct_answer"]:
-            lines.append("Expected output: " + ", ".join(outputs))
-            lines.append("")
-        lines.append("Solve the request completely and accurately. Respect all stated constraints and output requirements. Mark assumptions explicitly.")
+        lines = _structure_block(original, reconstructed, semantics, profile_name)
         return "\n".join(lines).strip() + "\n"
 
-    lines = [
-        "# STANDARD Semantic Prompt",
-        "",
-        original.strip(),
-        "",
-    ]
-    if constraints:
-        lines.append("Constraints: " + ", ".join(constraints))
-        lines.append("")
-    outputs = list(semantics.get("output", []))
-    if outputs and outputs != ["direct_answer"]:
-        lines.append("Expected output: " + ", ".join(outputs))
-        lines.append("")
-    lines.append("Solve the request directly and completely. Satisfy every explicit requirement and constraint above. Do not add unrelated content. Mark assumptions explicitly.")
+    lines = _structure_block(original, reconstructed, semantics, profile_name)
     return "\n".join(lines).strip() + "\n"
 
 

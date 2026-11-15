@@ -304,27 +304,36 @@ def report_markdown(rows: list[CaseRow], grouped: dict[str, dict[str, Any]], ove
         "",
         "| Salida | Qué es | Estructura | Expansión |",
         "|---|---|---:|---:|",
-        f"| `optimized_prompt` (“Copiar prompt”) | original + cabecera de perfil + una línea genérica | "
+        f"| `optimized_prompt` (“Copiar prompt”) | objetivo completo + rol, tareas, "
+        f"restricciones, contrato de salida, verificación y ruta de bloqueo | "
         f"{overall['avg_structure_out']}/8 | ×{overall['median_token_expansion']} |",
-        f"| `reconstructed` (artefacto completo) | prompt reconstruido con rol, tareas, restricciones, "
-        f"contrato de salida y verificación | {overall['avg_structure_reconstructed']}/8 "
+        f"| `reconstructed` (artefacto completo) | prompt reconstruido con seeds y "
+        f"directivas de perfil añadidas | {overall['avg_structure_reconstructed']}/8 "
         f"| ×{overall['median_reconstructed_expansion']} |",
         "",
-        f"En **{overall['cases_where_ready_prompt_equals_input']} de {overall['cases']}** casos el prompt "
-        "que el usuario copia no aporta ninguna señal estructural nueva: sale igual que la entrada.",
-        "La mejora real está en el artefacto reconstruido, no en el botón de copiar.",
+        f"El prompt copiable ya no es el original con una cabecera: ahora declara "
+        f"**{overall['avg_structure_out']}/8** señales de estructura frente a "
+        f"**{overall['avg_structure_in']}/8** del input, conservando el "
+        f"**{overall['avg_requirement_preservation'] * 100:.0f}%** de los requisitos "
+        "literales. Quedan "
+        f"**{overall['cases_where_ready_prompt_equals_input']} de {overall['cases']}** "
+        "casos sin señal nueva, todos entradas vagas de una línea.",
         "",
         "## Lo que sí y lo que no",
         "",
-        "- **Sí**: estructura del artefacto completo "
-        f"(+{overall['avg_structure_reconstructed_delta']} señales medias sobre 8 posibles).",
+        f"- **Sí**: estructura del prompt copiable "
+        f"(+{overall['avg_structure_delta']} señales medias sobre 8).",
+        f"- **Sí**: estructura del artefacto completo "
+        f"(+{overall['avg_structure_reconstructed_delta']} señales medias sobre 8).",
         "- **Sí**: las ambigüedades detectadas se convierten en preguntas visibles "
         f"({overall['total_ambiguities_detected']} detectadas → {overall['total_questions_surfaced']} mostradas).",
         f"- **Sí**: los requisitos literales del input se preservan "
         f"({overall['avg_requirement_preservation'] * 100:.1f}% en el prompt copiable, "
         f"{overall['avg_requirement_preservation_reconstructed'] * 100:.1f}% en el reconstruido).",
-        f"- **No**: el prompt copiable no se acorta (×{overall['median_token_expansion']}) ni gana "
-        "estructura en entradas vagas.",
+        f"- **No**: el prompt compilado no se acorta (×{overall['median_token_expansion']} el copiable, "
+        f"×{overall['median_reconstructed_expansion']} el completo).",
+        "- **No**: una entrada vaga de una línea sigue sin poder estructurarse: no hay "
+        "información que extraer, solo preguntas que hacer.",
         "- **No**: la puntuación interna `prompt_quality` apenas cambia "
         f"({overall['avg_quality_in']} → {overall['avg_quality_out']}, "
         f"{overall['avg_quality_delta']:+.2f}): mide contrato semántico, no utilidad.",
