@@ -111,3 +111,14 @@ def test_legacy_rejects_tool_messages():
 def test_summary_over_budget_is_not_truncated():
     with pytest.raises(ValueError, match="Resumen excede"):
         cc.compact_history(mk_history(20), 1024, summarizer=lambda _: "x" * 8000)
+
+
+def test_offload_refuses_corrupt_existing_content(tmp_path):
+    view = cc.TurnView("assistant", "x" * 4000, 1000)
+    cc.offload_large_blocks([view], str(tmp_path), 600)
+    path = next(tmp_path.iterdir())
+    assert len(path.stem.removeprefix("offloaded-")) == 64
+    path.write_text("tampered", encoding="utf-8")
+    with pytest.raises(ValueError, match="corrupta"):
+        cc.offload_large_blocks([view], str(tmp_path), 600)
+    assert path.read_text(encoding="utf-8") == "tampered"

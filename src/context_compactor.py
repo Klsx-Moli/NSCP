@@ -69,17 +69,30 @@ def partition_turns(views, keep_recent):
     return pinned, middle, recent
 
 
-def offload_large_blocks(middle, storage_dir, max_inline_tokens, tokenizer=None):
+def offload_large_blocks(middle, storage_dir, max_inline_tokens, tokenizer=None, *, protect_users=False):
     os.makedirs(storage_dir, exist_ok=True)
     out, count = [], 0
     for v in middle:
-        if v.token_count > max_inline_tokens and not has_code(v):
-            digest = hashlib.sha1(v.content.encode("utf-8")).hexdigest()[:12]
+        if (v.token_count > max_inline_tokens and not has_code(v)
+                and not (protect_users and v.role == "user")):
+            raw = v.content.encode("utf-8")
+            digest = hashlib.sha256(raw).hexdigest()
             filename = f"offloaded-{digest}.txt"
             path = os.path.join(storage_dir, filename)
-            if not os.path.exists(path):
-                with open(path, "w", encoding="utf-8") as fh:
-                    fh.write(v.content)
+            if os.path.islink(path):
+                raise ValueError("Referencia local no puede ser un enlace simbolico")
+            try:
+                with open(path, "xb") as fh:
+                    fh.write(raw)
+                    fh.flush()
+                    os.fsync(fh.fileno())
+            except FileExistsError:
+                pass
+            if not os.path.isfile(path) or os.path.islink(path):
+                raise ValueError("Referencia local no es un archivo regular")
+            with open(path, "rb") as fh:
+                if fh.read() != raw:
+                    raise ValueError("Referencia local corrupta; no se sobrescribe")
             pointer = f"[turno ({v.role}, {v.token_count} tokens) movido a archivo local '{filename}']"
             out.append(TurnView(v.role, pointer, tokens_of(pointer, tokenizer), v.pinned))
             count += 1
@@ -117,7 +130,8 @@ def _report(policy, num_ctx, before, after, triggered, actions):
 
 
 def compact_history(history: Sequence, num_ctx: int, level=None,
-                    summarizer: Callable | None = None, storage_dir=None, tokenizer=None):
+                    summarizer: Callable | None = None, storage_dir=None, tokenizer=None,
+                    *, protect_users=False):
     if type(num_ctx) is not int or num_ctx <= 0:
         raise ValueError("num_ctx debe ser un entero positivo")
     policy = get_policy(level)
@@ -132,7 +146,8 @@ def compact_history(history: Sequence, num_ctx: int, level=None,
     pinned, middle, recent = partition_turns(views, policy.keep_recent_turns)
     offloaded = 0
     if storage_dir and policy.offload_enabled and middle:
-        middle, offloaded = offload_large_blocks(middle, storage_dir, policy.offload_max_inline_tokens, tokenizer)
+        middle, offloaded = offload_large_blocks(middle, storage_dir, policy.offload_max_inline_tokens, tokenizer,
+                                                 protect_users=protect_users)
 
     # reserva: wrapper + encabezado del resumen + separadores del mensaje system
     overhead = tokens_of(HERMES_WRAPPER, tokenizer) + tokens_of(SUMMARY_INTRO, tokenizer) + 4
@@ -144,20 +159,27 @@ def compact_history(history: Sequence, num_ctx: int, level=None,
     middle_kept = list(middle)
     if middle and sum(v.token_count for v in middle) > budget:
         code_idx = [i for i, v in enumerate(middle) if has_code(v)]
-        prose_idx = [i for i in range(len(middle)) if not has_code(middle[i])]
+        mandatory = [i for i, v in enumerate(middle)
+                     if has_code(v) or (protect_users and v.role == "user")]
+        mandatory_set = set(mandatory)
+        prose_idx = [i for i in range(len(middle)) if i not in mandatory_set]
         reserve = min(policy.max_summary_tokens, budget // 3) if (summarizer and prose_idx) else 0
+        if protect_users:
+            reserve = min(reserve, max(0, budget - sum(middle[i].token_count for i in mandatory)))
         keep, used = set(), 0
-        for i in reversed(code_idx):
+        for i in reversed(mandatory):
             t = middle[i].token_count
             if used + t <= budget - reserve:
                 keep.add(i)
                 used += t
-            else:
+            elif i in code_idx:
                 code_dropped += 1
-        code_kept = len(keep)
+            else:
+                dropped += 1
+        code_kept = sum(i in keep for i in code_idx)
         remaining = budget - used
         prose = [middle[i] for i in prose_idx]
-        if summarizer and prose:
+        if summarizer and prose and remaining > 0 and (not protect_users or reserve > 0):
             summary = summarizer(prose)
             summarized = len(prose)
             limit = min(remaining, policy.max_summary_tokens)

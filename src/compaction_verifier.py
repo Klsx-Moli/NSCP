@@ -8,6 +8,7 @@ de modo que evaluate_strict puede aplicarse sin modificarlo.
 
 from __future__ import annotations
 
+import hashlib
 import re
 
 from compression_policy import get_policy
@@ -20,7 +21,7 @@ _PATH = re.compile(r"(?<![\w/])(?:[A-Za-z]:\\|\./|~/|/)?[\w.\-]+(?:[\\/][\w.\-]+
 _NUM = re.compile(r"\b\d+(?:[.,]\d+)+\b|\b\d{3,}\b")
 _IDENT = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b")
 _MARK = re.compile(r"\b(nunca|jamas|siempre|obligatorio|prohibido|never|always|must|do not|solo|only)\b", re.I)
-_POINTER = re.compile(r"'(offloaded-[0-9a-f]{12}\.txt)'")
+_POINTER = re.compile(r"'(offloaded-[0-9a-f]{64}\.txt)'")
 MAX_FACTS = 500
 
 
@@ -65,17 +66,27 @@ def _present(kind, value, out):
     return False
 
 
-def _recoverable(messages, storage_dir):
+def _recoverable(messages, storage_dir, original_views):
     if not storage_dir:
         return ""
     import os
+    originals = {hashlib.sha256(v.content.encode("utf-8")).hexdigest(): v.content
+                 for v in original_views}
     chunks = []
     for m in messages:
         for name in _POINTER.findall(m["content"]):
+            digest = name[len("offloaded-"):-len(".txt")]
+            if digest not in originals:
+                continue
             p = os.path.join(storage_dir, name)
-            if os.path.exists(p):
-                with open(p, encoding="utf-8") as fh:
-                    chunks.append(fh.read().lower())
+            if os.path.isfile(p) and not os.path.islink(p):
+                try:
+                    with open(p, "rb") as fh:
+                        raw = fh.read()
+                    if hashlib.sha256(raw).hexdigest() == digest and raw == originals[digest].encode("utf-8"):
+                        chunks.append(originals[digest].lower())
+                except OSError:
+                    continue
     return "\n".join(chunks)
 
 
@@ -94,9 +105,10 @@ def verify_compaction(history, messages, report, storage_dir=None, tokenizer=Non
     pinned, middle, recent = partition_turns(views, policy.keep_recent_turns)
     raw_ctx = "\n".join(m["content"] for m in messages)
     ctx = raw_ctx.lower()
-    rec = _recoverable(messages, storage_dir)
+    rec = _recoverable(messages, storage_dir, views)
 
-    if not all(v.content in messages[0]["content"] for v in pinned):
+    if not messages or messages[0].get("role") != "system" or not all(
+            v.role == "system" and v.content in messages[0]["content"] for v in pinned):
         out["critical_losses"].append("missing_pinned")
     tail = messages[len(messages) - len(recent):] if recent else []
     if [{"role": v.role, "content": v.content} for v in recent] != tail:
@@ -123,11 +135,13 @@ def verify_compaction(history, messages, report, storage_dir=None, tokenizer=Non
     ded = 40 * ("missing_pinned" in out["critical_losses"]) + 40 * ("missing_recent" in out["critical_losses"])
     ded += min(60, 20 * code_lost) + round((1 - out["fact_retention"]) * 60)
     out["score"] = max(0, 100 - ded)
-    # Lexical overlap is diagnostic only; a constraint cannot be proved by 80% word overlap.
-    constraints = {value for kind, value, role in facts if kind == "constraint" and role == "user"}
-    # Exact string presence is necessary, not sufficient for semantic equivalence.
-    if any(value not in ctx for value in constraints):
-        out["warnings"].append("user_constraint_requires_semantic_review")
+    # Every original user message is protected in strict mode, not just known
+    # keywords. Compare the ordered sequence, including duplicates and role.
+    original_users = [v.content for v in views if v.role == "user"]
+    output_users = [m["content"] for m in messages if m.get("role") == "user"]
+    if original_users != output_users:
+        out["critical_losses"].append("missing_or_modified_user_turn")
+        out["warnings"].append("user_authority_not_preserved")
     out["semantic_equivalence"] = "not_verified"
     return out
 
@@ -140,6 +154,10 @@ def evaluate_gate(vreport, policy=None):
         reasons.append(f"score_below_min:{score}<{p.get('min_score', 0)}")
     if len(crit) > int(p.get("max_critical_losses", 0)):
         reasons.append(f"critical_losses_exceeded:{len(crit)}>{p.get('max_critical_losses', 0)}")
+    # User authority, system/recent turns and code are non-waivable.
+    hard = {"missing_or_modified_user_turn", "missing_pinned", "missing_recent",
+            "missing_code_block", "modified_passthrough"}
+    reasons.extend("hard_loss:" + loss for loss in crit if loss in hard)
     reasons.extend(str(x) for x in vreport.get("profile_failures", []))
     return len(reasons) == 0, sorted(set(reasons))
 
@@ -148,7 +166,8 @@ def compact_with_gate(history, num_ctx, level=None, summarizer=None, storage_dir
                       tokenizer=None, strict=True, policy=None):
     """Compacta, verifica y aplica la compuerta. Con strict: si falla, reintenta con
     truncado determinista (sin resumen); si tambien falla, lanza CompactionBlocked."""
-    msgs, rep = compact_history(history, num_ctx, level, summarizer, storage_dir, tokenizer)
+    msgs, rep = compact_history(history, num_ctx, level, summarizer, storage_dir, tokenizer,
+                                protect_users=strict)
     ver = verify_compaction(history, msgs, rep, storage_dir, tokenizer)
     ok, reasons = evaluate_gate(ver, policy)
     rep["verification"] = {**ver, "strict_requested": bool(strict), "gate_reasons": reasons,
@@ -156,7 +175,8 @@ def compact_with_gate(history, num_ctx, level=None, summarizer=None, storage_dir
     if ok or not strict:
         return msgs, rep
     if summarizer is not None:
-        msgs2, rep2 = compact_history(history, num_ctx, level, None, storage_dir, tokenizer)
+        msgs2, rep2 = compact_history(history, num_ctx, level, None, storage_dir, tokenizer,
+                                      protect_users=True)
         ver2 = verify_compaction(history, msgs2, rep2, storage_dir, tokenizer)
         ok2, reasons2 = evaluate_gate(ver2, policy)
         rep2["verification"] = {**ver2, "strict_requested": True, "gate_reasons": reasons2,

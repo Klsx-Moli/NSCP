@@ -60,3 +60,10 @@ def test_cli_stdout_and_messages_wrapper(tmp_path, capsys):
 def test_gate_policy_default_when_config_missing(monkeypatch):
     monkeypatch.setattr(cli.Path, "read_text", lambda *a, **k: (_ for _ in ()).throw(OSError("x")))
     assert cli.load_gate_policy() == {"min_score": 80, "max_critical_losses": 0}
+
+
+def test_cli_never_overwrites_source(tmp_path):
+    original = write(tmp_path, build(random.Random(5), 3, 0))
+    before = open(original, "rb").read()
+    assert cli.run_cli(["--input", original, "--out", original, "--num-ctx", "8192"]) == 1
+    assert open(original, "rb").read() == before

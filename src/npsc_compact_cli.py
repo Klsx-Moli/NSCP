@@ -10,6 +10,8 @@ from __future__ import annotations
 import argparse
 import functools
 import json
+import os
+import tempfile
 import sys
 from pathlib import Path
 
@@ -66,6 +68,12 @@ def _parser():
 def run_cli(argv=None):
     args = _parser().parse_args(argv)
     try:
+        source = Path(args.input)
+        if args.out != "-":
+            output = Path(args.out)
+            if (output.is_symlink() or source.resolve() == output.resolve()
+                    or (output.exists() and source.exists() and os.path.samefile(source, output))):
+                raise ValueError("la salida no puede sobrescribir el historial original ni ser un enlace")
         history = load_history(args.input)
     except (OSError, ValueError) as exc:
         print(f"[npsc compact] entrada invalida: {exc}", file=sys.stderr)
@@ -92,7 +100,22 @@ def run_cli(argv=None):
     if args.out == "-":
         print(text)
     else:
-        Path(args.out).write_text(text, encoding="utf-8")
+        destination = Path(args.out)
+        staged = None
+        try:
+            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=destination.parent,
+                                             delete=False) as fh:
+                staged = Path(fh.name)
+                fh.write(text)
+                fh.flush()
+                os.fsync(fh.fileno())
+            os.replace(staged, destination)
+        except OSError as exc:
+            print(f"[npsc compact] error de salida: {exc}", file=sys.stderr)
+            return 1
+        finally:
+            if staged is not None:
+                staged.unlink(missing_ok=True)
     if code:
         print("[npsc compact] bloqueado por --strict: " + ",".join(payload["reasons"]), file=sys.stderr)
     return code

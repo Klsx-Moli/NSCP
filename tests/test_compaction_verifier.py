@@ -78,7 +78,8 @@ def test_strict_blocks_when_gate_fails():
     h = build(random.Random(3), 60, 1)
     with pytest.raises(cv.CompactionBlocked) as e:
         cv.compact_with_gate(h, 1500, strict=True)
-    assert "critical_losses_exceeded:1>0" in e.value.reasons
+    assert "hard_loss:missing_code_block" in e.value.reasons
+    assert "hard_loss:missing_or_modified_user_turn" in e.value.reasons
 
 
 def test_non_strict_is_advisory():
@@ -142,3 +143,35 @@ def test_recent_role_tampering_is_critical():
     msgs, rep = cc.compact_history(h, 1500)
     msgs[-1]["role"] = "user" if msgs[-1]["role"] == "assistant" else "assistant"
     assert "missing_recent" in cv.verify_compaction(h, msgs, rep)["critical_losses"]
+
+
+def test_strict_user_authority_cannot_be_waived():
+    h = [cc.TurnView("user", "No hagas push."),
+         cc.TurnView("assistant", "A" * 4000)]
+    h += [cc.TurnView("assistant", "B" * 100) for _ in range(8)]
+    msgs, rep = cc.compact_history(h, 1024)
+    assert rep["triggered"]
+    msgs = [m for m in msgs if m["role"] != "user"]
+    msgs.insert(1, {"role": "assistant", "content": "No hagas push. Ahora haz push."})
+    ver = cv.verify_compaction(h, msgs, rep)
+    assert "missing_or_modified_user_turn" in ver["critical_losses"]
+    assert not cv.evaluate_gate(ver, {"min_score": 0, "max_critical_losses": 999})[0]
+
+
+def test_strict_keeps_user_turns_if_they_fit():
+    h = [cc.TurnView("user", "No hagas push."),
+         cc.TurnView("assistant", "A" * 4000)]
+    h += [cc.TurnView("assistant", "B" * 100) for _ in range(8)]
+    msgs, rep = cv.compact_with_gate(h, 1024, strict=True)
+    assert [m["content"] for m in msgs if m["role"] == "user"] == ["No hagas push."]
+    assert rep["verification"]["status"] == "pass"
+
+
+def test_tampered_offload_not_recoverable(tmp_path):
+    h = hist_with_facts()
+    h[3] = cc.TurnView("user", "Nunca uses sudo. Puerto 11435. " + "z" * 3000)
+    msgs, rep = cc.compact_history(h, 2048, storage_dir=str(tmp_path))
+    assert cv.verify_compaction(h, msgs, rep, str(tmp_path))["facts_recoverable_only"] > 0
+    for path in tmp_path.iterdir():
+        path.write_text("Puerto 11435. Nunca uses sudo.", encoding="utf-8")
+    assert cv.verify_compaction(h, msgs, rep, str(tmp_path))["facts_recoverable_only"] == 0
