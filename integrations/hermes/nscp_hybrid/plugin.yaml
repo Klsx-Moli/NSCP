@@ -1,0 +1,3 @@
+name: nscp_hybrid
+description: Experimental native Hermes compressor with NSCP request selection
+version: "0.1.0"

@@ -129,3 +129,59 @@ separate future acceptance gates.
 A protected assistant call also protects its tool result. Results from
 `nscp_recall` are not recursively elided. Focus guards inspect both tool-call
 arguments and returned text, so a file read need not echo its own filename.
+
+
+## Native-preserving hybrid candidate (experimental)
+
+`nscp_hybrid` subclasses the installed Hermes `ContextCompressor`. Native
+`compress`, usage tracking, archive/commit ownership, cooldowns and manual
+compaction remain native; NSCP's request-only selection is an additional hook.
+The reviewed upstream contract is Hermes commit
+`ed1cbc8de49b233bb71f38e96ed013b52f43ee20`.
+Signature checks do not establish runtime compatibility. The subclass
+maps explicit native constructor settings; it does not reproduce every
+host-initialization override (e.g. Codex threshold autoraise). Not a drop-in
+production replacement. Plugin-process isolation is not supported.
+
+Install without activation:
+
+```powershell
+python scripts/install_hermes_context.py --engine nscp_hybrid
+```
+
+The engine requires `NSCP_HYBRID_POLICY` JSON with a positive main-model
+output reservation and an explicit route. For a disposable test profile
+with an 8192-token output reservation (change it to match your main provider):
+
+```powershell
+$env:NSCP_HYBRID_POLICY = '{"route":"local","output_reserve":8192,"selection_mode":"observe","local":{"model":"qwen3.5:4b-q4_K_M","num_ctx":8192,"num_predict":2048,"timeout":120}}'
+```
+
+Only after preflight verification choose `context.engine: nscp_hybrid`.
+Do not assume that setting the config proves the plugin loaded: Hermes can
+fall back to its built-in compressor when plugin loading fails. Check the
+actual engine identity and status. Keep native `context.engine: compressor`
+for important sessions until real-host validation is complete.
+
+- `route: native` delegates summary generation to Hermes. Its router can use
+  paid or remote providers, including main-model fallback on capacity errors.
+  It is not a zero-cost route.
+- `route: local` calls the local Ollama API with typed messages and no
+  alternate provider in the NSCP summary hook. It requires a trusted
+  local daemon, positively identified GGUF metadata, non-truncated completion
+  and reported usage. It rejects prompts larger than a conservative wire
+  budget instead of silently dropping text. Native summary failure aborts;
+  native deterministic fallback is prohibited in this hook. Other host
+  activity is outside this guarantee. Local model availability and
+  compatibility with the host's typed templates are not yet verified.
+- `selection_mode: observe` is default; native compression remains available
+  and NSCP reports hypothetical request plans. `experimental` enables
+  request rewriting only with a valid recoverable plan and requires the
+  `context_engine` toolset and non-conflicting `nscp_recall`.
+
+Local mode refuses micro-compaction, prepare-ahead and provider-native
+Responses compaction; server-owned Codex thread mode is unsupported.
+A local model with 8192 context may be too small for the native summary
+prompt. This is a visible blocker, not a signal to silently switch providers.
+No model was downloaded, no live session activated, and no native configuration
+modified by the installer.
