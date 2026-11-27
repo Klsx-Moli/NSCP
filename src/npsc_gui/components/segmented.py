@@ -4,7 +4,6 @@ from __future__ import annotations
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QPushButton
 
-from npsc_gui.design.style import active_theme
 
 
 class SegmentedControl(QFrame):
@@ -16,7 +15,6 @@ class SegmentedControl(QFrame):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setObjectName("NPSCSegmentedControl")
-        theme = active_theme()
         layout = QHBoxLayout(self)
         layout.setContentsMargins(2, 2, 2, 2)
         layout.setSpacing(0)

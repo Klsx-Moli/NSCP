@@ -6,7 +6,6 @@ single primary action instead of four placeholders with zeros.
 """
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
 
 from i18n import tr

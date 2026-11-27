@@ -791,15 +791,6 @@ _TRANSLATIONS: dict[str, dict[str, str]] = {
         'ko': '프롬프트가 너무 깁니다',
         'zh': '提示词过长',
     },
-    'mode.advanced.title': {
-        'es': 'Modo Avanzable — Secciones editables',
-        'en': 'Advanced Mode — Editable sections',
-        'fr': 'Mode avancé — Sections modifiables',
-        'de': 'Erweiterter Modus — Bearbeitbare Abschnitte',
-        'ru': 'Расширенный режим — Редактируемые разделы',
-        'ko': '고급 모드 — 편집 가능한 섹션',
-        'zh': '高级模式 — 可编辑区块',
-    },
     'about.title': {
         'es': 'Acerca de NeuroPrompt Semantic Compiler',
         'en': 'About NeuroPrompt Semantic Compiler',

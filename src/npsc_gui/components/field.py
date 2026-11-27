@@ -5,10 +5,9 @@ keep a transparent border and the focus state never shifts the layout.
 """
 from __future__ import annotations
 
-from PySide6.QtCore import QEvent, Qt
+from PySide6.QtCore import QEvent
 from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
 
-from i18n import tr
 from npsc_gui.design.style import active_theme
 
 

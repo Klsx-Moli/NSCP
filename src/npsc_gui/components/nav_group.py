@@ -58,7 +58,6 @@ class NavGroup(QFrame):
 
     def set_collapsed(self, collapsed: bool) -> None:
         """Hide group labels and item text, keeping each item focusable."""
-        from npsc_gui.components.icons import icon
 
         self._collapsed = collapsed
         self._label.setVisible(not collapsed and bool(self._label.text()))
