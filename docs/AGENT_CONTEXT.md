@@ -185,3 +185,16 @@ A local model with 8192 context may be too small for the native summary
 prompt. This is a visible blocker, not a signal to silently switch providers.
 No model was downloaded, no live session activated, and no native configuration
 modified by the installer.
+
+
+## Shared local transport
+
+The legacy chunked summarizer now uses the same strict Ollama transport as the
+hybrid hook. Both preflight installed GGUF metadata, reject upstream execution
+markers, send explicit non-thinking and non-truncating options, and require
+complete assistant text with observed usage. Legacy chunks account for JSON
+escaping and the shared transport's wire budget. A thinking-only or
+length-terminated response is a failure, never a successful summary.
+Legacy non-strict mode still permits its existing deterministic fallback;
+strict mode raises SummaryUnavailable. Neither path certifies semantic fidelity
+or the trustworthiness of the local Ollama daemon.

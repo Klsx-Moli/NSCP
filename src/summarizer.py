@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import json
-from urllib.parse import urlsplit
-import urllib.request
 
-DEFAULT_MODEL = "qwen3.5:4b-q4_K_M"
+from local_summary import DEFAULT_MODEL, LocalSummaryConfig, complete_summary
+
 DEFAULT_HOST = "http://localhost:11434"
 DEFAULT_TIMEOUT = 120.0
 DEFAULT_NUM_CTX = 8192
@@ -57,35 +56,16 @@ class SummaryUnavailable(ValueError):
     """The requested local summary could not be produced without truncation."""
 
 
-class _NoRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise SummaryUnavailable("Redireccion de Ollama rechazada")
-
-
-def _local_endpoint(host):
-    u = urlsplit(host)
-    if (u.scheme != "http" or u.hostname not in ("localhost", "127.0.0.1", "::1")
-            or u.username is not None or u.password is not None
-            or u.path not in ("", "/") or u.query or u.fragment):
-        raise ValueError("Ollama debe ser HTTP loopback sin credenciales ni ruta")
-    port = u.port or 11434
-    address = "[::1]" if u.hostname == "::1" else "127.0.0.1"
-    return f"http://{address}:{port}/api/chat"
-
-
-def _open_local(req, timeout):
-    # Never use environment proxies or follow redirects with conversation data.
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
-    return opener.open(req, timeout=timeout)
-
-
-def _chunks(text, byte_budget):
+def _chunks(text, byte_budget, *, json_escaped=False):
     """Conservative UTF-8 byte bound, not a claim of exact tokenizer counts."""
     if byte_budget < 4:
         raise ValueError("Presupuesto insuficiente para un caracter UTF-8")
     start, size = 0, 0
     for i, ch in enumerate(text):
-        n = len(ch.encode("utf-8"))
+        n = (len(json.dumps(ch, ensure_ascii=False).encode("utf-8")) - 2
+             if json_escaped else len(ch.encode("utf-8")))
+        if n > byte_budget:
+            raise ValueError("Un caracter no cabe en el presupuesto local")
         if size + n > byte_budget:
             yield text[start:i]
             start, size = i, 0
@@ -99,17 +79,20 @@ def summarize_turns(turns, model=DEFAULT_MODEL, host=DEFAULT_HOST, timeout=DEFAU
                     strict=False):
     if not turns:
         return ""
-    endpoint = _local_endpoint(host)
-    if (type(num_ctx) is not int or type(num_predict) is not int
-            or num_predict <= 0 or num_ctx <= num_predict + 1024
-            or not isinstance(timeout, (int, float)) or not 0 < timeout <= 600):
-        raise ValueError("Configuracion de contexto, salida o timeout invalida")
-    if not isinstance(model, str) or not model.strip():
-        raise ValueError("Modelo local invalido")
+    config = LocalSummaryConfig(model=model, host=host, timeout=timeout,
+                                num_ctx=num_ctx, num_predict=num_predict)
     text = "\n\n".join(f"[{t.role}] {t.content}" for t in turns)
-    # Reserve template/framing slack and the entire generation budget.
-    budget = num_ctx - num_predict - len((_SYSTEM + _PROMPT).encode("utf-8")) - 512
-    if budget < 4:
+
+    def messages(chunk):
+        return [{"role": "system", "content": _SYSTEM},
+                {"role": "user", "content": _PROMPT + chunk}]
+
+    # Match the shared transport's wire bound, including JSON escapes and
+    # message framing. No exact tokenizer guarantee is implied.
+    framing = len(json.dumps(messages(""), ensure_ascii=False,
+                             separators=(",", ":")).encode("utf-8"))
+    budget = num_ctx - num_predict - framing - 512 - 32 * 2
+    if budget < 6:
         raise ValueError("Presupuesto local insuficiente")
     calls = 0
 
@@ -118,30 +101,13 @@ def summarize_turns(turns, model=DEFAULT_MODEL, host=DEFAULT_HOST, timeout=DEFAU
         calls += 1
         if calls > MAX_REQUESTS:
             raise SummaryUnavailable("Limite de llamadas locales alcanzado")
-        payload = {"model": model, "stream": False, "think": False,
-                   "options": {"num_ctx": num_ctx, "num_predict": num_predict,
-                               "temperature": 0},
-                   "messages": [{"role": "system", "content": _SYSTEM},
-                                {"role": "user", "content": _PROMPT + chunk}]}
-        req = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"),
-                                     headers={"Content-Type": "application/json"})
-        with _open_local(req, timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        if data.get("done_reason") == "length" or data.get("done") is False:
-            raise SummaryUnavailable("Respuesta incompleta del modelo")
-        count = data.get("prompt_eval_count")
-        if count is not None and (type(count) is not int or count > num_ctx - num_predict):
-            raise SummaryUnavailable("Presupuesto de entrada excedido")
-        content = ((data.get("message") or {}).get("content") or "").strip()
-        if not content:
-            raise SummaryUnavailable("Respuesta vacia")
-        return content
+        return complete_summary(messages(chunk), config).content
 
     try:
         # Every byte is sent; consolidation has a progress and request bound.
         # No partial summary is returned after a failed request.
         while True:
-            pieces = list(_chunks(text, budget))
+            pieces = list(_chunks(text, budget, json_escaped=True))
             if not pieces or len(pieces) > MAX_REQUESTS - calls:
                 raise SummaryUnavailable("Historial excede el limite de procesamiento")
             summaries = [request(piece) for piece in pieces]
