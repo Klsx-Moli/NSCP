@@ -19,7 +19,7 @@ def fixture(batches, *, focused=False):
             {"role": "user", "content": "Audit repository. Never push."},
             {"role": "assistant", "content": "Read-only inspection."}]
     for i in range(batches):
-        size = 12 + (i * 31) % 90
+        size = 80 if i == 0 else 12 + (i * 31) % 90
         body = (f"synthetic path src/module_{i}.py: test result {i}\n"
                 + ("line: sample build output 0123456789\n" * size))
         rows.extend([

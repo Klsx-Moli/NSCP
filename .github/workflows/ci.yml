@@ -56,6 +56,12 @@ jobs:
           PYTHONPATH: src
           QT_QPA_PLATFORM: offscreen
 
+      - name: Synthetic context benchmark (structural, no model)
+        timeout-minutes: 3
+        run: python tools/benchmark_agent_context.py
+        env:
+          PYTHONPATH: src
+
       - name: Run tests (full regression, short tracebacks, coverage)
         if: always()
         timeout-minutes: 10
