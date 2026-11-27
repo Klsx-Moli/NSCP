@@ -30,6 +30,7 @@ py-modules = [
   "conversation_store",
   "npsc_compact_cli",
   "summarizer",
+  "local_summary",
   "compiler_defaults",
   "clarification_gate",
   "constraint_normalizer",
