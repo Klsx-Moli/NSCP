@@ -176,3 +176,30 @@ def test_output_metadata_is_independently_owned():
     assert plan.messages[4]["content"].startswith(MARKER)
     plan.messages[4]["metadata"]["nested"]["values"].append(2)
     assert source[4]["metadata"]["nested"]["values"] == [1]
+
+
+def test_parent_pin_and_recall_results_are_not_elided():
+    source = multi_history()
+    source[3]["pinned"] = True
+    source[6]["tool_calls"][0]["function"]["name"] = "nscp_recall"
+    result = plan_request(source, source, 1, keep_recent=1, strategy="adaptive")
+    assert result.messages[4] == source[4]
+    assert result.messages[7] == source[7]
+    assert result.messages[10]["content"].startswith(MARKER)
+    assert result.report["lineage_protected"] == 2
+
+
+def test_focus_can_match_tool_arguments_without_matching_output():
+    source = multi_history()
+    source[3]["tool_calls"][0]["function"]["arguments"] = '{"path":"src/important.py"}'
+    source[-1]["content"] = "Review src/important.py"
+    result = plan_request(source, source, 1, keep_recent=1, strategy="adaptive")
+    assert result.messages[4] == source[4]
+    assert result.report["focus_protected"] == 1
+
+
+def test_protect_first_does_not_split_protected_parent_from_result():
+    source = multi_history()
+    result = plan_request(source, source, 1, keep_recent=1, protect_first=4)
+    assert result.messages[4] == source[4]
+    assert result.report["lineage_protected"] == 1

@@ -125,3 +125,7 @@ asserted. Timing covers planning only, not recovery or provider execution.
 The report deliberately leaves actual provider tokens, cache hits, cost, and
 semantic task success null. Real anonymized traces and provider A/B are
 separate future acceptance gates.
+
+A protected assistant call also protects its tool result. Results from
+`nscp_recall` are not recursively elided. Focus guards inspect both tool-call
+arguments and returned text, so a file read need not echo its own filename.

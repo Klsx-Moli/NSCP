@@ -69,8 +69,9 @@ def _completed_results(messages, cutoff):
         response_ids = [r.get("tool_call_id") for r in results]
         if j <= cutoff and len(results) == len(ids) and all(isinstance(x, str) for x in response_ids):
             if set(response_ids) == set(ids):
+                calls_by_id = dict(zip(ids, calls))
                 for k in range(i + 1, j):
-                    yield k
+                    yield k, i, calls_by_id[messages[k]["tool_call_id"]]
         i = j
 
 
@@ -140,25 +141,34 @@ def plan_request(messages: list[dict], transcript: list[dict], budget: int, *,
     chosen = strategy
     if strategy == "adaptive":
         chosen = "cache_prefix" if before <= budget * 2 else "relevance"
-    candidate_count = focus_protected = sidecar_protected = 0
+    candidate_count = focus_protected = sidecar_protected = lineage_protected = 0
     # The current user turn and its entire assistant/tool chain are sacred.
     current_turn = max((i for i, m in enumerate(messages) if m["role"] == "user"), default=0)
     cutoff = min(current_turn, max(0, len(messages) - keep_recent))
     if before > budget and cutoff:
         available = _source_index(transcript)
         candidates = []
-        for index in _completed_results(messages, cutoff):
+        for index, parent_index, call in _completed_results(messages, cutoff):
             original = messages[index]
             value = original.get("content")
             if (index < protect_first or original.get("pinned") or not isinstance(value, str)
                     or len(value) < min_chars or value.startswith(MARKER)):
+                continue
+            function = call.get("function")
+            if (parent_index < protect_first or messages[parent_index].get("pinned")
+                    or not isinstance(function, dict)
+                    or not isinstance(function.get("name"), str)
+                    or not function["name"]
+                    or function["name"] == "nscp_recall"):
+                lineage_protected += 1
                 continue
             # Sidecar content may supersede visible content at provider serialization.
             if any(original.get(k) is not None for k in ("api_content", "images", "attachments")):
                 sidecar_protected += 1
                 continue
             folded = value.casefold() if terms else ""
-            if terms and any(term in folded for term in terms):
+            call_text = _json(function).casefold() if terms else ""
+            if terms and any(term in folded or term in call_text for term in terms):
                 focus_protected += 1
                 continue
             ref = _ref(original)
@@ -200,7 +210,7 @@ def plan_request(messages: list[dict], transcript: list[dict], budget: int, *,
         "tokens_before": before, "tokens_after": after, "budget": budget,
         "requested_strategy": strategy, "selected_strategy": chosen,
         "eligible_results": candidate_count, "focus_protected": focus_protected,
-        "sidecar_protected": sidecar_protected,
+        "sidecar_protected": sidecar_protected, "lineage_protected": lineage_protected,
         "unchanged_prefix_messages": _prefix_count(messages, out),
         "estimated_tokens_saved": before - after,
         "token_accounting": "caller_meter" if count else "utf8_heuristic",
