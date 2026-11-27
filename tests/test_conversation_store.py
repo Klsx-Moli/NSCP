@@ -1,11 +1,7 @@
-"""Tests del store SQLite. Headless: pytest tests/."""
-
-import os
-import sys
-
+import os, sys
+import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-
-from conversation_store import ConversationStore, Turn  # noqa: E402
+from conversation_store import ConversationStore, Turn
 
 
 def make(tmp_path):
@@ -13,49 +9,40 @@ def make(tmp_path):
 
 
 def test_append_and_load_roundtrip(tmp_path):
-    store = make(tmp_path)
-    store.append("c1", Turn(role="user", content="hola"))
-    store.append("c1", Turn(role="assistant", content="respuesta"))
-    loaded = store.load("c1")
-    assert len(loaded) == 2
-    assert loaded[0].content == "hola"
-    assert loaded[1].role == "assistant"
-    assert loaded[0].turn_id == "c1#00001"
-    store.close()
+    s = make(tmp_path)
+    s.append("c1", Turn(role="user", content="hola"))
+    s.append("c1", Turn(role="assistant", content="respuesta"))
+    l = s.load("c1")
+    assert len(l) == 2 and l[0].content == "hola" and l[1].role == "assistant" and l[0].turn_id == "c1#00001"
+    s.close()
 
 
 def test_isolation_between_conversations(tmp_path):
-    store = make(tmp_path)
-    store.append("a", Turn("user", "uno"))
-    store.append("b", Turn("user", "dos"))
-    assert store.count("a") == 1
-    assert store.count("b") == 1
-    assert store.load("a")[0].content == "uno"
-    store.close()
+    s = make(tmp_path)
+    s.append("a", Turn("user", "uno"))
+    s.append("b", Turn("user", "dos"))
+    assert s.count("a") == 1 and s.count("b") == 1 and s.load("a")[0].content == "uno"
+    s.close()
 
 
 def test_pinned_persists(tmp_path):
-    store = make(tmp_path)
-    store.append("c", Turn("system", "reglas", pinned=True))
-    assert store.load("c")[0].pinned is True
-    store.close()
+    s = make(tmp_path)
+    s.append("c", Turn("system", "reglas", pinned=True))
+    assert s.load("c")[0].pinned is True
+    s.close()
 
 
 def test_mark_summarized_is_not_destructive(tmp_path):
-    store = make(tmp_path)
+    s = make(tmp_path)
     for i in range(5):
-        store.append("c", Turn("user", f"turno {i}"))
-    n = store.mark_summarized("c", upto_seq=3, summary_id="sum-1")
-    assert n == 3
-    loaded = store.load("c")
-    assert len(loaded) == 5  # nada se borra
-    assert loaded[0].summarized_in == "sum-1"
-    assert loaded[2].content == "turno 2"  # contenido íntegro
-    assert loaded[4].summarized_in is None
-    store.close()
+        s.append("c", Turn("user", f"turno {i}"))
+    assert s.mark_summarized("c", upto_seq=3, summary_id="sum-1") == 3
+    l = s.load("c")
+    assert len(l) == 5 and l[0].summarized_in == "sum-1" and l[2].content == "turno 2" and l[4].summarized_in is None
+    s.close()
 
 
 def test_store_file_created(tmp_path):
-    store = make(tmp_path)
-    store.close()
+    s = make(tmp_path)
+    s.close()
     assert (tmp_path / "hist.db").exists()

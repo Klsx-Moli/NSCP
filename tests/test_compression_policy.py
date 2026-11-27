@@ -1,23 +1,11 @@
-"""Tests de políticas de compresión. Headless: pytest tests/."""
-
-import os
-import sys
-
+import os, sys
 import pytest
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-
-from compression_policy import (  # noqa: E402
-    DEFAULT_LEVEL,
-    POLICIES,
-    get_policy,
-    needs_compaction,
-)
+from compression_policy import DEFAULT_LEVEL, POLICIES, get_policy, needs_compaction
 
 
 def test_default_level_is_safe():
-    assert DEFAULT_LEVEL == "safe"
-    assert get_policy(None).level == "safe"
+    assert DEFAULT_LEVEL == "safe" and get_policy(None).level == "safe"
 
 
 def test_known_levels_exist():
@@ -31,8 +19,7 @@ def test_triggers_at():
 
 
 def test_needs_compaction_threshold():
-    assert needs_compaction(701, 1000, "safe")
-    assert not needs_compaction(699, 1000, "safe")
+    assert needs_compaction(701, 1000, "safe") and not needs_compaction(699, 1000, "safe")
 
 
 def test_unknown_level_and_bad_num_ctx_raise():
