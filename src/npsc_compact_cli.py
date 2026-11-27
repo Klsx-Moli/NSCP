@@ -51,7 +51,10 @@ def _parser():
     p.add_argument("--strict", action="store_true")
     p.add_argument("--offload-dir")
     p.add_argument("--summarizer", choices=["none", "ollama"], default="none")
-    p.add_argument("--model", default="hermes3:8b")
+    p.add_argument("--model", default="qwen3.5:4b-q4_K_M")
+    p.add_argument("--summarizer-num-ctx", type=int, default=8192)
+    p.add_argument("--summarizer-num-predict", type=int, default=1024)
+    p.add_argument("--summarizer-timeout", type=float, default=120.0)
     p.add_argument("--host", default="http://localhost:11434")
     return p
 
@@ -66,7 +69,10 @@ def run_cli(argv=None):
     summarizer = None
     if args.summarizer == "ollama":
         from summarizer import summarize_turns
-        summarizer = functools.partial(summarize_turns, model=args.model, host=args.host)
+        summarizer = functools.partial(summarize_turns, model=args.model, host=args.host,
+                                       num_ctx=args.summarizer_num_ctx,
+                                       num_predict=args.summarizer_num_predict,
+                                       timeout=args.summarizer_timeout, strict=args.strict)
     code, payload = 0, None
     try:
         msgs, rep = compact_with_gate(history, args.num_ctx, args.level, summarizer,
