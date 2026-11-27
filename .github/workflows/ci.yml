@@ -51,7 +51,7 @@ jobs:
             tests/test_agent_context.py tests/test_hermes_context_adapter.py tests/test_agent_context_benchmark.py \
             tests/test_code_protection.py tests/test_compact_cli.py \
             tests/test_compaction_verifier.py tests/test_compression_policy.py \
-            tests/test_context_compactor.py tests/test_conversation_store.py tests/test_summarizer.py tests/test_local_summary.py tests/test_hermes_hybrid.py
+            tests/test_context_compactor.py tests/test_conversation_store.py tests/test_summarizer.py tests/test_local_summary.py tests/test_hermes_hybrid.py tests/test_extractive_context.py
         env:
           PYTHONPATH: src
           QT_QPA_PLATFORM: offscreen

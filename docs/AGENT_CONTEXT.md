@@ -198,3 +198,27 @@ length-terminated response is a failure, never a successful summary.
 Legacy non-strict mode still permits its existing deterministic fallback;
 strict mode raises SummaryUnavailable. Neither path certifies semantic fidelity
 or the trustworthiness of the local Ollama daemon.
+
+
+## Exact extractive previews (offline candidate)
+
+`npsc-agent-context plan --input request.json --transcript transcript.json --budget 12000 --excerpts bm25`
+adds exact, offset-addressed excerpts to eligible archived tool results, within
+the request's remaining estimated budget. `--preview-reserve 512` optionally
+reserves space for previews and may archive additional results. The report
+shows the reference-only baseline and the extra archival count.
+
+`--excerpts ollama --max-model-calls 4` explicitly enables the local Qwen ID
+selector. It receives a bounded lexical candidate pool plus head/tail spans,
+returns JSON integer IDs, and cannot insert its own generated text into the
+request. Unknown IDs, duplicates, invalid JSON and failed local inference
+fall back to deterministic lexical ranking, with a reported failure count.
+Only existing tool data is excerpted; no new user instructions are created.
+Every preview has exact character offsets and a SHA-256 span manifest, and
+the full original remains recoverable through the existing reference.
+
+This is an offline/CLI experimental route; the Hermes plugins still use the
+unchanged default request planner. The source must be trusted for access
+authorization and treated as untrusted for instructions. Neither exact
+excerpts nor BM25/Qwen selection establish task success, semantic fidelity,
+actual billed savings, or complete relevance. Real model validation is pending.

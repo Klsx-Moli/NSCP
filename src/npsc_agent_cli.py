@@ -25,6 +25,12 @@ def run_cli(argv=None):
     plan.add_argument("--keep-recent", type=int, default=8)
     plan.add_argument("--strategy", choices=STRATEGIES, default="adaptive")
     plan.add_argument("--focus", action="append", default=None, help="Explicit protected identifier (repeatable)")
+    plan.add_argument("--excerpts", choices=["bm25", "ollama"],
+                      help="Opt-in exact source previews; ollama sends data only to the local model")
+    plan.add_argument("--preview-reserve", type=int, default=0)
+    plan.add_argument("--max-model-calls", type=int, default=4)
+    plan.add_argument("--local-num-ctx", type=int, default=8192)
+    plan.add_argument("--local-model", default="qwen3.5:4b-q4_K_M")
     recover = sub.add_parser("recall")
     recover.add_argument("--transcript", required=True)
     recover.add_argument("--reference", required=True)
@@ -34,9 +40,22 @@ def run_cli(argv=None):
     try:
         source = _messages(args.transcript)
         if args.command == "plan":
-            result = plan_request(_messages(args.input), source, args.budget,
-                                  keep_recent=args.keep_recent, strategy=args.strategy,
-                                  focus_terms=args.focus)
+            kwargs = dict(keep_recent=args.keep_recent, strategy=args.strategy,
+                          focus_terms=args.focus)
+            if args.excerpts:
+                from extractive_context import OllamaSpanSelector, plan_extractive_request
+                from local_summary import LocalSummaryConfig
+                selector = (OllamaSpanSelector(LocalSummaryConfig(
+                    model=args.local_model, num_ctx=args.local_num_ctx, num_predict=128))
+                    if args.excerpts == "ollama" else None)
+                result = plan_extractive_request(
+                    _messages(args.input), source, args.budget, **kwargs,
+                    preview_reserve=args.preview_reserve, selector=selector,
+                    max_model_calls=args.max_model_calls)
+            else:
+                if args.preview_reserve:
+                    raise ValueError("--preview-reserve requires --excerpts")
+                result = plan_request(_messages(args.input), source, args.budget, **kwargs)
             payload = {"messages": result.messages, "report": result.report}
             code = 0 if result.report["fits_metered_budget"] else 2
         else:

@@ -21,6 +21,7 @@ build-backend = "setuptools.build_meta"
 package-dir = {"" = "src"}
 py-modules = [
   "agent_context",
+  "extractive_context",
   "npsc_agent_cli",
   "benchmark_quality",
   "compilation_profiles",
