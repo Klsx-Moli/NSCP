@@ -13,6 +13,7 @@ jobs:
   test:
     name: pytest
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -41,11 +42,25 @@ jobs:
           pip install pytest pytest-cov ruff==0.16.9
 
       - name: Lint (ruff — errors + warnings, ignore line-length)
-        run: ruff check src/ tests/ --select E,F,W --ignore E501
+        run: ruff check src/ tests/ integrations/hermes/ scripts/install_hermes_context.py --select E,F,W --ignore E501
+
+      - name: Agent-context regression (independent of GUI)
+        timeout-minutes: 3
+        run: |
+          python -m pytest -q --tb=short \
+            tests/test_agent_context.py tests/test_hermes_context_adapter.py \
+            tests/test_code_protection.py tests/test_compact_cli.py \
+            tests/test_compaction_verifier.py tests/test_compression_policy.py \
+            tests/test_context_compactor.py tests/test_conversation_store.py tests/test_summarizer.py
+        env:
+          PYTHONPATH: src
+          QT_QPA_PLATFORM: offscreen
 
       - name: Run tests (full regression, short tracebacks, coverage)
+        if: always()
+        timeout-minutes: 10
         run: |
-          python -m pytest tests/ --tb=short -q \
+          python -m pytest tests/ --tb=short -q -o faulthandler_timeout=90 \
             --cov=src --cov-report=term-missing
         env:
           PYTHONPATH: src
