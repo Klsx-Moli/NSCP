@@ -58,13 +58,25 @@ The installer copies source only; it refuses to overwrite a different plugin.
 python scripts/install_hermes_context.py
 ```
 
-Use a separate disposable Hermes profile/session, verify the plugin can load and
-that nscp_recall is available to the agent. Only then manually choose:
+Use a separate disposable Hermes profile/session. The default plugin mode is
+**observe**: it produces a plan without rewriting the request or issuing recall
+references. Manually choose:
 
 ```yaml
 context:
   engine: nscp_context
 ```
+
+For a controlled experiment only, verify the `context_engine` toolset is enabled
+and `nscp_recall` is registered without name collisions. The current hook does
+not expose the final tool list, so this verification is an operator precondition.
+Then set `NSCP_CONTEXT_MODE=experimental` in the environment used to start Hermes.
+In PowerShell: `$env:NSCP_CONTEXT_MODE = 'experimental'`. An insufficient estimated
+budget leaves the original request unchanged and reports `budget_unmet`. Recall is
+limited to references actually emitted in this binding, and revalidates the
+current transcript on every read. Observe mode does not invoke any local LLM.
+The native compressor is not delegated to in either mode; do not use the plugin
+for long-running critical sessions until native fallback is implemented.
 
 Rollback by restoring `context.engine: compressor` and restarting Hermes. No
 automatic activation, provider switching, config rewriting or model downloads.

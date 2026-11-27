@@ -39,7 +39,7 @@ def engine(monkeypatch, tmp_path):
     dest = installer.install(tmp_path)
     plugin = load_file("_nscp_test_plugin", dest / "__init__.py", package=True)
     try:
-        yield plugin.NSCPContextEngine(), installer, dest
+        yield plugin.NSCPContextEngine(mode="experimental"), installer, dest
     finally:
         for name in list(sys.modules):
             if name.startswith("_nscp_test_plugin") or name == "_nscp_installer_test":
@@ -89,3 +89,63 @@ def test_unavailable_persistence_is_noop(engine):
     instance, _, _ = engine
     instance.bind_session_state(None, "s1")
     assert instance.select_context(old_history(), budget_tokens=1000) is None
+
+
+def test_observe_mode_reports_but_does_not_rewrite_or_issue_references(engine):
+    instance, _, _ = engine
+    instance.mode = "observe"
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=6000) is None
+    status = instance.get_status()
+    assert status["nscp_last_plan"]["disposition"] == "observe_only"
+    assert status["nscp_last_plan"]["references"]
+    assert not status["nscp_last_plan"]["applied"]
+    assert status["nscp_issued_references"] == 0
+    ref = status["nscp_last_plan"]["references"][0]
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
+
+
+def test_budget_unmet_is_explicit_and_never_applied(engine):
+    instance, _, _ = engine
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=100) is None
+    assert instance.get_status()["nscp_last_plan"]["disposition"] == "budget_unmet"
+    assert instance.get_status()["nscp_issued_references"] == 0
+
+
+def test_recall_rejects_unissued_hash_and_removed_original(engine):
+    instance, _, _ = engine
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=6000) is not None
+    status = instance.get_status()
+    ref = status["nscp_last_plan"]["references"][0]
+    status["nscp_last_plan"]["references"].clear()
+    assert instance.get_status()["nscp_last_plan"]["references"]
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": "0" * 64}))
+    rows[:] = rows[5:]
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
+    instance.select_context([{"role": "user", "content": "small"}], budget_tokens=6000)
+    assert instance.get_status()["nscp_last_plan"]["disposition"] == "below_threshold"
+
+
+def test_clone_keeps_policy_but_not_session(engine):
+    instance, _, _ = engine
+    instance.protect_first_n = 5
+    instance.protect_last_n = 12
+    instance.bind_session_state(None, "s1")
+    clone = instance.clone_for_agent()
+    assert clone.mode == instance.mode
+    assert clone.protect_first_n == 5 and clone.protect_last_n == 12
+    assert not clone._issued_refs and clone._session_id is None
