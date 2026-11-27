@@ -14,7 +14,6 @@ from PySide6.QtCore import (
     QEasingCurve,
     QPropertyAnimation,
     QRect,
-    Qt,
     QSettings,
     QObject,
 )

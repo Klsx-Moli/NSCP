@@ -2015,7 +2015,6 @@ class MainWindow(QMainWindow):
         # would duplicate the same numbers on the same screen.
         self.simple_metrics_panel.hide()
 
-        state = "error" if errors else "warning" if warnings else "success"
         self.simple_result_header.setText(tr("toast.compile_done"))
         self.simple_metrics_label.setText(
             tr("result.summary").format(

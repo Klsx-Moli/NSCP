@@ -1,11 +1,10 @@
-import os, sys
-import pytest
+import os
+import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 import random
 import context_compactor as cc
-from compaction_helpers import CODE, build, fake_summarizer
+from compaction_helpers import build, fake_summarizer
 
 
 def test_code_turn_kept_verbatim_with_summarizer():
