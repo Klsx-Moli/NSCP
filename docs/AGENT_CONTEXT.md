@@ -106,3 +106,22 @@ estimated savings and the number of unchanged prefix messages. These are
 structural and heuristic metrics, not proof of cache hits or semantic relevance.
 If protected content prevents fitting, the planner reports that fact rather
 than relaxing protections. No new provider or model calls are made.
+
+
+## Reproducible structural benchmark
+
+From the repository root, in PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+python tools/benchmark_agent_context.py --out agent-context-benchmark.json
+```
+
+Nine deterministic synthetic cases compare unchanged input, oldest-first,
+cache-prefix-first, largest-first with focus protection, and adaptive planning.
+Each modified result is rehydrated from the original transcript and checked
+byte-for-byte as Python text; message metadata and input immutability are
+asserted. Timing covers planning only, not recovery or provider execution.
+The report deliberately leaves actual provider tokens, cache hits, cost, and
+semantic task success null. Real anonymized traces and provider A/B are
+separate future acceptance gates.
