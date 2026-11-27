@@ -63,8 +63,8 @@ def test_offload_moves_large_blocks(tmp_path):
     small = cc.TurnView("user", "corto", 2)
     out, count = cc.offload_large_blocks([big, small], str(tmp_path), 600)
     assert count == 1
-    assert "movido a archivo" in out[0]["content"]
-    assert out[1]["content"] == "corto"
+    assert "movido a archivo" in out[0].content
+    assert out[1].content == "corto"
     files = list(tmp_path.iterdir())
     assert len(files) == 1
     assert files[0].read_text() == "y" * 3000
@@ -74,7 +74,7 @@ def test_code_blocks_are_never_offloaded(tmp_path):
     code = cc.TurnView("assistant", "```python\n" + "x" * 3000 + "\n```", 800)
     out, count = cc.offload_large_blocks([code], str(tmp_path), 600)
     assert count == 0
-    assert out[0]["content"].startswith("```python")
+    assert out[0].content.startswith("```python")
 
 
 def test_without_summarizer_drops_oldest_middle():
