@@ -12,6 +12,7 @@ Contrast targets (WCAG 2.1, verified by ``tests/test_design_system.py``):
 """
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 
 
@@ -57,13 +58,26 @@ class Shadow:
 
 
 # ─── Typography ─────────────────────────────────────────────────────────────
+# Prefer native fonts on each platform, with installed-family fallbacks.
+if sys.platform == "win32":
+    _BODY_FONT = '"Segoe UI Variable Text", "Segoe UI", Tahoma, sans-serif'
+    _DISPLAY_FONT = '"Segoe UI Variable Display", ' + _BODY_FONT
+    _MONO_FONT = '"Cascadia Code", Consolas, "Courier New", monospace'
+elif sys.platform == "darwin":
+    _BODY_FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif'
+    _DISPLAY_FONT = _BODY_FONT
+    _MONO_FONT = 'Menlo, Monaco, monospace'
+else:
+    _BODY_FONT = '"DejaVu Sans", "Liberation Sans", "Noto Sans", Lato, sans-serif'
+    _DISPLAY_FONT = _BODY_FONT
+    _MONO_FONT = '"DejaVu Sans Mono", "Liberation Mono", "Noto Sans Mono", monospace'
+
+
 @dataclass(frozen=True)
 class Typography:
-    # Segoe UI Variable is present on Windows 10/11; it is the closest match to
-    # the technical, neutral look of Linear/Raycast without bundling a font.
-    family: str = '"Segoe UI Variable Text", "Segoe UI", Tahoma, sans-serif'
-    display_family: str = '"Segoe UI Variable Display", "Segoe UI Variable Text", "Segoe UI", Tahoma, sans-serif'
-    mono_family: str = '"Cascadia Code", Consolas, "Courier New", monospace'
+    family: str = _BODY_FONT
+    display_family: str = _DISPLAY_FONT
+    mono_family: str = _MONO_FONT
 
     display_size: int = 24
     display_weight: int = 600

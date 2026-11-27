@@ -118,21 +118,16 @@ def test_theme_facade_is_single_source():
 
 
 def test_typography_family_is_declared_and_available():
-    """The declared family must be a real font, not a missing one (Inter was).
-
-    The ``offscreen``/``minimal`` Qt platforms ship zero fonts, so the
-    availability half of the check only runs when a font database exists.
-    """
+    """At least one concrete configured family must exist on the Qt host."""
     from PySide6.QtGui import QFontDatabase
 
-    family = get_theme("dark").typography.family
-    assert "Inter" not in family
-    assert "Noto Sans" not in family
+    typography = get_theme("dark").typography
     available = set(QFontDatabase.families())
     if not available:
         pytest.skip("Qt platform reports no fonts (offscreen/minimal)")
-    primary = family.split(",")[0].strip().strip('"')
-    assert primary in available, f"{primary!r} not in {sorted(available)[:10]}"
+    for stack in (typography.family, typography.display_family, typography.mono_family):
+        candidates = {f.strip().strip('"') for f in stack.split(",")}
+        assert candidates & available, f"{stack!r} has no installed family"
 
 
 # ── contrast ───────────────────────────────────────────────────────────────

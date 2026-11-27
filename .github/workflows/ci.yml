@@ -1,6 +1,6 @@
 # CI pipeline — P1 fix item 6
 # Runs on every push and pull_request targeting main.
-# Gate: ruff lint + pytest -x (fail-fast).  No merge without green CI.
+# Gate: ruff lint + pytest (full regression).  No merge without green CI.
 name: CI
 
 on:
@@ -43,9 +43,9 @@ jobs:
       - name: Lint (ruff — errors + warnings, ignore line-length)
         run: ruff check src/ tests/ --select E,F,W --ignore E501
 
-      - name: Run tests (fail-fast, short tracebacks, coverage)
+      - name: Run tests (full regression, short tracebacks, coverage)
         run: |
-          python -m pytest tests/ -x --tb=short -q \
+          python -m pytest tests/ --tb=short -q \
             --cov=src --cov-report=term-missing
         env:
           PYTHONPATH: src
