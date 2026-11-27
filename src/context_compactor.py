@@ -13,7 +13,7 @@ import os
 from dataclasses import dataclass
 from typing import Callable, Sequence
 
-from compression_policy import CompressionPolicy, get_policy
+from compression_policy import get_policy
 
 HERMES_WRAPPER = (
     "# Contexto compactado (NSCP)\n"
