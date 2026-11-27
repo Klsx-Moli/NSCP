@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-from agent_context import plan_request, recall
+from agent_context import STRATEGIES, plan_request, recall
 
 
 def _messages(path):
@@ -23,6 +23,8 @@ def run_cli(argv=None):
     plan.add_argument("--transcript", required=True)
     plan.add_argument("--budget", type=int, required=True)
     plan.add_argument("--keep-recent", type=int, default=8)
+    plan.add_argument("--strategy", choices=STRATEGIES, default="adaptive")
+    plan.add_argument("--focus", action="append", default=None, help="Explicit protected identifier (repeatable)")
     recover = sub.add_parser("recall")
     recover.add_argument("--transcript", required=True)
     recover.add_argument("--reference", required=True)
@@ -33,7 +35,8 @@ def run_cli(argv=None):
         source = _messages(args.transcript)
         if args.command == "plan":
             result = plan_request(_messages(args.input), source, args.budget,
-                                  keep_recent=args.keep_recent)
+                                  keep_recent=args.keep_recent, strategy=args.strategy,
+                                  focus_terms=args.focus)
             payload = {"messages": result.messages, "report": result.report}
             code = 0 if result.report["fits_metered_budget"] else 2
         else:

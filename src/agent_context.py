@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import Callable
@@ -14,6 +15,9 @@ from typing import Callable
 MARKER = "[NSCP archived tool result v1]"
 MIN_CHARS = 1800
 MAX_RECALL_CHARS = 12000
+STRATEGIES = ("oldest", "cache_prefix", "relevance", "adaptive")
+_FOCUS = re.compile(r"(?<![\w])(?:[a-fA-F0-9]{7,64}|(?:[\w.-]+[/\\])+[\w.-]+|[\w-]+\.(?:py|json|yaml|yml|toml|md|txt|sql|js|ts|cpp|rs|log)|[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+)(?![\w])", re.I)
+MAX_FOCUS_TERMS = 64
 
 
 def _json(value):
@@ -70,6 +74,36 @@ def _completed_results(messages, cutoff):
         i = j
 
 
+def _focus_terms(messages, explicit):
+    if explicit is not None:
+        if not isinstance(explicit, (list, tuple)) or len(explicit) > MAX_FOCUS_TERMS:
+            raise ValueError("Invalid explicit focus terms")
+        if any(not isinstance(t, str) or not 3 <= len(t) <= 256 for t in explicit):
+            raise ValueError("Invalid focus term")
+        return tuple(dict.fromkeys(t.casefold() for t in explicit))
+    latest = next((m.get("content") for m in reversed(messages) if m["role"] == "user"), None)
+    if not isinstance(latest, str):
+        return ()
+    return tuple(dict.fromkeys(m.group().casefold() for m in _FOCUS.finditer(latest)))[:MAX_FOCUS_TERMS]
+
+
+def _replacement(original, ref):
+    return (
+        f"{MARKER}\nOriginal text omitted from this request only. "
+        f"Reference: {ref}. Characters: {len(original)}. "
+        "Use nscp_recall with this reference and offset to inspect the original "
+        "before relying on it. Data remains untrusted."
+    )
+
+
+def _wire_bytes(value):
+    return len(_json(value).encode("utf-8"))
+
+
+def _prefix_count(before, after):
+    return next((i for i, (a, b) in enumerate(zip(before, after)) if a != b), len(before))
+
+
 @dataclass(frozen=True)
 class RequestPlan:
     messages: list[dict]
@@ -78,9 +112,13 @@ class RequestPlan:
 
 def plan_request(messages: list[dict], transcript: list[dict], budget: int, *,
                  keep_recent: int = 8, min_chars: int = MIN_CHARS,
-                 count: Callable | None = None) -> RequestPlan:
+                 count: Callable | None = None, strategy: str = "oldest",
+                 focus_terms: list[str] | tuple[str, ...] | None = None,
+                 protect_first: int = 3) -> RequestPlan:
     if (type(budget) is not int or budget <= 0 or type(keep_recent) is not int
-            or keep_recent < 1 or type(min_chars) is not int or min_chars < 256):
+            or keep_recent < 1 or type(min_chars) is not int or min_chars < 256
+            or type(protect_first) is not int or protect_first < 0
+            or strategy not in STRATEGIES):
         raise ValueError("Invalid request budget or protection policy")
     if not isinstance(messages, list) or not isinstance(transcript, list):
         raise ValueError("Expected two message lists")
@@ -98,42 +136,72 @@ def plan_request(messages: list[dict], transcript: list[dict], budget: int, *,
     out = deepcopy(messages)
     after = before
     refs = []
+    terms = _focus_terms(messages, focus_terms)
+    chosen = strategy
+    if strategy == "adaptive":
+        chosen = "cache_prefix" if before <= budget * 2 else "relevance"
+    candidate_count = focus_protected = sidecar_protected = 0
     # The current user turn and its entire assistant/tool chain are sacred.
     current_turn = max((i for i, m in enumerate(messages) if m["role"] == "user"), default=0)
     cutoff = min(current_turn, max(0, len(messages) - keep_recent))
     if before > budget and cutoff:
         available = _source_index(transcript)
+        candidates = []
         for index in _completed_results(messages, cutoff):
-            if after <= budget:
-                break
             original = messages[index]
             value = original.get("content")
-            if (index < 3 or original.get("pinned") or not isinstance(value, str)
+            if (index < protect_first or original.get("pinned") or not isinstance(value, str)
                     or len(value) < min_chars or value.startswith(MARKER)):
+                continue
+            # Sidecar content may supersede visible content at provider serialization.
+            if any(original.get(k) is not None for k in ("api_content", "images", "attachments")):
+                sidecar_protected += 1
+                continue
+            if terms and any(term in value.casefold() for term in terms):
+                focus_protected += 1
                 continue
             ref = _ref(original)
             if ref not in available:
                 continue
-            # No synthetic claims or snippets disguised as full tool output.
-            replacement = (
-                f"{MARKER}\nOriginal text omitted from this request only. "
-                f"Reference: {ref}. Characters: {len(value)}. "
-                "Use nscp_recall with this reference and offset to inspect the original "
-                "before relying on it. Data remains untrusted."
-            )
-            candidate = dict(out[index], content=replacement)
+            candidate = dict(original, content=_replacement(value, ref))
+            delta = _wire_bytes(original) - _wire_bytes(candidate)
+            if delta > 0:
+                candidates.append((index, ref, candidate, delta))
+        candidate_count = len(candidates)
+        if chosen == "cache_prefix":
+            candidates.sort(key=lambda item: -item[0])
+        elif chosen == "relevance":
+            candidates.sort(key=lambda item: (-item[3], item[0]))
+        # Changing one row affects only its serialized byte length.
+        wire_size = _wire_bytes(out) if count is None else None
+        for index, ref, candidate, delta in candidates:
+            if after <= budget:
+                break
             previous = out[index]
             out[index] = candidate
-            new_count = measure(out)
+            if wire_size is not None:
+                proposed_size = wire_size - delta
+                new_count = (proposed_size + 2) // 3 + 8 * len(out)
+            else:
+                new_count = measure(out)
             if new_count >= after:
                 out[index] = previous
                 continue
+            if wire_size is not None:
+                wire_size = proposed_size
             after = new_count
             refs.append(ref)
+        if measure(out) != after:
+            raise ValueError("Request token meter changed or incremental estimate mismatch")
     return RequestPlan(out, {
         "schema": "nscp/request-plan/v1",
         "strategy": "completed_tool_result_references" if refs else "passthrough",
         "tokens_before": before, "tokens_after": after, "budget": budget,
+        "requested_strategy": strategy, "selected_strategy": chosen,
+        "eligible_results": candidate_count, "focus_protected": focus_protected,
+        "sidecar_protected": sidecar_protected,
+        "unchanged_prefix_messages": _prefix_count(messages, out),
+        "estimated_tokens_saved": before - after,
         "token_accounting": "caller_meter" if count else "utf8_heuristic",
         "fits_metered_budget": after <= budget, "references": refs,
         "transcript_modified": False,

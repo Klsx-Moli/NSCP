@@ -79,3 +79,18 @@ automatic activation, provider switching, config rewriting or model downloads.
   enable automatic generative summaries until grounded fidelity is demonstrated.
 - Tests against real anonymized agent traces, negations and conflicting
   decisions, concurrent subagents and plugin failure/timeout.
+
+
+## Adaptive request planning (offline, no model)
+
+`--strategy adaptive` selects a cache-prefix-oriented plan near the budget
+and largest-eligible-result-first at high pressure. Explicit paths, hashes and
+identifiers in the latest user message (or repeatable `--focus` arguments) protect
+matching tool results from elision. Provider-specific sidecar content is left
+alone. The default library strategy remains oldest-first for compatibility.
+
+The report includes eligible results, protected matches, selected strategy,
+estimated savings and the number of unchanged prefix messages. These are
+structural and heuristic metrics, not proof of cache hits or semantic relevance.
+If protected content prevents fitting, the planner reports that fact rather
+than relaxing protections. No new provider or model calls are made.

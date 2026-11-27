@@ -106,3 +106,64 @@ def test_invalid_budget_and_meter():
             plan_request(source, source, value)
     with pytest.raises(ValueError):
         plan_request(source, source, 100, count=lambda _: -1)
+
+
+def multi_history():
+    source = transcript()[:3]
+    for i, size in enumerate((2500, 3000, 9000)):
+        source.extend([
+            {"role": "assistant", "content": None, "tool_calls": [
+                {"id": str(i), "type": "function", "function": {"name": "read", "arguments": "{}"}}]},
+            {"role": "tool", "tool_call_id": str(i), "content": chr(97 + i) * size},
+            {"role": "assistant", "content": "done"},
+        ])
+    source.append({"role": "user", "content": "continue"})
+    return source
+
+
+def test_cache_prefix_prefers_newest_eligible_result():
+    source = multi_history()
+    from agent_context import _estimate
+    budget = _estimate(source) - 500
+    old = plan_request(source, source, budget, strategy="oldest", keep_recent=1)
+    new = plan_request(source, source, budget, strategy="cache_prefix", keep_recent=1)
+    assert old.report["fits_metered_budget"] and new.report["fits_metered_budget"]
+    assert new.report["unchanged_prefix_messages"] > old.report["unchanged_prefix_messages"]
+    assert new.report["unchanged_prefix_messages"] == 10
+
+
+def test_focus_path_and_sidecar_protected_in_every_strategy():
+    source = multi_history()
+    source[4]["content"] += " src/core.py"
+    source[7]["api_content"] = [{"type": "text", "text": "provider-specific"}]
+    source[-1]["content"] = "Investigate src/core.py"
+    for strategy in ("oldest", "cache_prefix", "relevance", "adaptive"):
+        plan = plan_request(source, source, 1, strategy=strategy, keep_recent=1)
+        assert plan.messages[4] == source[4]
+        assert plan.messages[7] == source[7]
+        assert plan.messages[10]["content"].startswith(MARKER)
+        assert plan.report["focus_protected"] == 1
+        assert plan.report["sidecar_protected"] == 1
+
+
+def test_incremental_estimate_matches_full_unicode_and_custom_meter():
+    from agent_context import _estimate
+    source = multi_history()
+    source[4]["content"] = "ñ😀漢字\n" * 3000
+    a = plan_request(source, source, 100, keep_recent=1)
+    b = plan_request(source, source, 100, keep_recent=1, count=_estimate)
+    assert a.messages == b.messages
+    assert a.report["tokens_after"] == b.report["tokens_after"] == _estimate(a.messages)
+
+
+def test_adaptive_selects_route_by_pressure():
+    from agent_context import _estimate
+    source = multi_history()
+    near = plan_request(source, source, _estimate(source) - 100, strategy="adaptive", keep_recent=1)
+    far = plan_request(source, source, 1, strategy="adaptive", keep_recent=1)
+    assert near.report["selected_strategy"] == "cache_prefix"
+    assert far.report["selected_strategy"] == "relevance"
+    with pytest.raises(ValueError):
+        plan_request(source, source, 10, strategy="invented")
+    with pytest.raises(ValueError):
+        plan_request(source, source, 10, focus_terms=[""])
