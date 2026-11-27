@@ -222,3 +222,16 @@ unchanged default request planner. The source must be trusted for access
 authorization and treated as untrusted for instructions. Neither exact
 excerpts nor BM25/Qwen selection establish task success, semantic fidelity,
 actual billed savings, or complete relevance. Real model validation is pending.
+
+
+### Extractive evidence benchmark
+
+Run `PYTHONPATH=src python tools/benchmark_extractive_context.py` (set
+`$env:PYTHONPATH="src"` first on Windows). It compares reference-only,
+BM25 and a synthetic answer-key oracle over six known evidence cases at
+two budgets. The oracle is deliberately privileged and is **not Qwen**:
+it tests whether target text is available in the offered pool. A miss is
+reported rather than repaired by injecting the answer. Every visible
+excerpt is checked against the original offset, reference and digest.
+No provider usage, billing, model accuracy or semantic task success is
+inferred from evidence visibility.
