@@ -1,8 +1,9 @@
 """Compactor de contexto conversacional para objetivos Hermes (NSCP).
 
 Reglas duras: el historial original jamas se modifica; los turnos con bloques
-de codigo nunca se offloadean; los turnos system y pinned entran siempre.
-Limitacion v1: el resumen SI puede incluir turnos con codigo (ver docs).
+de codigo (```) nunca se offloadean ni se resumen: se conservan verbatim o, si
+no caben, se descartan de forma EXPLICITA (actions.code_turns_dropped) y el
+verificador lo marca como perdida critica. Los turnos system/pinned entran siempre.
 """
 
 from __future__ import annotations
@@ -43,6 +44,10 @@ def tokens_of(text, tokenizer=None):
     return tokenizer(text) if tokenizer else estimate_tokens(text)
 
 
+def has_code(v):
+    return "```" in v.content
+
+
 def to_view(turn, tokenizer=None):
     content = getattr(turn, "content", "") or ""
     tok = getattr(turn, "token_count", 0) or tokens_of(content, tokenizer)
@@ -62,7 +67,7 @@ def offload_large_blocks(middle, storage_dir, max_inline_tokens, tokenizer=None)
     os.makedirs(storage_dir, exist_ok=True)
     out, count = [], 0
     for v in middle:
-        if v.token_count > max_inline_tokens and "```" not in v.content:
+        if v.token_count > max_inline_tokens and not has_code(v):
             digest = hashlib.sha1(v.content.encode("utf-8")).hexdigest()[:12]
             filename = f"offloaded-{digest}.txt"
             path = os.path.join(storage_dir, filename)
@@ -97,7 +102,7 @@ def _report(policy, num_ctx, before, after, triggered, actions):
         "triggered": triggered, "tokens_before": before, "tokens_after": after,
         "compression_ratio": round(before / after, 2) if after else 0.0,
         "actions": actions,
-        "verification": {"status": "structural_only"},
+        "verification": {"status": "not_verified"},
     }
 
 
@@ -115,32 +120,49 @@ def compact_history(history: Sequence, num_ctx: int, level=None,
     if storage_dir and policy.offload_enabled and middle:
         middle, offloaded = offload_large_blocks(middle, storage_dir, policy.offload_max_inline_tokens, tokenizer)
 
-    budget = (num_ctx - sum(v.token_count for v in pinned) - sum(v.token_count for v in recent)
-              - tokens_of(HERMES_WRAPPER, tokenizer))
+    # reserva: wrapper + encabezado del resumen + separadores del mensaje system
+    overhead = tokens_of(HERMES_WRAPPER, tokenizer) + tokens_of(SUMMARY_INTRO, tokenizer) + 4
+    budget = num_ctx - sum(v.token_count for v in pinned) - sum(v.token_count for v in recent) - overhead
     if budget < 100:
         raise ValueError("Ventana insuficiente: instrucciones fijadas + turnos recientes no caben en num_ctx.")
 
-    summary, summarized, dropped = None, 0, 0
+    summary, summarized, dropped, code_kept, code_dropped = None, 0, 0, 0, 0
     middle_kept = list(middle)
     if middle and sum(v.token_count for v in middle) > budget:
-        if summarizer:
-            summary = summarizer(middle)
-            summarized = len(middle)
-            middle_kept = []
-            if tokens_of(summary, tokenizer) > budget:
-                summary = summary[: max(budget * 4 - 48, 64)] + "\n[...resumen truncado por presupuesto]"
+        code_idx = [i for i, v in enumerate(middle) if has_code(v)]
+        prose_idx = [i for i in range(len(middle)) if not has_code(middle[i])]
+        reserve = min(policy.max_summary_tokens, budget // 3) if (summarizer and prose_idx) else 0
+        keep, used = set(), 0
+        for i in reversed(code_idx):
+            t = middle[i].token_count
+            if used + t <= budget - reserve:
+                keep.add(i)
+                used += t
+            else:
+                code_dropped += 1
+        code_kept = len(keep)
+        remaining = budget - used
+        prose = [middle[i] for i in prose_idx]
+        if summarizer and prose:
+            summary = summarizer(prose)
+            summarized = len(prose)
+            limit = min(remaining, policy.max_summary_tokens)
+            if tokens_of(summary, tokenizer) > limit:
+                summary = summary[: max(limit * 4 - 48, 64)] + "\n[...resumen truncado por presupuesto]"
         else:
-            middle_kept, used = [], 0
-            for v in reversed(middle):
-                if used + v.token_count <= budget:
-                    middle_kept.append(v)
-                    used += v.token_count
+            u = 0
+            for i in reversed(prose_idx):
+                t = middle[i].token_count
+                if u + t <= remaining:
+                    keep.add(i)
+                    u += t
                 else:
                     dropped += 1
-            middle_kept.reverse()
+        middle_kept = [middle[i] for i in range(len(middle)) if i in keep]
 
     messages = assemble_context(pinned, summary, middle_kept, recent)
     after = sum(tokens_of(m["content"], tokenizer) for m in messages)
     actions = {"offloaded": offloaded, "summarized_turns": summarized, "dropped_turns": dropped,
-               "kept_recent": len(recent), "pinned": len(pinned), "middle_kept": len(middle_kept)}
+               "kept_recent": len(recent), "pinned": len(pinned), "middle_kept": len(middle_kept),
+               "code_turns_kept": code_kept, "code_turns_dropped": code_dropped}
     return messages, _report(policy, num_ctx, before, after, True, actions)

@@ -13,12 +13,39 @@ _PROMPT = ("Resume el historial en estas secciones exactas:\n- OBJETIVO VIGENTE\
            "- ARCHIVOS/SISTEMAS TOCADOS\n- RESTRICCIONES DEL USUARIO\n- PENDIENTES\n\nHISTORIAL:\n")
 
 
-def _fallback_summary(turns):
-    lines = ["RESUMEN AUTOMATICO (sin modelo; truncado determinista):"]
+def _fallback_summary(turns, max_chars=2400):
+    """Resumen extractivo DETERMINISTA: restricciones, luego rutas/numeros/URLs/identificadores,
+    y con el presupuesto sobrante la primera linea de cada turno. Sin modelo, sin inventar."""
+    from compaction_verifier import extract_facts
+    cons, other, seen = [], [], set()
+    for t in turns:
+        for kind, val in sorted(extract_facts(t.content or "", t.role)):
+            if val not in seen:
+                seen.add(val)
+                (cons if kind == "constraint" else other).append(val)
+    lines = ["RESUMEN AUTOMATICO (sin modelo; extractivo determinista):"]
+    used = len(lines[0])
+
+    def section(title, items):
+        nonlocal used
+        picked = []
+        for it in items:
+            if used + len(it) + 3 > max_chars:
+                break
+            picked.append(it)
+            used += len(it) + 3
+        if picked:
+            lines.append(title)
+            lines.extend(f"- {p}" for p in picked)
+            used += len(title) + 1
+
+    section("RESTRICCIONES:", cons)
+    section("HECHOS (rutas, numeros, URLs):", other)
+    heads = []
     for t in turns:
         text = (t.content or "").strip()
-        first = text.splitlines()[0][:160] if text else "(turno vacio)"
-        lines.append(f"- [{t.role}] {first}")
+        heads.append(f"[{t.role}] " + (text.splitlines()[0][:160] if text else "(turno vacio)"))
+    section("TURNOS (primera linea):", heads)
     return "\n".join(lines)
 
 
