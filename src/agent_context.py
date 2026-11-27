@@ -157,13 +157,14 @@ def plan_request(messages: list[dict], transcript: list[dict], budget: int, *,
             if any(original.get(k) is not None for k in ("api_content", "images", "attachments")):
                 sidecar_protected += 1
                 continue
-            if terms and any(term in value.casefold() for term in terms):
+            folded = value.casefold() if terms else ""
+            if terms and any(term in folded for term in terms):
                 focus_protected += 1
                 continue
             ref = _ref(original)
             if ref not in available:
                 continue
-            candidate = dict(original, content=_replacement(value, ref))
+            candidate = dict(out[index], content=_replacement(value, ref))
             delta = _wire_bytes(original) - _wire_bytes(candidate)
             if delta > 0:
                 candidates.append((index, ref, candidate, delta))

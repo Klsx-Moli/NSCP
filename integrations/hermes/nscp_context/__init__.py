@@ -168,10 +168,11 @@ class NSCPContextEngine(ContextEngine):
             if not isinstance(args, dict) or set(args) - {"reference", "offset", "limit"}:
                 raise ValueError("invalid args")
             reference = args.get("reference")
+            expected_binding = self._binding
             if not isinstance(reference, str) or reference not in self._issued_refs:
                 return json.dumps({"error": "reference_not_issued_in_current_session"})
             binding, source = self._source()
-            if source is None:
+            if source is None or binding is not expected_binding:
                 return json.dumps({"error": "session_recall_unavailable"})
             result = recall(source, reference, offset=args.get("offset", 0),
                             limit=args.get("limit", 4000))

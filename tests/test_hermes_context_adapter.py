@@ -7,6 +7,7 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
+from agent_context import _ref
 from test_agent_context import transcript
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,10 +63,13 @@ def test_adapter_request_selection_and_recall(engine):
     ] if session == "s1" else []))
     instance.bind_session_state(None, "s1", store)
     output = instance.select_context(rows, budget_tokens=6000)
-    assert output is not None and output[4]["content"] != rows[4]["content"]
+    assert output is not None
     ref = instance.get_status()["nscp_last_plan"]["references"][0]
+    source_index = next(i for i, row in enumerate(rows)
+                        if row["role"] == "tool" and _ref(row) == ref)
+    assert output[source_index]["content"] != rows[source_index]["content"]
     result = json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref, "limit": 20}))
-    assert result["content"] == rows[4]["content"][:20]
+    assert result["content"] == rows[source_index]["content"][:20]
     assert instance.compress(rows, force=True) == rows
     assert instance.should_compress() is False
     instance.on_session_reset()
@@ -134,7 +138,7 @@ def test_recall_rejects_unissued_hash_and_removed_original(engine):
     status["nscp_last_plan"]["references"].clear()
     assert instance.get_status()["nscp_last_plan"]["references"]
     assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": "0" * 64}))
-    rows[:] = rows[5:]
+    rows[:] = [row for row in rows if row["role"] != "tool" or _ref(row) != ref]
     assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
     instance.select_context([{"role": "user", "content": "small"}], budget_tokens=6000)
     assert instance.get_status()["nscp_last_plan"]["disposition"] == "below_threshold"
@@ -149,3 +153,22 @@ def test_clone_keeps_policy_but_not_session(engine):
     assert clone.mode == instance.mode
     assert clone.protect_first_n == 5 and clone.protect_last_n == 12
     assert not clone._issued_refs and clone._session_id is None
+
+
+def test_recall_does_not_cross_rebinding_during_source_read(engine):
+    instance, _, _ = engine
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=6000) is not None
+    ref = instance.get_status()["nscp_last_plan"]["references"][0]
+    read = instance._source
+
+    def changed():
+        instance.bind_session_state(None, "s2", store)
+        return read()
+
+    instance._source = changed
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))

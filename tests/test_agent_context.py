@@ -167,3 +167,12 @@ def test_adaptive_selects_route_by_pressure():
         plan_request(source, source, 10, strategy="invented")
     with pytest.raises(ValueError):
         plan_request(source, source, 10, focus_terms=[""])
+
+
+def test_output_metadata_is_independently_owned():
+    source = multi_history()
+    source[4]["metadata"] = {"nested": {"values": [1]}}
+    plan = plan_request(source, source, 1, keep_recent=1)
+    assert plan.messages[4]["content"].startswith(MARKER)
+    plan.messages[4]["metadata"]["nested"]["values"].append(2)
+    assert source[4]["metadata"]["nested"]["values"] == [1]
