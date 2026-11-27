@@ -41,7 +41,10 @@ def estimate_tokens(text):
 
 
 def tokens_of(text, tokenizer=None):
-    return tokenizer(text) if tokenizer else estimate_tokens(text)
+    count = tokenizer(text) if tokenizer else estimate_tokens(text)
+    if type(count) is not int or count < 0 or (text and count == 0):
+        raise ValueError("Conteo de tokens invalido")
+    return count
 
 
 def has_code(v):
@@ -49,10 +52,13 @@ def has_code(v):
 
 
 def to_view(turn, tokenizer=None):
-    content = getattr(turn, "content", "") or ""
-    tok = getattr(turn, "token_count", 0) or tokens_of(content, tokenizer)
-    return TurnView(getattr(turn, "role", "user") or "user", content, tok,
-                    bool(getattr(turn, "pinned", False)))
+    content = getattr(turn, "content", None)
+    role = getattr(turn, "role", None)
+    if not isinstance(content, str) or role not in _VALID_ROLES:
+        raise ValueError("Turno invalido")
+    # Cached counts are not authoritative for the selected target tokenizer.
+    tok = tokens_of(content, tokenizer)
+    return TurnView(role, content, tok, bool(getattr(turn, "pinned", False)))
 
 
 def partition_turns(views, keep_recent):
@@ -83,10 +89,13 @@ def offload_large_blocks(middle, storage_dir, max_inline_tokens, tokenizer=None)
 
 
 def assemble_context(pinned, summary, middle, recent):
+    if any(v.role != "system" for v in pinned):
+        raise ValueError("El compactador legacy no puede reordenar turnos fijados no-system")
     head = [v.content for v in pinned] + [HERMES_WRAPPER]
-    if summary:
-        head.append(SUMMARY_INTRO + "\n\n" + summary)
     messages = [{"role": "system", "content": "\n\n".join(head)}]
+    if summary:
+        # Generated historical text is data, never a system instruction.
+        messages.append({"role": "assistant", "content": SUMMARY_INTRO + "\n\n" + summary})
     for v in list(middle) + list(recent):
         role = v.role if v.role in _VALID_ROLES else "user"
         if role == "system":
@@ -102,14 +111,19 @@ def _report(policy, num_ctx, before, after, triggered, actions):
         "triggered": triggered, "tokens_before": before, "tokens_after": after,
         "compression_ratio": round(before / after, 2) if after else 0.0,
         "actions": actions,
+        "token_accounting": "content_only_estimate",
         "verification": {"status": "not_verified"},
     }
 
 
 def compact_history(history: Sequence, num_ctx: int, level=None,
                     summarizer: Callable | None = None, storage_dir=None, tokenizer=None):
+    if type(num_ctx) is not int or num_ctx <= 0:
+        raise ValueError("num_ctx debe ser un entero positivo")
     policy = get_policy(level)
     views = [to_view(t, tokenizer) for t in history]
+    if any(v.role == "tool" for v in views):
+        raise ValueError("El compactador legacy no conserva el protocolo de herramientas")
     before = sum(v.token_count for v in views)
     if before < policy.triggers_at(num_ctx):
         msgs = [{"role": v.role if v.role in _VALID_ROLES else "user", "content": v.content} for v in views]
@@ -147,8 +161,8 @@ def compact_history(history: Sequence, num_ctx: int, level=None,
             summary = summarizer(prose)
             summarized = len(prose)
             limit = min(remaining, policy.max_summary_tokens)
-            if tokens_of(summary, tokenizer) > limit:
-                summary = summary[: max(limit * 4 - 48, 64)] + "\n[...resumen truncado por presupuesto]"
+            if not isinstance(summary, str) or tokens_of(summary, tokenizer) > limit:
+                raise ValueError("Resumen excede presupuesto; no se trunca silenciosamente")
         else:
             u = 0
             for i in reversed(prose_idx):
@@ -162,6 +176,8 @@ def compact_history(history: Sequence, num_ctx: int, level=None,
 
     messages = assemble_context(pinned, summary, middle_kept, recent)
     after = sum(tokens_of(m["content"], tokenizer) for m in messages)
+    if after > num_ctx:
+        raise ValueError("Contexto ensamblado excede el presupuesto")
     actions = {"offloaded": offloaded, "summarized_turns": summarized, "dropped_turns": dropped,
                "kept_recent": len(recent), "pinned": len(pinned), "middle_kept": len(middle_kept),
                "code_turns_kept": code_kept, "code_turns_dropped": code_dropped}

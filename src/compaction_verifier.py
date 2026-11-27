@@ -84,23 +84,28 @@ def verify_compaction(history, messages, report, storage_dir=None, tokenizer=Non
            "facts_total": 0, "facts_in_context": 0, "facts_recoverable_only": 0, "facts_lost": 0,
            "fact_retention": 1.0, "code_blocks_lost": 0}
     if not report.get("triggered"):
+        original = [{"role": v.role, "content": v.content} for v in (to_view(t, tokenizer) for t in history)]
+        if messages != original:
+            out["critical_losses"].append("modified_passthrough")
+            out["score"] = 0
         return out
     policy = get_policy(report["level"])
     views = [to_view(t, tokenizer) for t in history]
     pinned, middle, recent = partition_turns(views, policy.keep_recent_turns)
-    ctx = "\n".join(m["content"] for m in messages).lower()
+    raw_ctx = "\n".join(m["content"] for m in messages)
+    ctx = raw_ctx.lower()
     rec = _recoverable(messages, storage_dir)
 
     if not all(v.content in messages[0]["content"] for v in pinned):
         out["critical_losses"].append("missing_pinned")
-    tail = [m["content"] for m in messages[len(messages) - len(recent):]] if recent else []
-    if [v.content for v in recent] != tail:
+    tail = messages[len(messages) - len(recent):] if recent else []
+    if [{"role": v.role, "content": v.content} for v in recent] != tail:
         out["critical_losses"].append("missing_recent")
 
     facts, code_lost = set(), 0
     for v in middle:
         for block in _FENCE.findall(v.content):
-            if block.lower() not in ctx:
+            if block not in raw_ctx:
                 code_lost += 1
         facts |= {(k, val, v.role) for k, val in extract_facts(v.content, v.role)}
     seen = {}
@@ -118,6 +123,12 @@ def verify_compaction(history, messages, report, storage_dir=None, tokenizer=Non
     ded = 40 * ("missing_pinned" in out["critical_losses"]) + 40 * ("missing_recent" in out["critical_losses"])
     ded += min(60, 20 * code_lost) + round((1 - out["fact_retention"]) * 60)
     out["score"] = max(0, 100 - ded)
+    # Lexical overlap is diagnostic only; a constraint cannot be proved by 80% word overlap.
+    constraints = {value for kind, value, role in facts if kind == "constraint" and role == "user"}
+    # Exact string presence is necessary, not sufficient for semantic equivalence.
+    if any(value not in ctx for value in constraints):
+        out["warnings"].append("user_constraint_requires_semantic_review")
+    out["semantic_equivalence"] = "not_verified"
     return out
 
 

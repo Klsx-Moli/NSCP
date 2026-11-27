@@ -9,6 +9,7 @@ dependencies = ["PySide6>=6.11"]
 
 [project.scripts]
 npsc = "npsc_cli:run_cli"
+npsc-compact = "npsc_compact_cli:run_cli"
 npsc-gui = "npsc_gui.main:main"
 
 [build-system]
@@ -20,6 +21,12 @@ package-dir = {"" = "src"}
 py-modules = [
   "benchmark_quality",
   "compilation_profiles",
+  "compaction_verifier",
+  "compression_policy",
+  "context_compactor",
+  "conversation_store",
+  "npsc_compact_cli",
+  "summarizer",
   "compiler_defaults",
   "clarification_gate",
   "constraint_normalizer",

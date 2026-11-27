@@ -61,7 +61,9 @@ def test_without_summarizer_drops_oldest_middle():
 def test_with_summarizer_injected():
     fake = lambda turns: "RESUMEN: " + "; ".join(t.content[:6] for t in turns)  # noqa: E731
     msgs, rep = cc.compact_history(mk_history(20), num_ctx=1024, summarizer=fake)
-    assert rep["actions"]["summarized_turns"] == 12 and "RESUMEN" in msgs[0]["content"]
+    assert rep["actions"]["summarized_turns"] == 12
+    assert any(m["role"] == "assistant" and "RESUMEN" in m["content"] for m in msgs)
+    assert "RESUMEN" not in msgs[0]["content"]
     assert rep["actions"]["dropped_turns"] == 0
 
 
@@ -83,3 +85,29 @@ def test_history_input_not_mutated():
     snapshot = [(v.role, v.content, v.token_count) for v in hist]
     cc.compact_history(hist, num_ctx=1024)
     assert snapshot == [(v.role, v.content, v.token_count) for v in hist]
+
+
+def test_stale_token_counts_cannot_bypass_budget():
+    hist = mk_history(20, chars=300)
+    for turn in hist:
+        turn.token_count = 1
+    _, rep = cc.compact_history(hist, 1024)
+    assert rep["triggered"] and rep["tokens_before"] > 1000
+    assert rep["tokens_after"] <= 1024
+
+
+def test_non_system_pinned_is_not_promoted():
+    hist = mk_history(20)
+    hist[0].pinned = True
+    with pytest.raises(ValueError, match="no-system"):
+        cc.compact_history(hist, 1024)
+
+
+def test_legacy_rejects_tool_messages():
+    with pytest.raises(ValueError, match="herramientas"):
+        cc.compact_history([cc.TurnView("tool", "output")], 8192)
+
+
+def test_summary_over_budget_is_not_truncated():
+    with pytest.raises(ValueError, match="Resumen excede"):
+        cc.compact_history(mk_history(20), 1024, summarizer=lambda _: "x" * 8000)

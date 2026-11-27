@@ -38,7 +38,11 @@ def load_history(path):
     for i, m in enumerate(items):
         if not isinstance(m, dict) or m.get("role") not in VALID_ROLES or not isinstance(m.get("content"), str):
             raise ValueError(f"mensaje {i} invalido: requiere role en {VALID_ROLES} y content str")
-        out.append(TurnView(m["role"], m["content"], estimate_tokens(m["content"]), bool(m.get("pinned", False))))
+        if m["role"] == "tool" or set(m) - {"role", "content", "pinned"}:
+            raise ValueError(f"mensaje {i}: formato agéntico no soportado por CLI legacy; no se descartan metadatos")
+        if "pinned" in m and type(m["pinned"]) is not bool:
+            raise ValueError(f"mensaje {i}: pinned debe ser booleano")
+        out.append(TurnView(m["role"], m["content"], estimate_tokens(m["content"]), m.get("pinned", False)))
     return out
 
 

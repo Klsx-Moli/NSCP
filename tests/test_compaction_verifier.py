@@ -126,3 +126,19 @@ def test_report_compatible_with_npsc_evaluate_strict():
     m2, r2 = cc.compact_history(h2, 8192)
     v2 = cv.verify_compaction(h2, m2, r2)
     assert ns.evaluate_strict(v2, pol)[0] is True and cv.evaluate_gate(v2, pol)[0] is True
+
+
+def test_passthrough_tampering_does_not_get_perfect_score():
+    h = hist_with_facts(3)
+    msgs, rep = cc.compact_history(h, 8192)
+    msgs[1]["role"] = "assistant"
+    result = cv.verify_compaction(h, msgs, rep)
+    assert "modified_passthrough" in result["critical_losses"]
+    assert not cv.evaluate_gate(result)[0]
+
+
+def test_recent_role_tampering_is_critical():
+    h = hist_with_facts()
+    msgs, rep = cc.compact_history(h, 1500)
+    msgs[-1]["role"] = "user" if msgs[-1]["role"] == "assistant" else "assistant"
+    assert "missing_recent" in cv.verify_compaction(h, msgs, rep)["critical_losses"]
