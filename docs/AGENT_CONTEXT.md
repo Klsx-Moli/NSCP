@@ -209,7 +209,7 @@ reserves space for previews and may archive additional results. The report
 shows the reference-only baseline and the extra archival count.
 
 `--excerpts ollama --max-model-calls 4` explicitly enables the local Qwen ID
-selector. It receives a bounded lexical candidate pool plus head/tail spans,
+selector. It receives a bounded lexical and uniformly sampled candidate pool, with exact-text diversity,
 returns JSON integer IDs, and cannot insert its own generated text into the
 request. Unknown IDs, duplicates, invalid JSON and failed local inference
 fall back to deterministic lexical ranking, with a reported failure count.

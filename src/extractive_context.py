@@ -87,6 +87,43 @@ def rank_spans(spans, query):
     return [sid for _, sid in sorted(ranked, key=lambda row: (-row[0], row[1]))]
 
 
+def _diverse_ids(spans, ids):
+    # Diversity is a candidate-pool optimization only. The original transcript
+    # and occurrence offsets are not deduplicated or altered.
+    seen = set()
+    result = []
+    for sid in ids:
+        text = spans[sid].text
+        if text not in seen:
+            seen.add(text)
+            result.append(sid)
+    return result
+
+
+def candidate_pool(spans, ranking):
+    """Bounded lexical + uniform coverage, interleaved before local fitting.
+
+    This is not exhaustive semantic retrieval. It prevents identical repeated
+    chunks from monopolizing the pool, and retains some nonmatching regions.
+    """
+    if not spans:
+        return []
+    ranked = _diverse_ids(spans, ranking)
+    n = min(len(spans), 8 if ranked else MAX_POOL)
+    sampled = [round(i * (len(spans) - 1) / max(1, n - 1)) for i in range(n)]
+    lexical = ranked[:MAX_POOL - len(sampled)]
+    merged = []
+    for i in range(max(len(lexical), len(sampled))):
+        if i < len(lexical):
+            merged.append(lexical[i])
+        if i < len(sampled):
+            merged.append(sampled[i])
+    # Fill spare slots with remaining diverse lexical matches, not repeated
+    # copies of already presented text.
+    ids = _diverse_ids(spans, merged + ranked)[:MAX_POOL]
+    return [spans[sid] for sid in ids]
+
+
 def _validate_ids(ids, allowed, limit=MAX_EXCERPTS):
     if (not isinstance(ids, list) or len(ids) > limit
             or any(type(i) is not int or i not in allowed for i in ids)
@@ -171,11 +208,12 @@ def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
                   reserved_plan_tokens=base.report["tokens_after"],
                   extra_archived_results=len(base.report["references"]) - len(normal.report["references"]),
                   excerpts=[], selector_calls=0, selector_failures=0,
-                  skipped_sources=0, excerpt_tokens_added=0,
-                  selection_route="local_ids" if selector is not None else "bm25",
+                  selector_attempts=[], skipped_sources=0, excerpt_tokens_added=0,
+                  requested_selection_route="local_ids" if selector is not None else "bm25",
                   semantic_equivalence="not_verified" if base.report["references"] else "unchanged")
     query = _current_query(messages)
-    if not isinstance(query, str) or len(query) > 4096:
+    report["query_available"] = isinstance(query, str) and 0 < len(query) <= 4096
+    if not report["query_available"]:
         query = ""
     after = _estimate(out)
     if base.report["fits_metered_budget"] and query:
@@ -192,21 +230,22 @@ def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
                 report["skipped_sources"] += 1
                 continue
             ranking = rank_spans(spans, query)
-            ids = ranking[:MAX_EXCERPTS]
-            # Include head/tail for a bounded model candidate pool, including
-            # semantic queries without a lexical match. BM25 alone does not
-            # pretend unmatched excerpts are relevant.
-            pool_ids = list(dict.fromkeys(ranking[:MAX_POOL - 2] + [0, len(spans) - 1]))
-            pool = [spans[i] for i in pool_ids if 0 <= i < len(spans)]
+            ids = _diverse_ids(spans, ranking)[:MAX_EXCERPTS]
             route = "bm25"
-            if selector is not None and pool and report["selector_calls"] < max_model_calls:
-                report["selector_calls"] += 1
-                try:
-                    ids = _validate_ids(selector(query, tuple(pool)), {s.id for s in pool})
-                    route = "local_ids"
-                except Exception:
-                    report["selector_failures"] += 1
-                    route = "bm25_fallback"
+            if selector is not None and report["selector_calls"] < max_model_calls:
+                pool = candidate_pool(spans, ranking)
+                if pool:
+                    report["selector_calls"] += 1
+                    attempt = {"message_index": index, "offered_candidates": len(pool)}
+                    try:
+                        ids = _validate_ids(selector(query, tuple(pool)), {s.id for s in pool})
+                        route = "local_ids"
+                        attempt.update(outcome="selected", selected_ids=list(ids))
+                    except Exception as exc:
+                        report["selector_failures"] += 1
+                        route = "bm25_fallback"
+                        attempt.update(outcome="failed", error_type=type(exc).__name__)
+                    report["selector_attempts"].append(attempt)
             chosen = []
             for sid in ids:
                 span = spans[sid]

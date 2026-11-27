@@ -7,7 +7,7 @@ import pytest
 
 from agent_context import MARKER, _estimate, recall
 from extractive_context import (
-    _PREVIEW, OllamaSpanSelector, plan_extractive_request, rank_spans, split_spans,
+    _PREVIEW, OllamaSpanSelector, candidate_pool, plan_extractive_request, rank_spans, split_spans,
 )
 
 
@@ -125,3 +125,39 @@ def test_call_limit_and_large_source_skip():
     rows[4]["content"] = "unicorn " * 20000
     p = plan_extractive_request(rows, rows, 1200, keep_recent=1)
     assert p.report["skipped_sources"] == 1 and not p.report["excerpts"]
+
+
+def test_candidate_pool_diversity_and_nonlexical_coverage():
+    spans = split_spans(("repeat word\n" * 10 + "pad" * 4) * 200, 128)
+    ranked = rank_spans(spans, "repeat")
+    pool = candidate_pool(spans, ranked)
+    assert len(pool) <= 24
+    assert len({s.text for s in pool}) == len(pool)
+    distinct = split_spans("".join(f"{i:04d}" + "x" * 124 for i in range(100)), 128)
+    sampled = candidate_pool(distinct, [])
+    assert len(sampled) == 24
+    assert sampled[0].id == 0 and sampled[-1].id == 99
+    assert any(40 <= span.id <= 60 for span in sampled)
+
+
+def test_failed_selection_reports_without_leaking_error_body():
+    rows = history()
+    def fail(*args):
+        raise RuntimeError("private text should not enter report")
+    plan = plan_extractive_request(rows, rows, 1200, keep_recent=1, selector=fail)
+    assert plan.report["selector_attempts"] == [
+        {"message_index": 4, "offered_candidates": plan.report["selector_attempts"][0]["offered_candidates"],
+         "outcome": "failed", "error_type": "RuntimeError"}]
+    assert "private text" not in json.dumps(plan.report)
+    assert plan.report["excerpts"][0]["route"] == "bm25_fallback"
+
+
+def test_cli_offline_extractive_route(tmp_path, capsys):
+    from npsc_agent_cli import run_cli
+    path = tmp_path / "hist.json"
+    path.write_text(json.dumps(history()), encoding="utf-8")
+    assert run_cli(["plan", "--input", str(path), "--transcript", str(path),
+                    "--budget", "1200", "--keep-recent", "1", "--excerpts", "bm25"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["report"]["schema"] == "nscp/extractive-plan/v1"
+    assert payload["report"]["excerpts"]
