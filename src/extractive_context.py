@@ -179,7 +179,8 @@ def _render(marker, spans):
 
 def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
                             strategy="adaptive", focus_terms=None, protect_first=3,
-                            preview_reserve=0, selector=None, max_model_calls=4):
+                            preview_reserve=0, selector=None, max_model_calls=4,
+                            selector_route="local_ids", selector_pool="sampled"):
     """Enrich recoverable reference-only plans with exact excerpts.
 
     Reserve is opt-in and can cause more results to be archived to make room
@@ -190,7 +191,9 @@ def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
     if (type(budget) is not int or budget <= 0
             or type(preview_reserve) is not int or not 0 <= preview_reserve < budget
             or type(max_model_calls) is not int or not 0 <= max_model_calls <= MAX_MODEL_CALLS
-            or (selector is not None and not callable(selector))):
+            or (selector is not None and not callable(selector))
+            or selector_route not in ("local_ids", "embedding", "embedding_rerank")
+            or selector_pool not in ("sampled", "bounded_all")):
         raise ValueError("Invalid extractive planning policy")
     kwargs = dict(keep_recent=keep_recent, strategy=strategy, focus_terms=focus_terms,
                   protect_first=protect_first)
@@ -209,7 +212,8 @@ def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
                   extra_archived_results=len(base.report["references"]) - len(normal.report["references"]),
                   excerpts=[], selector_calls=0, selector_failures=0,
                   selector_attempts=[], skipped_sources=0, excerpt_tokens_added=0,
-                  requested_selection_route="local_ids" if selector is not None else "bm25",
+                  requested_selection_route=selector_route if selector is not None else "bm25",
+                  selector_pool_policy=selector_pool,
                   semantic_equivalence="not_verified" if base.report["references"] else "unchanged")
     query = _current_query(messages)
     report["query_available"] = isinstance(query, str) and 0 < len(query) <= 4096
@@ -233,13 +237,18 @@ def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
             ids = _diverse_ids(spans, ranking)[:MAX_EXCERPTS]
             route = "bm25"
             if selector is not None and report["selector_calls"] < max_model_calls:
-                pool = candidate_pool(spans, ranking)
+                if selector_pool == "bounded_all" and len(spans) > 64:
+                    report["selector_attempts"].append({"message_index": index,
+                        "offered_candidates": 0, "total_spans": len(spans), "outcome": "pool_limit"})
+                    pool = []
+                else:
+                    pool = spans if selector_pool == "bounded_all" else candidate_pool(spans, ranking)
                 if pool:
                     report["selector_calls"] += 1
                     attempt = {"message_index": index, "offered_candidates": len(pool)}
                     try:
                         ids = _validate_ids(selector(query, tuple(pool)), {s.id for s in pool})
-                        route = "local_ids"
+                        route = selector_route
                         attempt.update(outcome="selected", selected_ids=list(ids))
                     except Exception as exc:
                         report["selector_failures"] += 1
