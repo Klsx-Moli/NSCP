@@ -1,0 +1,189 @@
+{
+  "schema": "nscp/iter08-local/v1",
+  "tasks": {
+    "kompress": {
+      "status": "executed",
+      "exit_code": 0,
+      "seconds": 9.56199999999808
+    },
+    "ctxprune": {
+      "status": "executed",
+      "exit_code": 0,
+      "seconds": 4.688000000001921
+    },
+    "nli": {
+      "status": "executed",
+      "exit_code": 0,
+      "seconds": 4.171999999998661
+    },
+    "semantic_preview": {
+      "baseline": {
+        "expected_evidence_visible": false,
+        "plan": {
+          "schema": "nscp/extractive-plan/v1",
+          "strategy": "completed_tool_result_references",
+          "tokens_before": 3808,
+          "tokens_after": 313,
+          "budget": 1300,
+          "requested_strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "eligible_results": 1,
+          "focus_protected": 0,
+          "sidecar_protected": 0,
+          "lineage_protected": 0,
+          "unchanged_prefix_messages": 4,
+          "estimated_tokens_saved": 3495,
+          "token_accounting": "utf8_heuristic",
+          "fits_metered_budget": true,
+          "references": [
+            "b07703fd7f4365a539accb3b5a620a1a187bc6041fde32acad9064459ab8dd14"
+          ],
+          "transcript_modified": false,
+          "semantic_equivalence": "not_verified",
+          "preview_reserve_requested": 0,
+          "reference_only_tokens": 313,
+          "reserved_plan_tokens": 313,
+          "extra_archived_results": 0,
+          "excerpts": [],
+          "selector_calls": 0,
+          "selector_failures": 0,
+          "selector_attempts": [],
+          "skipped_sources": 0,
+          "excerpt_tokens_added": 0,
+          "requested_selection_route": "bm25",
+          "selector_pool_policy": "sampled",
+          "query_available": true
+        }
+      },
+      "server": {
+        "semantic-embedding": {
+          "pid": 7816,
+          "port": 10745,
+          "arguments": [
+            "<USERPROFILE>\\AppData\\Local\\Microsoft\\WinGet\\Packages\\ggml.llamacpp_Microsoft.Winget.Source_8wekyb3d8bbwe\\llama-server.exe",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "10745",
+            "-m",
+            "<EXTRAS_DIR>\\models\\embedding\\qwen3-embedding-0.6b-q8\\Qwen3-Embedding-0.6B-Q8_0.gguf",
+            "--ctx-size",
+            "2048",
+            "-t",
+            "2",
+            "-tb",
+            "2",
+            "--no-webui",
+            "--embedding",
+            "-ngl",
+            "99"
+          ],
+          "model_sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+          "startup_s": 5.797,
+          "exit_before_cleanup": null,
+          "termination_requested": true,
+          "exit_after_cleanup": 1
+        }
+      },
+      "embedding": {
+        "expected_evidence_visible": true,
+        "plan": {
+          "schema": "nscp/extractive-plan/v1",
+          "strategy": "completed_tool_result_references",
+          "tokens_before": 3808,
+          "tokens_after": 1242,
+          "budget": 1300,
+          "requested_strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "eligible_results": 1,
+          "focus_protected": 0,
+          "sidecar_protected": 0,
+          "lineage_protected": 0,
+          "unchanged_prefix_messages": 4,
+          "estimated_tokens_saved": 2566,
+          "token_accounting": "utf8_heuristic",
+          "fits_metered_budget": true,
+          "references": [
+            "b07703fd7f4365a539accb3b5a620a1a187bc6041fde32acad9064459ab8dd14"
+          ],
+          "transcript_modified": false,
+          "semantic_equivalence": "not_verified",
+          "preview_reserve_requested": 0,
+          "reference_only_tokens": 313,
+          "reserved_plan_tokens": 313,
+          "extra_archived_results": 0,
+          "excerpts": [
+            {
+              "message_index": 4,
+              "reference": "b07703fd7f4365a539accb3b5a620a1a187bc6041fde32acad9064459ab8dd14",
+              "route": "embedding",
+              "spans": [
+                {
+                  "id": 1,
+                  "start": 374,
+                  "end": 748,
+                  "sha256": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a"
+                },
+                {
+                  "id": 4,
+                  "start": 1496,
+                  "end": 1870,
+                  "sha256": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a"
+                },
+                {
+                  "id": 6,
+                  "start": 2244,
+                  "end": 2618,
+                  "sha256": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a"
+                },
+                {
+                  "id": 8,
+                  "start": 2992,
+                  "end": 3366,
+                  "sha256": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a"
+                },
+                {
+                  "id": 12,
+                  "start": 4488,
+                  "end": 4862,
+                  "sha256": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a"
+                },
+                {
+                  "id": 14,
+                  "start": 5236,
+                  "end": 5618,
+                  "sha256": "19ead5853722aae38115427f0cbabdca4e075c2931f8db5ba0dfeb96aa458a63"
+                }
+              ]
+            }
+          ],
+          "selector_calls": 1,
+          "selector_failures": 0,
+          "selector_attempts": [
+            {
+              "message_index": 4,
+              "offered_candidates": 28,
+              "outcome": "selected",
+              "selected_ids": [
+                14,
+                1,
+                4,
+                8,
+                12,
+                6
+              ]
+            }
+          ],
+          "skipped_sources": 0,
+          "excerpt_tokens_added": 929,
+          "requested_selection_route": "embedding",
+          "selector_pool_policy": "bounded_all",
+          "query_available": true
+        }
+      },
+      "local_http_requests": 8,
+      "status": "inference_path_observed"
+    }
+  },
+  "complete": true
+}

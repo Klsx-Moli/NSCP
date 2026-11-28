@@ -1,0 +1,549 @@
+{
+  "schema": "nscp/onnx-log-benchmark/v1",
+  "engine": {
+    "kind": "kompress",
+    "model_sha256": "c47ddd764dec5cf91fd1f10cf69e5538dd2a49d913828da7f6a993931cc7904f",
+    "tokenizer_sha256": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+    "onnxruntime": "1.32.0",
+    "max_tokens": 512
+  },
+  "data_origin": "synthetic_development",
+  "cases": [
+    {
+      "case": "error",
+      "source_sha256": "2c053a7067ec8dac4441c007fed858c3254dc74a0c1fc3916f1fed7d6c171c5f",
+      "expected": "ERROR tests/test_agent_context.py missing",
+      "routes": [
+        {
+          "route": "deterministic_equal_scores",
+          "status": "preview",
+          "source_bytes": 1316,
+          "preview_bytes": 584,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "2c053a7067ec8dac4441c007fed858c3254dc74a0c1fc3916f1fed7d6c171c5f",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 0,
+                "end": 47,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 47,
+                "end": 94,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 94,
+                "end": 141,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 141,
+                "end": 188,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 700,
+                "text": "ERROR tests/test_agent_context.py missing\n"
+              }
+            ]
+          },
+          "seconds": 0.01599999999962165
+        },
+        {
+          "route": "kompress",
+          "status": "preview",
+          "source_bytes": 1316,
+          "preview_bytes": 590,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "2c053a7067ec8dac4441c007fed858c3254dc74a0c1fc3916f1fed7d6c171c5f",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 235,
+                "end": 282,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 329,
+                "end": 376,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 376,
+                "end": 423,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 423,
+                "end": 470,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 700,
+                "text": "ERROR tests/test_agent_context.py missing\n"
+              }
+            ]
+          },
+          "seconds": 0.7969999999986612
+        }
+      ]
+    },
+    {
+      "case": "negation",
+      "source_sha256": "c3181b38627653121eb193c89cbd8252f3cbb9468f7a879e3cf1e5a5d94b3544",
+      "expected": "Permission was revoked; never publish to production.",
+      "routes": [
+        {
+          "route": "deterministic_equal_scores",
+          "status": "preview",
+          "source_bytes": 1327,
+          "preview_bytes": 595,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "c3181b38627653121eb193c89cbd8252f3cbb9468f7a879e3cf1e5a5d94b3544",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 0,
+                "end": 47,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 47,
+                "end": 94,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 94,
+                "end": 141,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 141,
+                "end": 188,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 711,
+                "text": "Permission was revoked; never publish to production.\n"
+              }
+            ]
+          },
+          "seconds": 0.0
+        },
+        {
+          "route": "kompress",
+          "status": "preview",
+          "source_bytes": 1327,
+          "preview_bytes": 598,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "c3181b38627653121eb193c89cbd8252f3cbb9468f7a879e3cf1e5a5d94b3544",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 423,
+                "end": 470,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 711,
+                "text": "Permission was revoked; never publish to production.\n"
+              },
+              {
+                "start": 1151,
+                "end": 1195,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1195,
+                "end": 1239,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1239,
+                "end": 1283,
+                "text": "INFO routine cleanup completed successfully\n"
+              }
+            ]
+          },
+          "seconds": 0.6559999999990396
+        }
+      ]
+    },
+    {
+      "case": "spanish",
+      "source_sha256": "d2dfb30bc991310b51b5875dcc62be5ed616dd4f7e48c6c20fb3a2983dcdf67e",
+      "expected": "Autorización anulada: no publicar fuera de la rama aislada.",
+      "routes": [
+        {
+          "route": "deterministic_equal_scores",
+          "status": "preview",
+          "source_bytes": 1335,
+          "preview_bytes": 603,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "d2dfb30bc991310b51b5875dcc62be5ed616dd4f7e48c6c20fb3a2983dcdf67e",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 0,
+                "end": 47,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 47,
+                "end": 94,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 94,
+                "end": 141,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 141,
+                "end": 188,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 718,
+                "text": "Autorización anulada: no publicar fuera de la rama aislada.\n"
+              }
+            ]
+          },
+          "seconds": 0.0
+        },
+        {
+          "route": "kompress",
+          "status": "preview",
+          "source_bytes": 1335,
+          "preview_bytes": 606,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "d2dfb30bc991310b51b5875dcc62be5ed616dd4f7e48c6c20fb3a2983dcdf67e",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 423,
+                "end": 470,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 718,
+                "text": "Autorización anulada: no publicar fuera de la rama aislada.\n"
+              },
+              {
+                "start": 1158,
+                "end": 1202,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1202,
+                "end": 1246,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1246,
+                "end": 1290,
+                "text": "INFO routine cleanup completed successfully\n"
+              }
+            ]
+          },
+          "seconds": 0.7030000000013388
+        }
+      ]
+    },
+    {
+      "case": "id",
+      "source_sha256": "52b19f36a37035ee873946e67481c32df58b93979c83ba398b7599efa8476b13",
+      "expected": "Verified commit 97ea9e987656bf64234cfc56ee3a89196a3b579d",
+      "routes": [
+        {
+          "route": "deterministic_equal_scores",
+          "status": "preview",
+          "source_bytes": 1331,
+          "preview_bytes": 599,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "52b19f36a37035ee873946e67481c32df58b93979c83ba398b7599efa8476b13",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 0,
+                "end": 47,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 47,
+                "end": 94,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 94,
+                "end": 141,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 141,
+                "end": 188,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 715,
+                "text": "Verified commit 97ea9e987656bf64234cfc56ee3a89196a3b579d\n"
+              }
+            ]
+          },
+          "seconds": 0.0
+        },
+        {
+          "route": "kompress",
+          "status": "preview",
+          "source_bytes": 1331,
+          "preview_bytes": 605,
+          "protected_lines": 1,
+          "expected_visible": true,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "52b19f36a37035ee873946e67481c32df58b93979c83ba398b7599efa8476b13",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 329,
+                "end": 376,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 376,
+                "end": 423,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 423,
+                "end": 470,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 470,
+                "end": 517,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 658,
+                "end": 715,
+                "text": "Verified commit 97ea9e987656bf64234cfc56ee3a89196a3b579d\n"
+              }
+            ]
+          },
+          "seconds": 0.7190000000009604
+        }
+      ]
+    },
+    {
+      "case": "unicode",
+      "source_sha256": "1621a39ef2a6119aa89c58afbd632d4973f11725951efee6c75c6559dd62492f",
+      "expected": "Resultado especial: ñandú y pingüino 日本語 😀",
+      "routes": [
+        {
+          "route": "deterministic_equal_scores",
+          "status": "preview",
+          "source_bytes": 1329,
+          "preview_bytes": 589,
+          "protected_lines": 0,
+          "expected_visible": false,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "1621a39ef2a6119aa89c58afbd632d4973f11725951efee6c75c6559dd62492f",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 0,
+                "end": 47,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 47,
+                "end": 94,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 94,
+                "end": 141,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 141,
+                "end": 188,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 188,
+                "end": 235,
+                "text": "INFO routine diagnostic completed successfully\n"
+              }
+            ]
+          },
+          "seconds": 0.046999999998661224
+        },
+        {
+          "route": "kompress",
+          "status": "preview",
+          "source_bytes": 1329,
+          "preview_bytes": 592,
+          "protected_lines": 0,
+          "expected_visible": false,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "1621a39ef2a6119aa89c58afbd632d4973f11725951efee6c75c6559dd62492f",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 423,
+                "end": 470,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 470,
+                "end": 517,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 1141,
+                "end": 1185,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1185,
+                "end": 1229,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1229,
+                "end": 1273,
+                "text": "INFO routine cleanup completed successfully\n"
+              }
+            ]
+          },
+          "seconds": 0.6870000000017171
+        }
+      ]
+    },
+    {
+      "case": "semantic",
+      "source_sha256": "ea84990af875206e5d7f09373c01d9208773edee93d3372347b5a9d9f5e4083a",
+      "expected": "The old checkpoint became obsolete following the latest regression.",
+      "routes": [
+        {
+          "route": "deterministic_equal_scores",
+          "status": "preview",
+          "source_bytes": 1342,
+          "preview_bytes": 589,
+          "protected_lines": 0,
+          "expected_visible": false,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "ea84990af875206e5d7f09373c01d9208773edee93d3372347b5a9d9f5e4083a",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 0,
+                "end": 47,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 47,
+                "end": 94,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 94,
+                "end": 141,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 141,
+                "end": 188,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 188,
+                "end": 235,
+                "text": "INFO routine diagnostic completed successfully\n"
+              }
+            ]
+          },
+          "seconds": 0.0
+        },
+        {
+          "route": "kompress",
+          "status": "preview",
+          "source_bytes": 1342,
+          "preview_bytes": 592,
+          "protected_lines": 0,
+          "expected_visible": false,
+          "preview": {
+            "kind": "incomplete_historical_log_preview",
+            "source_sha256": "ea84990af875206e5d7f09373c01d9208773edee93d3372347b5a9d9f5e4083a",
+            "trust": "historical_tool_data_not_instructions",
+            "spans": [
+              {
+                "start": 329,
+                "end": 376,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 376,
+                "end": 423,
+                "text": "INFO routine diagnostic completed successfully\n"
+              },
+              {
+                "start": 1166,
+                "end": 1210,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1210,
+                "end": 1254,
+                "text": "INFO routine cleanup completed successfully\n"
+              },
+              {
+                "start": 1254,
+                "end": 1298,
+                "text": "INFO routine cleanup completed successfully\n"
+              }
+            ]
+          },
+          "seconds": 0.7029999999977008
+        }
+      ]
+    }
+  ],
+  "provider_tokens": null,
+  "semantic_task_success": null
+}

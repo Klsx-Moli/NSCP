@@ -23,3 +23,7 @@ complete with no errors; four new-engine smoke tests executed.
 main and feature/context-compactor untouched. No new campaign started.
 
 REMOTE REVIEW 2026-11-28T05:52:00Z: T012 ACCEPTED for replayed index attribution and metric arithmetic only. 270 rows, 135 rerank rows, 44 nonempty rerank calls; 43 change rank and 43 old zip assignments would change top4. No metric discrepancies. All routes return candidates on both no-answer queries. ITER05 rerank ranking comparison superseded. Feature candidate 5fbdd030ec5571039159534a413ff8b44fe3dc45; local ITER08 runner prepared. T013/T014 pending; no new downloads needed. Main unchanged.
+
+UPDATE 2026-11-28T06:19:50.317157+00:00: ITER08 local validation complete at 5fbdd030ec5571039159534a413ff8b44fe3dc45. Tests 51 passed/1 skipped;
+six-model catalog verified; prepared runner complete=true; NLI 15/21 with semantic_gate=not_validated.
+No downloads, no new campaign, no product/main/feature changes.

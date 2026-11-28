@@ -1,0 +1,167 @@
+{
+  "schema": "nscp/local-resources/v1",
+  "models": [
+    {
+      "model_id": "qwen3-embedding-0.6b-q8",
+      "function": "embedding",
+      "availability": "PRESENT",
+      "files": [
+        {
+          "path": "models/embedding/qwen3-embedding-0.6b-q8/Qwen3-Embedding-0.6B-Q8_0.gguf",
+          "exists": true,
+          "bytes": 639150592,
+          "sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439"
+        }
+      ],
+      "source_integrity": "not_verified",
+      "inference": "not_verified"
+    },
+    {
+      "model_id": "qwen3-reranker-0.6b-q8",
+      "function": "reranking",
+      "availability": "PRESENT",
+      "files": [
+        {
+          "path": "models/reranking/qwen3-reranker-0.6b-q8/qwen3-reranker-0.6b-q8_0.gguf",
+          "exists": true,
+          "bytes": 639153184,
+          "sha256": "22c9979ce4fbcdc5acdc310c6641c32797eff1aa980b8f7a2db8a8ea23429a48"
+        }
+      ],
+      "source_integrity": "not_verified",
+      "inference": "not_verified"
+    },
+    {
+      "model_id": "compactor-qwen3.5-4b-q4",
+      "function": "compaction",
+      "availability": "PRESENT",
+      "files": [
+        {
+          "path": "models/compaction/compactor-qwen3.5-4b-q4/Compactor-Qwen3.5-4B.Q4_K_M.gguf",
+          "exists": true,
+          "bytes": 2708804832,
+          "sha256": "0b5b943c72ba440240f2c5d2184181e4a0721c9905bf87b74503e63d5e6ea34b"
+        }
+      ],
+      "source_integrity": "not_verified",
+      "inference": "not_verified"
+    },
+    {
+      "model_id": "kompress-v2-base-int8",
+      "function": "extraction",
+      "availability": "PRESENT",
+      "files": [
+        {
+          "path": "models/extraction/kompress-v2-base-int8/onnx/kompress-int8-wo.onnx",
+          "exists": true,
+          "bytes": 274049435,
+          "sha256": "c47ddd764dec5cf91fd1f10cf69e5538dd2a49d913828da7f6a993931cc7904f"
+        },
+        {
+          "path": "models/extraction/kompress-v2-base-int8/config.json",
+          "exists": true,
+          "bytes": 432,
+          "sha256": "1449bb02c1375480bc33b8ab0d6bded9c685953d8c6e4213dd2e9ac50116d8b9"
+        },
+        {
+          "path": "models/extraction/kompress-v2-base-int8/tokenizer.json",
+          "exists": true,
+          "bytes": 3583228,
+          "sha256": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30"
+        },
+        {
+          "path": "models/extraction/kompress-v2-base-int8/tokenizer_config.json",
+          "exists": true,
+          "bytes": 20840,
+          "sha256": "2966a59b9e9cf122279aec1249e22e5bc7ad8430c754e95031b13fd128d4e560"
+        },
+        {
+          "path": "models/extraction/kompress-v2-base-int8/special_tokens_map.json",
+          "exists": true,
+          "bytes": 694,
+          "sha256": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049"
+        }
+      ],
+      "source_integrity": "not_verified",
+      "inference": "not_verified"
+    },
+    {
+      "model_id": "ctxprune-small-int8",
+      "function": "extraction",
+      "availability": "PRESENT",
+      "files": [
+        {
+          "path": "models/extraction/ctxprune-small-int8/onnx/model_quantized.onnx",
+          "exists": true,
+          "bytes": 142501996,
+          "sha256": "a00b6154721359f3786367d07be50e235a072d59887496eb462334c0b599ac48"
+        },
+        {
+          "path": "models/extraction/ctxprune-small-int8/config.json",
+          "exists": true,
+          "bytes": 2040,
+          "sha256": "dc139d7ae0d3633a2896aa99ab857c63a5057a4dd6b0f67e3ea6a86898649972"
+        },
+        {
+          "path": "models/extraction/ctxprune-small-int8/tokenizer.json",
+          "exists": true,
+          "bytes": 34363188,
+          "sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+        },
+        {
+          "path": "models/extraction/ctxprune-small-int8/tokenizer_config.json",
+          "exists": true,
+          "bytes": 574,
+          "sha256": "14b147f2a4f939d9b12ab36e9633917040dd948fa78ce283b03402e4cf2c9cba"
+        }
+      ],
+      "source_integrity": "not_verified",
+      "inference": "not_verified"
+    },
+    {
+      "model_id": "multilingual-minilm-nli-onnx",
+      "function": "nli",
+      "availability": "PRESENT",
+      "files": [
+        {
+          "path": "models/nli/multilingual-minilm-nli-onnx/onnx/model.onnx",
+          "exists": true,
+          "bytes": 428127016,
+          "sha256": "79f8cda2b1230585a95ea0514a6f1bd21c5c986ba0529bb3261213a3e195fa6e"
+        },
+        {
+          "path": "models/nli/multilingual-minilm-nli-onnx/config.json",
+          "exists": true,
+          "bytes": 921,
+          "sha256": "e08b628c4d46c8601dda34ddb40a7857e5961870b80482382d420db6dfb6e00e"
+        },
+        {
+          "path": "models/nli/multilingual-minilm-nli-onnx/tokenizer.json",
+          "exists": true,
+          "bytes": 17082854,
+          "sha256": "b2116c05e7305eea30394284760789681c5b3440dd4cd9a8c77539da68f9e8a6"
+        },
+        {
+          "path": "models/nli/multilingual-minilm-nli-onnx/tokenizer_config.json",
+          "exists": true,
+          "bytes": 1255,
+          "sha256": "10dd51e1952b6725b3c65edd16411a4ffe97a6f61636f11a7505bcb0bdb6b360"
+        },
+        {
+          "path": "models/nli/multilingual-minilm-nli-onnx/special_tokens_map.json",
+          "exists": true,
+          "bytes": 964,
+          "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+        },
+        {
+          "path": "models/nli/multilingual-minilm-nli-onnx/sentencepiece.bpe.model",
+          "exists": true,
+          "bytes": 5069051,
+          "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865"
+        }
+      ],
+      "source_integrity": "not_verified",
+      "inference": "not_verified"
+    }
+  ]
+}

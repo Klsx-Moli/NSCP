@@ -1,0 +1,331 @@
+{
+  "schema": "nscp/nli-diagnostic/v1",
+  "identity": {
+    "model_sha256": "79f8cda2b1230585a95ea0514a6f1bd21c5c986ba0529bb3261213a3e195fa6e",
+    "tokenizer_sha256": "b2116c05e7305eea30394284760789681c5b3440dd4cd9a8c77539da68f9e8a6",
+    "config_sha256": "e08b628c4d46c8601dda34ddb40a7857e5961870b80482382d420db6dfb6e00e",
+    "onnxruntime": "1.32.0"
+  },
+  "cases": [
+    {
+      "case": "es1",
+      "premise": "El servidor A está apagado.",
+      "hypothesis": "El servidor A está encendido.",
+      "expected": "contradiction",
+      "token_count": 19,
+      "scores": {
+        "entailment": 0.4135055306333857,
+        "neutral": 0.007537843513787628,
+        "contradiction": 0.5789566258528267
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es2",
+      "premise": "El servidor A está apagado.",
+      "hypothesis": "El servidor A no está encendido.",
+      "expected": "entailment",
+      "token_count": 20,
+      "scores": {
+        "entailment": 0.9807477781779469,
+        "neutral": 0.006614029386694593,
+        "contradiction": 0.012638192435358476
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es3",
+      "premise": "El servidor A está apagado.",
+      "hypothesis": "El servidor B está apagado.",
+      "expected": "neutral",
+      "token_count": 18,
+      "scores": {
+        "entailment": 0.006958515739822306,
+        "neutral": 0.01675910922620827,
+        "contradiction": 0.9762823750339695
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es4",
+      "premise": "Se revocó el permiso de escritura en el archivo A.",
+      "hypothesis": "El permiso de escritura en el archivo A sigue vigente.",
+      "expected": "contradiction",
+      "token_count": 30,
+      "scores": {
+        "entailment": 0.7957689822698718,
+        "neutral": 0.04452672979292699,
+        "contradiction": 0.15970428793720123
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es5",
+      "premise": "Solo se permite leer el archivo A.",
+      "hypothesis": "Se permite leer el archivo A.",
+      "expected": "entailment",
+      "token_count": 21,
+      "scores": {
+        "entailment": 0.9762744173938201,
+        "neutral": 0.009854606599570036,
+        "contradiction": 0.013870976006609864
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es6",
+      "premise": "El archivo A existe.",
+      "hypothesis": "El archivo A está cifrado.",
+      "expected": "neutral",
+      "token_count": 18,
+      "scores": {
+        "entailment": 0.29380282431719235,
+        "neutral": 0.6944212910160376,
+        "contradiction": 0.011775884666770122
+      },
+      "label": "neutral",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es7",
+      "premise": "Las tres pruebas fallaron.",
+      "hypothesis": "Al menos una prueba falló.",
+      "expected": "entailment",
+      "token_count": 17,
+      "scores": {
+        "entailment": 0.9817538421034234,
+        "neutral": 0.0068524845729764795,
+        "contradiction": 0.011393673323600112
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es8",
+      "premise": "Todas las pruebas fallaron.",
+      "hypothesis": "Todas las pruebas pasaron.",
+      "expected": "contradiction",
+      "token_count": 16,
+      "scores": {
+        "entailment": 0.1596608178903548,
+        "neutral": 0.00334648135043331,
+        "contradiction": 0.8369927007592118
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "es9",
+      "premise": "Se propuso ejecutar la prueba.",
+      "hypothesis": "La prueba fue ejecutada.",
+      "expected": "neutral",
+      "token_count": 18,
+      "scores": {
+        "entailment": 0.9918730282961784,
+        "neutral": 0.005574506895838058,
+        "contradiction": 0.002552464807983618
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en1",
+      "premise": "Server A is off.",
+      "hypothesis": "Server A is on.",
+      "expected": "contradiction",
+      "token_count": 14,
+      "scores": {
+        "entailment": 0.14412244531939702,
+        "neutral": 0.012045273584787363,
+        "contradiction": 0.8438322810958157
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en2",
+      "premise": "Server A is off.",
+      "hypothesis": "Server A is not on.",
+      "expected": "entailment",
+      "token_count": 15,
+      "scores": {
+        "entailment": 0.9723675166741962,
+        "neutral": 0.015977418376545587,
+        "contradiction": 0.01165506494925824
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en3",
+      "premise": "Server A is off.",
+      "hypothesis": "Server B is off.",
+      "expected": "neutral",
+      "token_count": 14,
+      "scores": {
+        "entailment": 0.010708501470838183,
+        "neutral": 0.022032385474838285,
+        "contradiction": 0.9672591130543234
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en4",
+      "premise": "Write permission for file A was revoked.",
+      "hypothesis": "Write permission for file A is still valid.",
+      "expected": "contradiction",
+      "token_count": 25,
+      "scores": {
+        "entailment": 0.18090149664817556,
+        "neutral": 0.06231629745897262,
+        "contradiction": 0.7567822058928518
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en5",
+      "premise": "Only reading file A is permitted.",
+      "hypothesis": "Reading file A is permitted.",
+      "expected": "entailment",
+      "token_count": 19,
+      "scores": {
+        "entailment": 0.9599081669324102,
+        "neutral": 0.017867278943741873,
+        "contradiction": 0.02222455412384801
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en6",
+      "premise": "File A exists.",
+      "hypothesis": "File A is encrypted.",
+      "expected": "neutral",
+      "token_count": 16,
+      "scores": {
+        "entailment": 0.10728822818551664,
+        "neutral": 0.7846556359702648,
+        "contradiction": 0.10805613584421848
+      },
+      "label": "neutral",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en7",
+      "premise": "All three tests failed.",
+      "hypothesis": "At least one test failed.",
+      "expected": "entailment",
+      "token_count": 15,
+      "scores": {
+        "entailment": 0.7698716060014028,
+        "neutral": 0.05416241406183345,
+        "contradiction": 0.1759659799367637
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en8",
+      "premise": "All tests failed.",
+      "hypothesis": "All tests passed.",
+      "expected": "contradiction",
+      "token_count": 12,
+      "scores": {
+        "entailment": 0.03183971478023563,
+        "neutral": 0.006652253689228162,
+        "contradiction": 0.9615080315305363
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "en9",
+      "premise": "A test run was proposed.",
+      "hypothesis": "The test was executed.",
+      "expected": "neutral",
+      "token_count": 17,
+      "scores": {
+        "entailment": 0.9647412820839196,
+        "neutral": 0.0239665256013845,
+        "contradiction": 0.011292192314695929
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "cross1",
+      "premise": "El servidor A está apagado.",
+      "hypothesis": "Server A is on.",
+      "expected": "contradiction",
+      "token_count": 16,
+      "scores": {
+        "entailment": 0.16899656956143302,
+        "neutral": 0.01597125290205937,
+        "contradiction": 0.8150321775365076
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "cross2",
+      "premise": "File A exists.",
+      "hypothesis": "El archivo A existe.",
+      "expected": "entailment",
+      "token_count": 15,
+      "scores": {
+        "entailment": 0.9493041696784312,
+        "neutral": 0.025244920845935034,
+        "contradiction": 0.02545090947563368
+      },
+      "label": "entailment",
+      "calibrated": false,
+      "authority": "none"
+    },
+    {
+      "case": "cross3",
+      "premise": "El archivo A existe.",
+      "hypothesis": "File B is encrypted.",
+      "expected": "neutral",
+      "token_count": 17,
+      "scores": {
+        "entailment": 0.0771345560801029,
+        "neutral": 0.2260060505273584,
+        "contradiction": 0.6968593933925387
+      },
+      "label": "contradiction",
+      "calibrated": false,
+      "authority": "none"
+    }
+  ],
+  "expected_cases": 21,
+  "measured_cases": 21,
+  "hits": 15,
+  "authority": "none",
+  "semantic_gate": "not_validated"
+}

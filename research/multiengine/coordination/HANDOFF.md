@@ -52,3 +52,12 @@ REMOTE REVIEW 2026-11-28T05:52:00Z
 - CTXPrune smoke applied sigmoid to the class-1 logit; upstream uses two-class softmax. New local_onnx adapter and benchmark are ready for real inference tests. NLI 3/6 is diagnostic only.
 - New feature candidate 5fbdd030ec5571039159534a413ff8b44fe3dc45: ONNX exact previews, semantic local CLI excerpts, explicit authorization event resolver, NLI diagnostic, two additional model bundles and one local runner.
 - T013: import existing CTXPrune/NLI bundles into extras. T014: run tools/run_iter08_local.py using isolated ONNX Python. Do not rewrite tests or launch new broad campaign. No downloads, main merge, production Hermes changes, or skills changes.
+
+BLOQUE ITER08 2026-11-28T06:19:50.317157+00:00
+Realizado: fetch y lectura de TASKS/HANDOFF remotos; worktree desde 5fbdd030ec5571039159534a413ff8b44fe3dc45; cinco tests ejecutados;
+bundles CTXPrune/NLI importados al catálogo compartido; runner ITER08 ejecutado con Python ONNX aislado.
+Cambiado: T013/T014 a TESTED; nueva evidencia ITER08; STATUS/CHECKPOINT/EVIDENCE_INDEX.
+Fallido/negativo: NLI 15/21 sin calibración ni autoridad; casos unicode/semantic no visibles en Kompress/CTXPrune;
+logs ONNX vacíos; baseline determinista no mostró la evidencia esperada.
+Pendiente revisión remota: interpretación científica de NLI y del preview semántico.
+Sin autorización para integración en producto.

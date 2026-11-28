@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-28T05:52:00Z",
+  "updated_at": "2026-11-28T06:19:50.317157+00:00",
   "branch": "research/multiengine",
-  "base_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
-  "phase": "ITER07_REMOTE_REVIEW_ITER08_PREPARED",
-  "status": "READY_FOR_REVIEW",
+  "base_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45",
+  "phase": "ITER08_LOCAL_VALIDATION_TESTED",
+  "status": "TESTED",
   "verified": {
     "embedding": "VERIFIED_BY_EXECUTOR",
     "reranker": "VERIFIED_BY_EXECUTOR",
@@ -17,7 +17,10 @@
     "iter07_benchmark": "complete=true, no errors, ngl_requested=99",
     "iter07_smoke": "4 engines executed; NLI 3/6 labels",
     "iter07_rerank_attribution": "VERIFIED_BY_ME: 270 records, 135 rerank rows, no metric discrepancies",
-    "iter05_rerank": "SUPERSEDED: positional mapping defect"
+    "iter05_rerank": "SUPERSEDED: positional mapping defect",
+    "iter08_tests": "51 passed, 1 skipped",
+    "iter08_resources": "6 managed models PRESENT",
+    "iter08_runner": "complete=true; NLI 15/21; semantic_gate=not_validated"
   },
   "not_executed": [
     "ITER06",
@@ -27,9 +30,8 @@
     "calibrated abstention"
   ],
   "next": [
-    "T013 targeted import existing local bundles",
-    "T014 prepared local runner",
-    "review latest feature CI"
+    "remote interpretation of ITER08 results",
+    "no new campaign until remote review"
   ],
   "feature_candidate_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45"
 }
