@@ -1,0 +1,11 @@
+negation valid False bm25_hit True qwen_hit False ids None err LocalSummaryError: Incomplete or unrecognized completion
+revocation valid False bm25_hit True qwen_hit False ids None err LocalSummaryError: Incomplete or unrecognized completion
+unicode valid False bm25_hit True qwen_hit False ids None err LocalSummaryError: Incomplete or unrecognized completion
+state_change valid False bm25_hit True qwen_hit False ids None err LocalSummaryError: Incomplete or unrecognized completion
+semantic_gap valid False bm25_hit False qwen_hit False ids None err LocalSummaryError: Incomplete or unrecognized completion
+fake_authority valid False bm25_hit True qwen_hit False ids None err LocalSummaryError: Incomplete or unrecognized completion
+semantic_access valid False bm25_hit False qwen_hit False ids None err LocalSummaryError: Incomplete or unrecognized completion
+repeat {'attempt': 1, 'pool_size': 9, 'error': 'LocalSummaryError: Incomplete or unrecognized completion', 'seconds': 2.687}
+repeat {'attempt': 2, 'pool_size': 9, 'error': 'LocalSummaryError: Incomplete or unrecognized completion', 'seconds': 2.411}
+repeat {'attempt': 3, 'pool_size': 9, 'error': 'LocalSummaryError: Incomplete or unrecognized completion', 'seconds': 2.428}
+SUMMARY {'cases': 7, 'bm25_hits': 5, 'qwen_hits': 0, 'qwen_valid_responses': 0, 'bm25_hit_rate': 0.714, 'qwen_hit_rate': 0.0, 'total_prompt_tokens': 0, 'total_completion_tokens': 0, 'total_wall_s': 0, 'mean_wall_s': 0.0}

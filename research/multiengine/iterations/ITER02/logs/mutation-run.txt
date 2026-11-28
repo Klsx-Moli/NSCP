@@ -1,0 +1,9 @@
+MUT-NEG-001 KILLED rc=1 summary=3 failed, 30 passed in 1.70s
+MUT-AUTH-001 FALSE_COVERAGE rc=0 summary=19 passed in 0.15s
+MUT-SILENT-001 KILLED rc=4 summary=ERROR: file or directory not found: tests/test_context_loss_verifier.py
+MUT-ACCOUNT-001 KILLED rc=2 summary=1 error in 1.48s
+MUT-ROLE-001 FALSE_COVERAGE rc=0 summary=16 passed in 0.35s
+MUT-META-001 FALSE_COVERAGE rc=0 summary=16 passed in 0.15s
+MUT-COUNT-001 KILLED rc=2 summary=1 error in 0.34s
+MUT-ID-001 KILLED rc=1 summary=16 passed, 8 errors in 0.34s
+COUNTS {'KILLED': 5, 'FALSE_COVERAGE': 3}

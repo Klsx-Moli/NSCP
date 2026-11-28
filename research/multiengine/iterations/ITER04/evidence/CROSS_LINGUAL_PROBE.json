@@ -1,0 +1,105 @@
+{
+  "route": "gemma3_selector_cross_lingual_es_en_offline_rescored",
+  "raw_json_valid": "0/6 (fenced markdown)",
+  "case_count": 6,
+  "selection_recall": 1.0,
+  "precision_mean": 0.333,
+  "rows": [
+    {
+      "case_id": "C-073",
+      "seconds": 2.044,
+      "selected_ids": [
+        5,
+        6,
+        0,
+        1,
+        2,
+        3
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "candidate_recall": true,
+      "literal_fidelity": true,
+      "false_positives": 5,
+      "raw_json_valid": false
+    },
+    {
+      "case_id": "C-074",
+      "seconds": 2.064,
+      "selected_ids": [
+        5,
+        6,
+        0,
+        1,
+        2,
+        3
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "candidate_recall": true,
+      "literal_fidelity": true,
+      "false_positives": 5,
+      "raw_json_valid": false
+    },
+    {
+      "case_id": "C-075",
+      "seconds": 1.978,
+      "selected_ids": [
+        5,
+        6,
+        0,
+        1,
+        2,
+        3
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "candidate_recall": true,
+      "literal_fidelity": true,
+      "false_positives": 5,
+      "raw_json_valid": false
+    },
+    {
+      "case_id": "C-076",
+      "seconds": 1.386,
+      "selected_ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "candidate_recall": true,
+      "literal_fidelity": true,
+      "false_positives": 1,
+      "raw_json_valid": false
+    },
+    {
+      "case_id": "C-077",
+      "seconds": 1.429,
+      "selected_ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "candidate_recall": true,
+      "literal_fidelity": true,
+      "false_positives": 1,
+      "raw_json_valid": false
+    },
+    {
+      "case_id": "C-078",
+      "seconds": 1.325,
+      "selected_ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "candidate_recall": true,
+      "literal_fidelity": true,
+      "false_positives": 1,
+      "raw_json_valid": false
+    }
+  ]
+}

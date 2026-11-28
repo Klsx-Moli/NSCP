@@ -1,0 +1,34 @@
+0.00.551.268 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.563.873 I srv          init: The UI is disabled
+0.00.563.881 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.580.221 I srv    load_model: loading model '<MODEL_ROOT>\00_CONTROL_OFICIAL\bartowski--Qwen_Qwen3.5-4B-GGUF\Qwen_Qwen3.5-4B-Q4_K_M.gguf'
+0.08.545.215 W resolve_fused_ops: layer 0 is assigned to device CPU but fused Gated Delta Net (chunked) is assigned to device Vulkan0 (usually due to missing support)
+0.08.545.226 W resolve_fused_ops: fused Gated Delta Net (chunked) not supported, set to disabled
+0.16.509.489 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 8192, kv_unified = 'true'
+0.16.663.445 I srv  llama_server: model loaded
+0.16.663.457 I srv  llama_server: listening on http://127.0.0.1:18087
+0.16.986.315 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.16.986.985 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.20.983.939 I slot print_timing: id  3 | task 0 | prompt processing, n_tokens =    133, progress = 0.20, t =   4.00 s / 33.28 tokens per second
+0.25.443.038 I slot print_timing: id  3 | task 0 | prompt processing, n_tokens =    645, progress = 0.99, t =   8.46 s / 76.28 tokens per second
+0.51.790.789 I slot print_timing: id  3 | task 0 | n_decoded =    100, tg =   3.94 t/s, tg_3s =   3.94 t/s
+0.55.010.524 I slot print_timing: id  3 | task 0 | n_decoded =    112, tg =   3.92 t/s, tg_3s =   3.73 t/s
+0.58.053.927 I slot print_timing: id  3 | task 0 | n_decoded =    124, tg =   3.92 t/s, tg_3s =   3.94 t/s
+1.01.281.597 I slot print_timing: id  3 | task 0 | n_decoded =    136, tg =   3.90 t/s, tg_3s =   3.72 t/s
+1.04.441.244 I slot print_timing: id  3 | task 0 | n_decoded =    148, tg =   3.89 t/s, tg_3s =   3.80 t/s
+1.07.651.594 I slot print_timing: id  3 | task 0 | n_decoded =    160, tg =   3.88 t/s, tg_3s =   3.74 t/s
+1.10.770.263 I slot print_timing: id  3 | task 0 | n_decoded =    171, tg =   3.86 t/s, tg_3s =   3.53 t/s
+1.13.897.665 I slot print_timing: id  3 | task 0 | n_decoded =    183, tg =   3.86 t/s, tg_3s =   3.84 t/s
+1.16.983.847 I slot print_timing: id  3 | task 0 | n_decoded =    195, tg =   3.86 t/s, tg_3s =   3.89 t/s
+1.20.235.917 I slot print_timing: id  3 | task 0 | n_decoded =    199, tg =   3.70 t/s, tg_3s =   1.23 t/s
+1.23.273.325 I slot print_timing: id  3 | task 0 | n_decoded =    210, tg =   3.69 t/s, tg_3s =   3.62 t/s
+1.26.323.707 I slot print_timing: id  3 | task 0 | n_decoded =    222, tg =   3.71 t/s, tg_3s =   3.93 t/s
+1.29.412.783 I slot print_timing: id  3 | task 0 | n_decoded =    234, tg =   3.72 t/s, tg_3s =   3.88 t/s
+1.32.654.796 I slot print_timing: id  3 | task 0 | n_decoded =    246, tg =   3.71 t/s, tg_3s =   3.70 t/s
+1.35.737.695 I slot print_timing: id  3 | task 0 | n_decoded =    258, tg =   3.72 t/s, tg_3s =   3.89 t/s
+1.38.753.706 I slot print_timing: id  3 | task 0 | n_decoded =    270, tg =   3.73 t/s, tg_3s =   3.98 t/s
+1.39.874.396 I slot print_timing: id  3 | task 0 | prompt eval time =    9441.84 ms /   649 tokens (   14.55 ms per token,    68.74 tokens per second)
+1.39.874.408 I slot print_timing: id  3 | task 0 |        eval time =   73407.45 ms /   274 tokens (  267.91 ms per token,     3.73 tokens per second)
+1.39.874.410 I slot print_timing: id  3 | task 0 |       total time =   82849.29 ms /   923 tokens
+1.39.874.415 I slot print_timing: id  3 | task 0 |    graphs reused =        272
+1.39.876.615 I slot      release: id  3 | task 0 | stop processing: n_tokens = 922, truncated = 0

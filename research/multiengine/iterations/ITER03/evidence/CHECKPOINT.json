@@ -1,0 +1,19 @@
+{
+  "campaign": "NSCP_EXTRACTIVE_ITER03",
+  "sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+  "worktree": "<ITER03_WORKTREE>",
+  "evidence": "<EVIDENCE_DIR>/2026-11-27_iter03",
+  "tests": "20 passed",
+  "synthetic_benchmark": "EXECUTED, structural oracle only",
+  "real_qwen": {
+    "valid_responses": "7/7",
+    "bm25_hits": "5/7",
+    "qwen_hits": "5/7",
+    "all_ids_valid": true,
+    "semantic_gap": "unresolved",
+    "transient_failure": "recorded and rerun"
+  },
+  "previous_sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "constraints": "no production changes, no push, no main modification",
+  "next": "package evidence, report"
+}

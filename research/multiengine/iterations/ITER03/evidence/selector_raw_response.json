@@ -1,0 +1,11 @@
+{
+  "done": false,
+  "done_reason": null,
+  "model": "qwen3.5:4b-q4_K_M",
+  "remote_host": null,
+  "prompt_eval_count": null,
+  "eval_count": null,
+  "content": "0000000000000000000000000000000",
+  "thinking_len": 0,
+  "tool_calls": null
+}

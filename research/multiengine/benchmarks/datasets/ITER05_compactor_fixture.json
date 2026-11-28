@@ -1,0 +1,17 @@
+{
+  "facts": {
+    "sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+    "branch": "feature/context-compactor",
+    "permission": "moli revoco el permiso de push a las 10:00",
+    "test": "535 passed, 1 skipped",
+    "error": "tests/test_agent_context.py file or directory not found",
+    "path": "<EVIDENCE_DIR>",
+    "decision": "no modificar main ni Hermes activo",
+    "next": "ejecutar ITER05 en worktree aislado",
+    "model": "Qwen3-Embedding-0.6B Q8_0",
+    "gate": "CHECKMATE exige gates PASS",
+    "owner": "THEKEY gobierna, Hermes implementa",
+    "vram": "RX 570 4 GB reportados"
+  },
+  "text": "sha: 97ea9e987656bf64234cfc56ee3a89196a3b579d\nbranch: feature/context-compactor\npermission: moli revoco el permiso de push a las 10:00\ntest: 535 passed, 1 skipped\nerror: tests/test_agent_context.py file or directory not found\npath: <EVIDENCE_DIR>\ndecision: no modificar main ni Hermes activo\nnext: ejecutar ITER05 en worktree aislado\nmodel: Qwen3-Embedding-0.6B Q8_0\ngate: CHECKMATE exige gates PASS\nowner: THEKEY gobierna, Hermes implementa\nvram: RX 570 4 GB reportados\nEl informe anterior afirmaba erroneamente que el permiso de push seguia vigente.\nUn resumen viejo indicaba 591 tests passed; dato no reproducible localmente.\nnota de seguimiento 0: se reviso el estado 0 sin cambios relevantes\nnota de seguimiento 1: se reviso el estado 1 sin cambios relevantes\nnota de seguimiento 2: se reviso el estado 2 sin cambios relevantes\nnota de seguimiento 3: se reviso el estado 3 sin cambios relevantes\nnota de seguimiento 4: se reviso el estado 4 sin cambios relevantes\nnota de seguimiento 5: se reviso el estado 5 sin cambios relevantes\nnota de seguimiento 6: se reviso el estado 6 sin cambios relevantes\nnota de seguimiento 7: se reviso el estado 7 sin cambios relevantes\nnota de seguimiento 8: se reviso el estado 8 sin cambios relevantes\nnota de seguimiento 9: se reviso el estado 9 sin cambios relevantes\nnota de seguimiento 10: se reviso el estado 10 sin cambios relevantes\nnota de seguimiento 11: se reviso el estado 11 sin cambios relevantes\nnota de seguimiento 12: se reviso el estado 12 sin cambios relevantes\nnota de seguimiento 13: se reviso el estado 13 sin cambios relevantes\nnota de seguimiento 14: se reviso el estado 14 sin cambios relevantes\nnota de seguimiento 15: se reviso el estado 15 sin cambios relevantes\nnota de seguimiento 16: se reviso el estado 16 sin cambios relevantes\nnota de seguimiento 17: se reviso el estado 17 sin cambios relevantes\nnota de seguimiento 18: se reviso el estado 18 sin cambios relevantes\nnota de seguimiento 19: se reviso el estado 19 sin cambios relevantes"
+}

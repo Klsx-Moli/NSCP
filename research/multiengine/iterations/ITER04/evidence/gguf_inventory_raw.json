@@ -1,0 +1,152 @@
+[
+  {
+    "path": "D:\\MODELOS\\codegemma-7b-it-Q4_K_M.gguf",
+    "bytes": 5329759232,
+    "name": "codegemma-7b-it-Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\codellama-7b.Q4_K_M.gguf",
+    "bytes": 4081095360,
+    "name": "codellama-7b.Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\deepseek-coder-6.7b-instruct.Q4_K_M.gguf",
+    "bytes": 4083015904,
+    "name": "deepseek-coder-6.7b-instruct.Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\dolphin-2.9.4-llama3.1-8b-Q4_K_M.gguf",
+    "bytes": 4920746112,
+    "name": "dolphin-2.9.4-llama3.1-8b-Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\L3.2-Rogue-Creative-Instruct-Uncensored-Abliterated-7B-D_AU-Q4_k_m.gguf",
+    "bytes": 4588966592,
+    "name": "L3.2-Rogue-Creative-Instruct-Uncensored-Abliterated-7B-D_AU-Q4_k_m.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\Llama3.1-BestMix-Chem-Einstein-8B.Q4_K_M.gguf",
+    "bytes": 4920734560,
+    "name": "Llama3.1-BestMix-Chem-Einstein-8B.Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+    "bytes": 4920739232,
+    "name": "Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\Mistral-7B-Instruct-v0.3-Q4_K_M.gguf",
+    "bytes": 4372812000,
+    "name": "Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\nous-hermes-llama-2-7b.Q4_K_M.gguf",
+    "bytes": 4081004224,
+    "name": "nous-hermes-llama-2-7b.Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\Qwen2.5-7B-Instruct-Q4_K_M.gguf",
+    "bytes": 4683074240,
+    "name": "Qwen2.5-7B-Instruct-Q4_K_M.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\qwen2.5-coder-7b-instruct-q4_k_m.gguf",
+    "bytes": 4683073536,
+    "name": "qwen2.5-coder-7b-instruct-q4_k_m.gguf"
+  },
+  {
+    "path": "D:\\MODELOS\\qwen3-7b-instruct-q4_k_m.gguf",
+    "bytes": 1536145962,
+    "name": "qwen3-7b-instruct-q4_k_m.gguf"
+  },
+  {
+    "path": "E:\\MODELOS\\Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+    "bytes": 4920739232,
+    "name": "Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\qwen3-8b-q4_k_m.gguf",
+    "bytes": 5027783872,
+    "name": "qwen3-8b-q4_k_m.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\00_CONTROL_OFICIAL\\bartowski--Qwen_Qwen3.5-4B-GGUF\\Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+    "bytes": 3013027808,
+    "name": "Qwen_Qwen3.5-4B-Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\01_QAT_Y_CUANTIZACION_MEJORADA\\google--gemma-4-E2B-it-qat-q4_0-gguf\\gemma-4-E2B_q4_0-it.gguf",
+    "bytes": 3349516256,
+    "name": "gemma-4-E2B_q4_0-it.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\01_QAT_Y_CUANTIZACION_MEJORADA\\google--gemma-4-E4B-it-qat-q4_0-gguf\\gemma-4-E4B_q4_0-it.gguf",
+    "bytes": 5154941280,
+    "name": "gemma-4-E4B_q4_0-it.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\01_QAT_Y_CUANTIZACION_MEJORADA\\YoozLabs--Qwen3.5-4B-qat-GGUF\\Qwen3.5-4B-qat-Q4_0.gguf",
+    "bytes": 2543899040,
+    "name": "Qwen3.5-4B-qat-Q4_0.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\AdvancedDataIntelligence--adi-qwen3.5-4b-glm5.2-general-GGUF\\adi-qwen3.5-4b-glm5.2-general-q4_k_m.gguf",
+    "bytes": 2708804064,
+    "name": "adi-qwen3.5-4b-glm5.2-general-q4_k_m.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwen3.5-4B-Claude-4.6-Opus-Reasoning-Distilled-v2-GGUF\\Qwen3.5-4B.Q4_K_M.gguf",
+    "bytes": 2708800320,
+    "name": "Qwen3.5-4B.Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwen3.5-4B-Neo-GGUF\\Qwen3.5-4B.Q4_K_M.gguf",
+    "bytes": 2708800320,
+    "name": "Qwen3.5-4B.Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwen3.5-9B-DeepSeek-V4-Flash-GGUF\\Qwen3.5-9B-DeepSeek-V4-Flash-Q4_K_M.gguf",
+    "bytes": 5629105408,
+    "name": "Qwen3.5-9B-DeepSeek-V4-Flash-Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwopus3.5-4B-v3-GGUF\\Qwen3.5-4B.Q4_K_M.gguf",
+    "bytes": 2708800320,
+    "name": "Qwen3.5-4B.Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwopus3.5-9B-v3-GGUF\\Qwopus3.5-9B-v3.Q4_K_M.gguf",
+    "bytes": 5629105024,
+    "name": "Qwopus3.5-9B-v3.Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\03_PROGRAMACION\\Jackrong--Qwopus3.5-9B-Coder-GGUF\\Qwopus3.5-9B-coder-Exp-Q4_K_M.gguf",
+    "bytes": 5629111264,
+    "name": "Qwopus3.5-9B-coder-Exp-Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\04_AGENTES_Y_HERRAMIENTAS\\limnmn--Qwen3.5-4B-AgentTools-GGUF\\Qwen3.5-4B-AgentTools-v0.8-Q4_K_M.gguf",
+    "bytes": 2713534752,
+    "name": "Qwen3.5-4B-AgentTools-v0.8-Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\05_MODELOS_ALTERNATIVOS\\LiquidAI--LFM2.5-8B-A1B-GGUF\\LFM2.5-8B-A1B-Q4_K_M.gguf",
+    "bytes": 5155564768,
+    "name": "LFM2.5-8B-A1B-Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\90_EXPERIMENTALES\\jica98--qwen3.5-4B-super-coder\\qwen3.5-4B-super-coder.Q4_0.gguf",
+    "bytes": 2611783040,
+    "name": "qwen3.5-4B-super-coder.Q4_0.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\99_CUARENTENA_UNCENSORED\\DavidAU--Qwen3.5-9B-The-Defiant-Fable-Uncensored-Heretic-NEO-IMATRIX-MAX-MTP-GGUF\\Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-Q4_K_M.gguf",
+    "bytes": 6828993824,
+    "name": "Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-Q4_K_M.gguf"
+  },
+  {
+    "path": "<MODEL_ROOT>\\99_CUARENTENA_UNCENSORED\\lukey03--Qwen3.5-9B-abliterated-GGUF\\Qwen3.5-9B-abliterated-Q4_K_M.gguf",
+    "bytes": 5627044704,
+    "name": "Qwen3.5-9B-abliterated-Q4_K_M.gguf"
+  }
+]

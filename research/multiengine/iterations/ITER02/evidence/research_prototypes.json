@@ -1,0 +1,132 @@
+{
+  "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "prototypes": {
+    "bm25": {
+      "verdict": "PASS",
+      "metric": {
+        "top": "Puerto 11435 configurado en config/service.py"
+      },
+      "note": "synthetic 3-document corpus"
+    },
+    "exact_dedup": {
+      "verdict": "PASS",
+      "metric": {
+        "in": 4,
+        "out": 3
+      },
+      "note": "exact string identity: 4 inputs, 3 unique"
+    },
+    "extractive_selection": {
+      "verdict": "PASS",
+      "metric": {
+        "selected": [
+          "El puerto es 11435.",
+          "No uses sudo.",
+          "El archivo es config/service.py."
+        ]
+      },
+      "note": "keyword-guided sentence retention"
+    },
+    "estimator_calibration": {
+      "verdict": "PASS",
+      "metric": [
+        {
+          "chars": 10,
+          "estimate": 3,
+          "ratio": 0.3
+        },
+        {
+          "chars": 11,
+          "estimate": 3,
+          "ratio": 0.2727
+        },
+        {
+          "chars": 500,
+          "estimate": 125,
+          "ratio": 0.25
+        },
+        {
+          "chars": 799,
+          "estimate": 200,
+          "ratio": 0.2503
+        }
+      ],
+      "note": "no real tokenizer available; ratio to chars only"
+    },
+    "qwen_fragment_selection": {
+      "verdict": "PASS",
+      "metric": "B) puerto 11435",
+      "note": "real loopback Qwen with think=false"
+    },
+    "hierarchical_memory": {
+      "verdict": "PASS",
+      "metric": {
+        "layers": [
+          4,
+          2,
+          1
+        ]
+      },
+      "note": "3 synthetic abstraction levels"
+    },
+    "revoked_retrieval": {
+      "verdict": "PASS",
+      "metric": {
+        "active": [
+          "a1",
+          "a3"
+        ]
+      },
+      "note": "latest valid state overrides prior revocation"
+    },
+    "fidelity_after_1": {
+      "verdict": "PASS",
+      "metric": {
+        "retained": [
+          "PUERTO=11435",
+          "SIN_SUDO",
+          "BACKUP=0300"
+        ],
+        "count": 3,
+        "facts_retained": 3
+      },
+      "note": "structural measurement, >=50% of 4 synthetic facts; Qwen-based fidelity NOT measured"
+    },
+    "fidelity_after_5": {
+      "verdict": "PASS",
+      "metric": {
+        "retained": [
+          "PUERTO=11435",
+          "BACKUP=0300"
+        ],
+        "count": 2,
+        "facts_retained": 2
+      },
+      "note": "structural measurement, >=50% of 4 synthetic facts; Qwen-based fidelity NOT measured"
+    },
+    "fidelity_after_10": {
+      "verdict": "PASS",
+      "metric": {
+        "retained": [
+          "PUERTO=11435",
+          "BACKUP=0300"
+        ],
+        "count": 2,
+        "facts_retained": 2
+      },
+      "note": "structural measurement, >=50% of 4 synthetic facts; Qwen-based fidelity NOT measured"
+    },
+    "fidelity_after_20": {
+      "verdict": "PASS",
+      "metric": {
+        "retained": [
+          "PUERTO=11435",
+          "BACKUP=0300"
+        ],
+        "count": 2,
+        "facts_retained": 2
+      },
+      "note": "structural measurement, >=50% of 4 synthetic facts; Qwen-based fidelity NOT measured"
+    }
+  }
+}

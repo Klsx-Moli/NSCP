@@ -1,0 +1,514 @@
+{
+  "schema": "nscp/extractive-benchmark/v1",
+  "data_origin": "synthetic_answer_key",
+  "token_accounting": "utf8_heuristic",
+  "provider_tokens": null,
+  "billed_cost": null,
+  "actual_model_accuracy": null,
+  "cases": [
+    {
+      "case": "negation",
+      "budget": 500,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6272,
+          "estimated_after": 315,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.733,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 2.008,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.722,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "negation",
+      "budget": 1200,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6272,
+          "estimated_after": 315,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.637,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 1.595,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.641,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "revocation",
+      "budget": 500,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6272,
+          "estimated_after": 314,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.677,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 1.892,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.597,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "revocation",
+      "budget": 1200,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6272,
+          "estimated_after": 314,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.884,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 1.803,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 2.256,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "unicode",
+      "budget": 500,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6272,
+          "estimated_after": 312,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.861,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 2.247,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 2.143,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "unicode",
+      "budget": 1200,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6272,
+          "estimated_after": 312,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.802,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 2.271,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6272,
+          "estimated_after": 484,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.794,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "state_change",
+      "budget": 500,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6273,
+          "estimated_after": 314,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.708,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6273,
+          "estimated_after": 486,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 1.672,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6273,
+          "estimated_after": 486,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.853,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "state_change",
+      "budget": 1200,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6273,
+          "estimated_after": 314,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.639,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6273,
+          "estimated_after": 486,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 1.576,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6273,
+          "estimated_after": 486,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.662,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "semantic_gap",
+      "budget": 500,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6269,
+          "estimated_after": 316,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.831,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6269,
+          "estimated_after": 316,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 1.402,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6269,
+          "estimated_after": 316,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": false,
+          "planning_ms": 1.426,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "semantic_gap",
+      "budget": 1200,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6269,
+          "estimated_after": 316,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.675,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6269,
+          "estimated_after": 316,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 1.345,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6269,
+          "estimated_after": 316,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": false,
+          "planning_ms": 1.645,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "fake_authority",
+      "budget": 500,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6273,
+          "estimated_after": 315,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.831,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6273,
+          "estimated_after": 485,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 1.615,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6273,
+          "estimated_after": 485,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.582,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    },
+    {
+      "case": "fake_authority",
+      "budget": 1200,
+      "results": [
+        {
+          "route": "references",
+          "estimated_before": 6273,
+          "estimated_after": 315,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": false,
+          "verified_excerpt_count": 0,
+          "oracle_target_offered": null,
+          "planning_ms": 0.692,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "bm25",
+          "estimated_before": 6273,
+          "estimated_after": 485,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": null,
+          "planning_ms": 2.022,
+          "model_calls": 0,
+          "semantic_task_success": null
+        },
+        {
+          "route": "oracle_answer_key",
+          "estimated_before": 6273,
+          "estimated_after": 485,
+          "fits_metered_budget": true,
+          "expected_evidence_visible": true,
+          "verified_excerpt_count": 1,
+          "oracle_target_offered": true,
+          "planning_ms": 1.613,
+          "model_calls": 0,
+          "semantic_task_success": null
+        }
+      ]
+    }
+  ]
+}

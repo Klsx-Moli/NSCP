@@ -1,0 +1,85 @@
+NSCP LOCAL CAMPAIGN - ITERACION 02 - INFORME FINAL LOCAL
+SHA validado: 9e6646b418a34d36d8ba09eb354bd81191caff69
+Worktree: <VALIDATION_ROOT>/NSCP-validation-20261127-iter02
+Evidencia: <EVIDENCE_DIR>/2026-11-27_iter02
+
+RESULTADO
+Todas las prioridades 0 a 8 fueron ejecutadas con herramientas reales. No se modifico
+main, no hubo push, merge ni cambios en la configuracion productiva de Hermes.
+No se usaron proveedores de pago ni se descargaron modelos.
+
+P0 - DISCREPANCIA DE TESTS
+pytest --collect-only: 591 tests en b71fb0c (identico a CI) y 594 en 9e6646b.
+La diferencia de 56 no es de recoleccion: la ejecucion local anterior reporto
+535 passed + 1 skipped + 10 subtests = 546 eventos, 55 menos que los 591
+recolectados. No se conservo el comando/filtro exacto de esa ejecucion.
+Suite targeted de CI: 119 passed en b71fb0c y 122 en 9e6646b.
+La suite completa local no puede completarse: test_apply_design_installs_focus_style
+se cuelga cuando lo preceden 8 MainWindow. Reproduccion minima:
+test_gui_b9.py + test_design_system.py cuelga al ~70%.
+Causa raiz medida: apply_design tarda 0.001s con 0 MainWindow y >40s con 8
+instancias cerradas pero vivas (logs/repolish_n0.txt, repolish_n8.txt).
+No se atribuye la diferencia a Windows sin evidencia.
+
+P1 - IDENTIDAD DE HERMES
+b71fb0c pertenece a NSCP, no a Hermes.
+~/.hermes no es repositorio Git. El repositorio real es
+<HERMES_ROOT>/hermes-agent, HEAD
+a9ff9799e273f525b82718cdc69fdec71b1dca5a, remoto NousResearch/hermes-agent,
+describe v0.23.0+canary.20261107T064357Z-73-ga9ff9799e27, limpio.
+REVIEWED_HERMES_COMMIT NO fue modificado: sigue en ed1cbc8 (no acreditado).
+
+P2 - QWEN
+POST directo a /api/chat con datos sinteticos:
+think=false -> content "OK", done_reason=stop en 128/256/512/1024/2048.
+think=true y ausencia de think -> thinking_len=500, content vacio,
+done_reason=length. La plantilla del modelo es "{{ .Prompt }}".
+Causa: parametro de inferencia / benchmark que omitia think=false.
+No es plantilla, version de Ollama, VRAM ni adaptador NSCP.
+
+P3 - NUEVO CHECKPOINT
+Worktree aislado en 9e6646b. Transporte comun local_summary.complete_summary
+usa think=false, truncate=false, shift=false. 122 tests targeted PASS.
+Llamadas reales a Ollama: summarize_turns(strict=True) y complete_summary
+devolvieron resumenes no vacios y validados.
+
+P4 - HERMES FASE 6
+Instalacion aislada del plugin en hermes_isolated_profile, sin tocar Hermes
+productivo. check_host_contract() FALLA con el Hermes instalado:
+ContextCompressor.bind_session_state no acepta el parametro persistence.
+Con un shim SOLO DE PRUEBA en el proceso aislado pasan update_model,
+persistencia, seleccion observe, ruta native, fallo local controlado,
+reset y clonado. nscp_recall no se registra en modo observe (diseno actual).
+No se confundio fallback nativo con carga NSCP.
+
+P5 - BANCO ADVERSARIAL
+53 casos ejecutados: 34 PASS, 4 FAIL, 15 BLOCKED, 0 ERROR.
+Cada caso registra entrada esperada, resultado real, SHA y evidencia en
+adversarial_execution.json.
+
+P6 - MUTACIONES
+8 mutaciones sobre copias desechables: 3 KILLED, 5 FALSE_COVERAGE
+(AUTH, ACCOUNT, ROLE, META, ID). Detalle en mutation_execution.json.
+
+P7 - HARDWARE
+dxdiag/DXGI: Radeon RX 570 Dedicated Memory 8135 MB (8 GB fisicos).
+WMI AdapterRAM reportaba 4293918720 bytes (~4 GB), incorrecto.
+VRAM durante inferencia real: 3141638552 bytes con context_length 4096.
+RAM libre ~4 GB. No se probaron 32768 tokens.
+
+P8 - PROTOTIPOS
+11 comprobaciones ejecutadas con datos sinteticos: BM25, deduplicacion
+exacta, seleccion extractiva, calibracion del estimador, seleccion de
+fragmento con Qwen real, memoria jerarquica, informacion revocada y
+fidelidad tras 1/5/10/20 compresiones (estructural, no modelo).
+
+LIMITACIONES
+- La suite completa no termina en este host por el defecto Qt documentado;
+  no se afirma 591 passed localmente.
+- Las 15 casos BLOCKED no tienen contrato NSCP verificable; no se marcan PASS.
+- La fidelidad con Qwen tras multiples ciclos no fue medida (solo estructural).
+- El shim de Hermes es de prueba y no demuestra compatibilidad productiva.
+
+EVIDENCIA
+Ver CHECKPOINT.json y el ZIP NSCP-EVIDENCE-2026-11-27_iter02.zip.
+Coste: 0. Rollback: descartar el worktree iter02; main intacto en fab8557.

@@ -1,0 +1,13 @@
+0.00.139.271 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.143.696 W srv  llama_server: embeddings enabled with n_batch (2048) > n_ubatch (512)
+0.00.143.710 W srv  llama_server: setting n_batch = n_ubatch = 512 to avoid assertion failure
+0.00.143.952 I srv          init: The UI is disabled
+0.00.143.959 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.148.895 I srv    load_model: loading model '<MODELS_DIR>\Qwen3-Embedding-0.6B-Q8_0.gguf'
+0.01.056.068 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.15.358.940 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 512, kv_unified = 'true'
+0.15.379.829 I srv  llama_server: model loaded
+0.15.379.851 I srv  llama_server: listening on http://127.0.0.1:18083
+0.15.538.691 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.15.538.730 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.15.979.113 I slot      release: id  3 | task 0 | stop processing: n_tokens = 4, truncated = 0

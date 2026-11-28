@@ -1,0 +1,103 @@
+{
+  "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "copies_root": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf",
+  "results": {
+    "MUT-NEG-001": {
+      "verdict": "KILLED",
+      "semantics": "accept truncated/non-stop responses",
+      "detail": "rc=1 summary=3 failed, 30 passed in 0.36s",
+      "tests": [
+        "tests/test_local_summary.py",
+        "tests/test_summarizer.py"
+      ],
+      "duration_s": 1.65,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-NEG-001",
+      "stdout_tail": "3 failed, 30 passed in 0.36s"
+    },
+    "MUT-AUTH-001": {
+      "verdict": "FALSE_COVERAGE",
+      "semantics": "authorize a non-loopback provider",
+      "detail": "rc=0 summary=19 passed in 0.16s",
+      "tests": [
+        "tests/test_local_summary.py"
+      ],
+      "duration_s": 1.74,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-AUTH-001",
+      "stdout_tail": "19 passed in 0.16s"
+    },
+    "MUT-SILENT-001": {
+      "verdict": "KILLED",
+      "semantics": "claim verification without running it",
+      "detail": "rc=1 summary=1 failed, 18 passed in 1.74s",
+      "tests": [
+        "tests/test_context_compactor.py",
+        "tests/test_context_loss.py"
+      ],
+      "duration_s": 2.73,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-SILENT-001",
+      "stdout_tail": "1 failed, 18 passed in 1.74s"
+    },
+    "MUT-ACCOUNT-001": {
+      "verdict": "FALSE_COVERAGE",
+      "semantics": "double estimated token counts",
+      "detail": "rc=0 summary=19 passed in 0.26s",
+      "tests": [
+        "tests/test_agent_context_benchmark.py",
+        "tests/test_agent_context.py"
+      ],
+      "duration_s": 1.28,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-ACCOUNT-001",
+      "stdout_tail": "19 passed in 0.26s"
+    },
+    "MUT-ROLE-001": {
+      "verdict": "FALSE_COVERAGE",
+      "semantics": "force every compacted role to user",
+      "detail": "rc=0 summary=16 passed in 0.52s",
+      "tests": [
+        "tests/test_context_compactor.py"
+      ],
+      "duration_s": 1.62,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-ROLE-001",
+      "stdout_tail": "16 passed in 0.52s"
+    },
+    "MUT-META-001": {
+      "verdict": "FALSE_COVERAGE",
+      "semantics": "corrupt compaction result schema metadata",
+      "detail": "rc=0 summary=16 passed in 0.16s",
+      "tests": [
+        "tests/test_agent_context.py"
+      ],
+      "duration_s": 1.45,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-META-001",
+      "stdout_tail": "16 passed in 0.16s"
+    },
+    "MUT-COUNT-001": {
+      "verdict": "KILLED",
+      "semantics": "double the reported compression ratio",
+      "detail": "rc=1 summary=1 failed, 18 passed in 0.89s",
+      "tests": [
+        "tests/test_context_compactor.py",
+        "tests/test_agent_context_benchmark.py"
+      ],
+      "duration_s": 2.29,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-COUNT-001",
+      "stdout_tail": "1 failed, 18 passed in 0.89s"
+    },
+    "MUT-ID-001": {
+      "verdict": "FALSE_COVERAGE",
+      "semantics": "ignore tool_call_id in message identity",
+      "detail": "rc=0 summary=24 passed in 0.82s",
+      "tests": [
+        "tests/test_agent_context.py",
+        "tests/test_hermes_context_adapter.py"
+      ],
+      "duration_s": 2.49,
+      "copy": "<EVIDENCE_DIR>\\2026-11-27_iter02\\nscp-mutations-gcd591xf\\MUT-ID-001",
+      "stdout_tail": "24 passed in 0.82s"
+    }
+  },
+  "counts": {
+    "KILLED": 3,
+    "FALSE_COVERAGE": 5
+  }
+}

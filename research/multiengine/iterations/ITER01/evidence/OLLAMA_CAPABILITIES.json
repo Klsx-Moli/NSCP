@@ -1,0 +1,64 @@
+{
+  "ollama": {
+    "version": "0.32.15",
+    "installed": true,
+    "server": "http://127.0.0.1:11434",
+    "running": true
+  },
+  "models_available": [
+    {
+      "name": "qwen3.5:4b-q4_K_M",
+      "id": "d8b0f5e9760c",
+      "size_bytes": 3324173934,
+      "format": "gguf",
+      "family": "qwen35",
+      "parameters": "4.2B",
+      "context_length": 262144,
+      "embedding_length": 2560,
+      "quantization": "Q4_K_M",
+      "requires_version": "0.30.0",
+      "capabilities": ["completion", "vision", "tools", "thinking"],
+      "modelfile_parameters": {
+        "temperature": 1,
+        "top_k": 20,
+        "top_p": 0.95,
+        "presence_penalty": 1.5
+      },
+      "local": true,
+      "cloud": false
+    },
+    {
+      "name": "qwen2.5:1.5b",
+      "id": "65ec06548149",
+      "size_bytes": 986000000,
+      "format": "gguf",
+      "local": true,
+      "cloud": false,
+      "installed_ago": "2 months"
+    }
+  ],
+  "capability_matrix": {
+    "num_ctx": "SUPPORTED (verified via request)",
+    "num_predict": "SUPPORTED (verified via request)",
+    "temperature": "SUPPORTED",
+    "think": "SUPPORTED (Qwen3 thinking field present)",
+    "truncate": "SUPPORTED (via API param)",
+    "shift": "SUPPORTED (via API param)",
+    "stream": "SUPPORTED (tested stream=false; stream=true available)",
+    "prompt_eval_count": "PRESENT in response",
+    "eval_count": "PRESENT in response",
+    "done_reason": "PRESENT in response (length, stop)",
+    "messages_tool_role": "SUPPORTED in /api/chat",
+    "tool_call_ids": "SUPPORTED in /api/chat tool_calls",
+    "remote_model_metadata": "Checked via /api/show remote_host/remote_model fields"
+  },
+  "verified_locality": {
+    "method": "Ollama /api/show inspected for remote_host/remote_model; model metadata confirms format=gguf and local files",
+    "result": "LOCAL (no cloud variant)"
+  },
+  "runtime_observation": {
+    "processor_usage": "100% GPU",
+    "context_active_after_run": 16384,
+    "model_in_memory_size_bytes": 3700000000
+  }
+}

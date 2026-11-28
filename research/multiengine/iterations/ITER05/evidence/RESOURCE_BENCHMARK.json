@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-11-28T00:40:24.550398+00:00",
+  "classification": "VERIFIED_BY_ME",
+  "method": "tasklist WorkingSet polling every 0.5 s",
+  "model": "<MODELS_DIR>\\Compactor-Qwen3.5-4B.Q4_K_M.gguf",
+  "gpu_offload_layers": 0,
+  "errors": [],
+  "load_s": 5.58,
+  "healthy": true,
+  "peak_rss_mb_load": 3209.3,
+  "inference_s_64tok": 19.265,
+  "usage": {
+    "completion_tokens": 64,
+    "prompt_tokens": 65,
+    "total_tokens": 129,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "peak_rss_mb_inference": 3265.7
+}

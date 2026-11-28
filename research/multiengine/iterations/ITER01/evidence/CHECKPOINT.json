@@ -1,0 +1,49 @@
+{
+  "campaign_phase": "00 - SYNC COMPLETE",
+  "initial_timestamp": "2026-11-27T05:54:13",
+  "worktree": "<VALIDATION_ROOT>/NSCP-validation-20261127-055413",
+  "validated_remote_sha": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+  "local_main_sha": "fab8557528a346fa284637dc53b9088d20087a0d",
+  "origin_main_sha": "4d74f6bfb3488fe67b1e667b09b96b705b03b68d",
+  "origin_feature_sha": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+  "evidence_directory": "<EVIDENCE_DIR>\\2026-11-27_b71fb0c",
+  "environment": {
+    "os": "Microsoft Windows 11 IoT Enterprise LTSC",
+    "os_version": "10.0.26100.0",
+    "build": "26100",
+    "cpu": "Intel(R) Core(TM) i5-4570 CPU @ 3.20GHz",
+    "cores": 4,
+    "logical_processors": 4,
+    "ram_total_gb": 15.9,
+    "ram_free_gb": 2.41,
+    "ssd_free_gb": 490.68,
+    "ssd_total_gb": 512,
+    "gpu_intel_hd_4600": {"adapter_ram_bytes": 1073741824},
+    "gpu_amd_rx_570": {"adapter_ram_bytes": 4293918720},
+    "python": {"version": "3.12.10", "executable": "<USERPROFILE>\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"},
+    "git": {"version": "2.55.0.windows.2"},
+    "ollama": {"version": "0.32.15", "local_models": ["qwen3.5:4b-q4_K_M", "qwen2.5:1.5b"]},
+    "hermes": {"root": "<HERMES_ROOT>", "agent_git_head": "b71fb0c6774f715d420889ce064c8e9d2728d5cf"}
+  },
+  "testing": {
+    "tests_total": 535,
+    "tests_passed": 535,
+    "tests_skipped": 1,
+    "ci_lint": "ruff check E,F,W --ignore E501: ALL PASSED",
+    "editable_install": {
+      "resolves_to": "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\\src",
+      "entry_points": ["npsc", "npsc-compact", "npsc-agent-context", "npsc-gui"]
+    }
+  },
+  "benchmarks": {
+    "ollama": {"model": "qwen3.5:4b-q4_K_M", "contexts_tested": [4096, 8192, 16384], "status": "EXECUTED"},
+    "hermes_compatibility_matrix": {"status": "EXECUTED"}
+  },
+  "next_steps": [
+    "Phase 5 adversarial test definitions (pending execution)",
+    "Phase 6 sandbox Hermes profile isolation",
+    "Phase 7-10 model benchmarks",
+    "Phase 12 mutation reasoning on contracts",
+    "Evidence finalization and hand-off"
+  ]
+}

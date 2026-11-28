@@ -1,0 +1,7 @@
+Timeout (0:00:08)!
+Thread 0x0000422c (most recent call first):
+  File "<USERPROFILE>\AppData\Local\Programs\Python\Python312\Lib\pathlib.py", line 1028 in read_text
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\src\version_history.py", line 87 in _load_all
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\src\version_history.py", line 64 in __init__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\src\npsc_gui\main_window.py", line 234 in __init__
+  File "<EVIDENCE_DIR>\2026-11-27_iter02\probe_hang_stack.py", line 14 in <module>

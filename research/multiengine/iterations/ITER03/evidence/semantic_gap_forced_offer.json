@@ -1,0 +1,46 @@
+[
+  {
+    "case": "semantic_gap",
+    "query": "Which obligations remain applicable?",
+    "target_ids": [
+      26
+    ],
+    "offered_ids": [
+      26,
+      0,
+      8,
+      16,
+      24,
+      33,
+      41,
+      49
+    ],
+    "pool_size": 8,
+    "qwen_ids": [],
+    "valid": true,
+    "hit": false,
+    "seconds": 7.721
+  },
+  {
+    "case": "semantic_access",
+    "query": "¿Quién puede acceder ahora al servidor?",
+    "target_ids": [
+      26
+    ],
+    "offered_ids": [
+      26,
+      0,
+      8,
+      16,
+      24,
+      33,
+      41,
+      49
+    ],
+    "pool_size": 8,
+    "qwen_ids": [],
+    "valid": true,
+    "hit": false,
+    "seconds": 6.721
+  }
+]

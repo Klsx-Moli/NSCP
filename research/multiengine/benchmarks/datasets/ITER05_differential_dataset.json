@@ -1,0 +1,43 @@
+{
+  "docs": [
+    "d00: moli revoco el permiso de push a las 10:00",
+    "d01: 535 passed, 1 skipped en la suite de NSCP",
+    "d02: Qwen3-Embedding-0.6B devuelve vectores de 1024 dimensiones",
+    "d03: el reranker Qwen3 orderna con relevance_score",
+    "d04: Compactor-Qwen3.5-4B conserva SHAs y revocaciones",
+    "d05: error tests/test_agent_context.py file or directory not found",
+    "d06: ruff PASS con --select E,F,W --ignore E501",
+    "d07: Ollama no responde en este entorno aislado",
+    "d08: worktree aislado en 97ea9e987656bf64234cfc56ee3a89196a3b579d",
+    "d09: permiso de push autorizado para main",
+    "d10: CHECKMATE exige gates PASS antes de cerrar",
+    "d11: THEKEY gobierna, Hermes implementa",
+    "d12: RX 570 con 4 GB de VRAM reportados",
+    "d13: temperatura 0 y salida acotada en el compactor",
+    "d14: memoria vectorial SQLite con dedupe por identidad",
+    "d15: MTU red y DNS del router sin cambios"
+  ],
+  "queries": [
+    [
+      "q1",
+      "quien revoco el permiso de push a las 10:00",
+      "d00"
+    ],
+    [
+      "q2",
+      "error file or directory not found en el test",
+      "d05"
+    ],
+    [
+      "q3",
+      "vector de 1024 dimensiones del embedding",
+      "d02"
+    ]
+  ],
+  "ks": [
+    4,
+    8,
+    16,
+    32
+  ]
+}

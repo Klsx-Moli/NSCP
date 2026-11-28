@@ -1,0 +1,33 @@
+{
+  "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "verdict": "RECONCILED",
+  "ci": {
+    "tests_passed": 594,
+    "targeted_passed": 122,
+    "subtests_passed": 10,
+    "ruff": "PASS",
+    "structural_benchmark": "PASS",
+    "coverage": "73%"
+  },
+  "local": {
+    "collect_only": 594,
+    "full_run_command": "pytest tests/ -q -p nscp_isolation_plugin --basetemp=<scratch>",
+    "passed": 593,
+    "skipped": 1,
+    "subtests_passed": 10,
+    "excluded_modules": [],
+    "log": "logs/full-tests-9e-isolated-filters.txt"
+  },
+  "skipped_test": {
+    "id": "tests/test_design_system.py::test_typography_family_is_declared_and_available",
+    "reason": "Qt platform reports no fonts (offscreen/minimal)",
+    "source_line": "tests/test_design_system.py:127",
+    "classification": "environment skip, not a failure; CI Linux runner has fonts"
+  },
+  "prior_iteration_01": {
+    "b71fb0c_collect": 591,
+    "local_old_result": "535 passed + 1 skipped + 10 subtests = 546 events",
+    "interpretation": "55 fewer executed than collected; original command/filter not retained; no platform assumption made"
+  },
+  "conclusion": "With the test-only event-filter cleanup plugin, the complete suite runs with zero excluded modules and matches CI except one offscreen font skip."
+}

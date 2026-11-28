@@ -1,0 +1,5 @@
+local_summary_route_report PASS content='RESUMEN_LOCAL_DE_PRUEBA' report={'route': 'local', 'model': 'qwen3.5:4b-q4_K_M', 'prompt_eval_count': 11, 'eval_count': 3, 'input_w
+cooperative_cancellation PASS AuxiliaryExplicitCancellation raised
+native_compaction_path PASS messages_out=6 first_role=system
+nscp_recall_experimental PASS nscp_recall=True schemas=1
+DONE {'local_summary_route_report': 'PASS', 'cooperative_cancellation': 'PASS', 'native_compaction_path': 'PASS', 'nscp_recall_experimental': 'PASS'}

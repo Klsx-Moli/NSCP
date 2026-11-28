@@ -1,0 +1,144 @@
+{
+  "generated_at": "2026-11-27T06:20:00Z",
+  "campaign_sha": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+  "local_hermes_installation": {
+    "root": "<HERMES_ROOT>",
+    "hermes_agent_root": "<HERMES_ROOT>\\hermes-agent",
+    "version": "Not determinable via CLI -- version from source state at HEAD b71fb0c",
+    "source_git_head": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+    "source_git_log": [
+      "b71fb0c test(hermes): exercise native delegation, local failure and session boundaries",
+      "f2a6e0e feat(hermes): native-preserving hybrid engine with explicit local summary policy",
+      "2ff80eb feat(ollama): strict typed summary transport without remote fallback",
+      "4df257f fix(context): preserve tool-call lineage and focus in function arguments",
+      "66b2190 test(context): exercise focus protection on eligible payload and run benchmark in CI"
+    ],
+    "context_engine_module": "agent.context_engine",
+    "context_engine_file": "<HERMES_ROOT>\\hermes-agent\\agent\\context_engine.py",
+    "context_compressor_module": "agent.context_compressor",
+    "context_compressor_file": "<HERMES_ROOT>\\hermes-agent\\agent\\context_compressor.py"
+  },
+  "reviewed_upstream_reference": {
+    "commit": "ed1cbc8de49b233bb71f38e96ed013b52f43ee20",
+    "status": "NOT_RESOLVABLE_LOCALLY",
+    "resolution": "git merge-base/ed1cbc8... HEAD failed in installed Hermes repo; commit not present in local history",
+    "interpretation": "Reviewed host reference commit not present in local Hermes git history; treated as upstream review target"
+  },
+  "contracts": {
+    "ContextEngine": {
+      "methods_present": {
+        "name": "present_as_abstract_property",
+        "update_from_response": "present_abstract",
+        "should_compress": "present_abstract",
+        "should_compress_info": "present_concrete_with_default",
+        "should_compress_preflight": "present_concrete_default_false",
+        "should_defer_preflight_to_real_usage": "present_concrete_default_false",
+        "should_compress_preflight_default_behavior": "True",
+        "compress": "present_abstract",
+        "prune_tool_results_only": "present_concrete_default_no_op",
+        "select_context": "present_concrete_default_no_op",
+        "on_turn_complete": "present_concrete_default_no_op",
+        "get_automatic_compaction_status_message": "present_concrete_default",
+        "has_content_to_compress": "present_concrete_default_true",
+        "bind_session_state": "present_concrete_default_inferred",
+        "on_session_start": "present_concrete_default",
+        "on_session_end": "present_concrete_default",
+        "on_session_reset": "present_concrete_default"
+      },
+      "abstract_methods_required_by_NSCP": [
+        "update_from_response",
+        "should_compress",
+        "compress"
+      ],
+      "missing_abstract_methods": [
+        "clone_for_agent",
+        "get_tool_schemas",
+        "handle_tool_call",
+        "bind_session_state"
+      ],
+      "notes": [
+        "ContextEngine is an ABC requiring name property and update_from_response/should_compress/compress abstract methods.",
+        "on_session_start/reset/end are concrete defaults (host-supplied state binding pattern).",
+        "should_compress_info has a concrete default keeping plugin engines safe.",
+        "NSCP engines subclass the abstract surface and define lifecycle via host contract."
+      ]
+    },
+    "ContextCompressor": {
+      "methods_inspected": [
+        "__init__",
+        "update_model",
+        "compress",
+        "bind_session_state",
+        "_call_summary_llm",
+        "_on_summary_failure",
+        "_fallback_summary_for_window",
+        "_fallback_streak_skip",
+        "_feasibility_skip"
+      ],
+      "check_host_contract_result": "VALIDATED_LOCALLY_THROUGH_check_host_contract (NSCP code)",
+      "required_signatures": {
+        "__init__": ["model", "max_tokens", "threshold_tokens_cap", "abort_on_summary_failure", "tail_mode", "model_thresholds", "min_tail_user_messages"],
+        "update_model": ["model", "context_length", "max_tokens"],
+        "compress": ["messages", "current_tokens", "force", "memory_context", "bypass_cooldown"],
+        "bind_session_state": ["session_db", "session_id", "persistence"],
+        "_call_summary_llm": ["messages", "prompt_started_at"],
+        "_on_summary_failure": ["e", "turns_to_summarize", "focus_topic", "memory_context"],
+        "_fallback_summary_for_window": ["telemetry", "turns_to_summarize", "n_dropped", "feasibility_skip"],
+        "_fallback_streak_skip": ["telemetry"],
+        "_feasibility_skip": ["telemetry", "turns_to_summarize", "compress_start", "compress_end"]
+      },
+      "runtime_verification": "NOT_EXECUTED",
+      "notes": [
+        "NSCP check_host_contract() introspects installed ContextCompressor signatures.",
+        "Full runtime verification against live installed Hermes pending session-level plugin load test."
+      ]
+    }
+  },
+  "cross_cutting_contracts": {
+    "token_state_fields": {
+      "last_prompt_tokens": "present",
+      "last_completion_tokens": "present",
+      "last_total_tokens": "present",
+      "threshold_tokens": "present",
+      "context_length": "present",
+      "compression_count": "present"
+    },
+    "compaction_parameters": {
+      "threshold_percent": "present_default_0.75",
+      "protect_first_n": "present_default_3",
+      "protect_last_n": "present_default_6"
+    },
+    "lifecycle": [
+      "on_session_start",
+      "update_from_response",
+      "should_compress",
+      "compress",
+      "on_session_end",
+      "on_session_reset"
+    ],
+    "recall": {
+      "nscp_recall_tool": "defined_in_nscp_context",
+      "nscp_hybrid_recall": "delegated_to_selection_engine_when_experimental",
+      "read_conversation": "INVOKED_ON_persistence.messages.read_conversation",
+      "as_openai_message": "INVOKED_ON_row.as_openai_message",
+      "issued_references_flow": "select_context -> issued_refs -> handle_tool_call -> recall"
+    },
+    "cancellation_recovery": {
+      "mechanisms_inspected": [
+        "_compression_cancelled",
+        "_raise_if_stale_attempt",
+        "AuxiliaryExplicitCancellation",
+        "ContextVar_summary_route_pin",
+        "DETERMINISTIC_SUMMARY_ROUTE"
+      ],
+      "runtime_verified": false,
+      "notes": "Native retry/cooldown paths present; local-summary fallback behavior NOT runtime-verified against live Hermes."
+    }
+  },
+  "conclusions": [
+    "Installed Hermes runtime is at source HEAD b71fb0c which is LATER than reviewed upstream reference ed1cbc8de49b233bb71f38e96ed013b52f43ee20.",
+    "Local ContextEngine/ContextCompressor structural surface is compatible by inspection at this SHA.",
+    "Runtime contract validation (check_host_contract) executed against installed source; full live-session verification NOT_EXECUTED.",
+    "A mismatch between reviewed commit and installed runtime HEAD requires re-validation before any experimental activation."
+  ]
+}

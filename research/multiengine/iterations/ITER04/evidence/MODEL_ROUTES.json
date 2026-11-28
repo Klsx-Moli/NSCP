@@ -1,0 +1,1712 @@
+{
+  "prereg_sha256": "009e798aa362ee0710722a4517c8478010ca962367425d90c0d3c3858eba5820",
+  "subset_ids": [
+    "C-001",
+    "C-002",
+    "C-004",
+    "C-005",
+    "C-007",
+    "C-008",
+    "C-010",
+    "C-011",
+    "C-013",
+    "C-014",
+    "C-016",
+    "C-017",
+    "C-019",
+    "C-020",
+    "C-022",
+    "C-023",
+    "C-025",
+    "C-026",
+    "C-028",
+    "C-029",
+    "C-031",
+    "C-032",
+    "C-034",
+    "C-035"
+  ],
+  "routes": {
+    "ollama_qwen35_selector": {
+      "cases": 24,
+      "candidate_recall": 1.0,
+      "selection_recall": 0.0,
+      "precision_mean": null,
+      "literal_fidelity": 0.0,
+      "semantic_fidelity": 0.0,
+      "false_positives_total": 0,
+      "correct_abstentions": 2,
+      "incorrect_abstentions": 0,
+      "cold_s": 6.814,
+      "warm_mean_s": 2.068,
+      "tokens": {
+        "prompt_eval_count": 0,
+        "eval_count": 0,
+        "calls": 0
+      },
+      "rows": [
+        {
+          "case_id": "C-001",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.814,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-002",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.055,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-004",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.06,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-005",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.057,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-007",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.064,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-008",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.057,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-010",
+          "lang": "es-es",
+          "category": "revocation",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.062,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-011",
+          "lang": "es-es",
+          "category": "revocation",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.073,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-013",
+          "lang": "es-es",
+          "category": "authorization_branch",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.219,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-014",
+          "lang": "es-es",
+          "category": "authorization_branch",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.061,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-016",
+          "lang": "es-es",
+          "category": "state_change",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.058,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-017",
+          "lang": "es-es",
+          "category": "state_change",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.057,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-019",
+          "lang": "es-es",
+          "category": "unicode_path",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.063,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-020",
+          "lang": "es-es",
+          "category": "unicode_path",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.063,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-022",
+          "lang": "es-es",
+          "category": "cross_lingual_shared_id",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            1,
+            3,
+            7,
+            4,
+            9,
+            6,
+            10,
+            12,
+            8,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 2.056,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-023",
+          "lang": "es-es",
+          "category": "cross_lingual_shared_id",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            1,
+            3,
+            7,
+            4,
+            9,
+            6,
+            10,
+            12,
+            8,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 2.074,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-025",
+          "lang": "es-es",
+          "category": "cross_lingual_no_overlap",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.078,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-026",
+          "lang": "es-es",
+          "category": "cross_lingual_no_overlap",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.061,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-028",
+          "lang": "es-es",
+          "category": "semantic_paraphrase",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.063,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-029",
+          "lang": "es-es",
+          "category": "semantic_paraphrase",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.054,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-031",
+          "lang": "es-es",
+          "category": "prompt_injection",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.056,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-032",
+          "lang": "es-es",
+          "category": "prompt_injection",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 2.058,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-034",
+          "lang": "es-es",
+          "category": "abstention_no_evidence",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 2.055,
+          "candidate_recall": null,
+          "selection_recall": null,
+          "precision": null,
+          "literal_fidelity": null,
+          "semantic_fidelity": null,
+          "false_positives": 0,
+          "abstention_correct": true,
+          "abstention_incorrect": false
+        },
+        {
+          "case_id": "C-035",
+          "lang": "es-es",
+          "category": "abstention_no_evidence",
+          "route": "ollama_qwen35_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 2.062,
+          "candidate_recall": null,
+          "selection_recall": null,
+          "precision": null,
+          "literal_fidelity": null,
+          "semantic_fidelity": null,
+          "false_positives": 0,
+          "abstention_correct": true,
+          "abstention_incorrect": false
+        }
+      ]
+    },
+    "qwen25_classifier": {
+      "cases": 24,
+      "candidate_recall": 1.0,
+      "selection_recall": 0.0,
+      "precision_mean": null,
+      "literal_fidelity": 0.0,
+      "semantic_fidelity": 0.0,
+      "false_positives_total": 0,
+      "correct_abstentions": 2,
+      "incorrect_abstentions": 0,
+      "cold_s": 2.15,
+      "warm_mean_s": 2.033,
+      "tokens": {
+        "prompt_eval_count": 0,
+        "eval_count": 0,
+        "calls": 0
+      },
+      "rows": [
+        {
+          "case_id": "C-001",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.15,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-002",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.178,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-004",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.037,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-005",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.031,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-007",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.028,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-008",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.027,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-010",
+          "lang": "es-es",
+          "category": "revocation",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.032,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-011",
+          "lang": "es-es",
+          "category": "revocation",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.029,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-013",
+          "lang": "es-es",
+          "category": "authorization_branch",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.021,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-014",
+          "lang": "es-es",
+          "category": "authorization_branch",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.022,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-016",
+          "lang": "es-es",
+          "category": "state_change",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.024,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-017",
+          "lang": "es-es",
+          "category": "state_change",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.024,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-019",
+          "lang": "es-es",
+          "category": "unicode_path",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.03,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-020",
+          "lang": "es-es",
+          "category": "unicode_path",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9
+          ],
+          "selected_ids": [],
+          "seconds": 2.024,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-022",
+          "lang": "es-es",
+          "category": "cross_lingual_shared_id",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            1,
+            3,
+            7
+          ],
+          "selected_ids": [],
+          "seconds": 2.026,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-023",
+          "lang": "es-es",
+          "category": "cross_lingual_shared_id",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            1,
+            3,
+            7
+          ],
+          "selected_ids": [],
+          "seconds": 2.027,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-025",
+          "lang": "es-es",
+          "category": "cross_lingual_no_overlap",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.028,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-026",
+          "lang": "es-es",
+          "category": "cross_lingual_no_overlap",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.017,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-028",
+          "lang": "es-es",
+          "category": "semantic_paraphrase",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.027,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-029",
+          "lang": "es-es",
+          "category": "semantic_paraphrase",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.026,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-031",
+          "lang": "es-es",
+          "category": "prompt_injection",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.025,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-032",
+          "lang": "es-es",
+          "category": "prompt_injection",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.025,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-034",
+          "lang": "es-es",
+          "category": "abstention_no_evidence",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.024,
+          "candidate_recall": null,
+          "selection_recall": null,
+          "precision": null,
+          "literal_fidelity": null,
+          "semantic_fidelity": null,
+          "false_positives": 0,
+          "abstention_correct": true,
+          "abstention_incorrect": false
+        },
+        {
+          "case_id": "C-035",
+          "lang": "es-es",
+          "category": "abstention_no_evidence",
+          "route": "qwen25_classifier",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "selected_ids": [],
+          "seconds": 2.027,
+          "candidate_recall": null,
+          "selection_recall": null,
+          "precision": null,
+          "literal_fidelity": null,
+          "semantic_fidelity": null,
+          "false_positives": 0,
+          "abstention_correct": true,
+          "abstention_incorrect": false
+        }
+      ]
+    },
+    "llamacpp_qwen35_gguf_selector": {
+      "cases": 6,
+      "candidate_recall": 1.0,
+      "selection_recall": 1.0,
+      "precision_mean": 1.0,
+      "literal_fidelity": 1.0,
+      "semantic_fidelity": 1.0,
+      "false_positives_total": 0,
+      "correct_abstentions": 0,
+      "incorrect_abstentions": 0,
+      "cold_s": 62.883,
+      "warm_mean_s": 26.937,
+      "tokens": {
+        "prompt_tokens": 5946,
+        "completion_tokens": 24,
+        "calls": 6
+      },
+      "rows": [
+        {
+          "case_id": "C-001",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "llamacpp_qwen35_gguf_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [
+            5
+          ],
+          "seconds": 62.883,
+          "candidate_recall": true,
+          "selection_recall": true,
+          "precision": 1.0,
+          "literal_fidelity": true,
+          "semantic_fidelity": true,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-002",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "llamacpp_qwen35_gguf_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [
+            5
+          ],
+          "seconds": 45.532,
+          "candidate_recall": true,
+          "selection_recall": true,
+          "precision": 1.0,
+          "literal_fidelity": true,
+          "semantic_fidelity": true,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-004",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "llamacpp_qwen35_gguf_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [
+            5
+          ],
+          "seconds": 57.13,
+          "candidate_recall": true,
+          "selection_recall": true,
+          "precision": 1.0,
+          "literal_fidelity": true,
+          "semantic_fidelity": true,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-005",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "llamacpp_qwen35_gguf_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [
+            5
+          ],
+          "seconds": 18.685,
+          "candidate_recall": true,
+          "selection_recall": true,
+          "precision": 1.0,
+          "literal_fidelity": true,
+          "semantic_fidelity": true,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-007",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "llamacpp_qwen35_gguf_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [
+            5
+          ],
+          "seconds": 2.077,
+          "candidate_recall": true,
+          "selection_recall": true,
+          "precision": 1.0,
+          "literal_fidelity": true,
+          "semantic_fidelity": true,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-008",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "llamacpp_qwen35_gguf_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [
+            5
+          ],
+          "seconds": 11.26,
+          "candidate_recall": true,
+          "selection_recall": true,
+          "precision": 1.0,
+          "literal_fidelity": true,
+          "semantic_fidelity": true,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        }
+      ]
+    }
+  },
+  "telemetry": [
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "ollama_qwen35_selector",
+      "error": "LocalSummaryError"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    },
+    {
+      "route": "qwen25_classifier",
+      "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+    }
+  ],
+  "llamacpp_subset_size": 6
+}

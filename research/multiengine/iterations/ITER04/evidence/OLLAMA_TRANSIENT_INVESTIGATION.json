@@ -1,0 +1,35 @@
+{
+  "topic": "Ollama transient failure independent investigation",
+  "verdict": "ENVIRONMENT_SERVICE_CONFIGURATION",
+  "not_attributed_to": "NSCP validation logic or model quality",
+  "evidence": [
+    {
+      "step": 1,
+      "observation": "During multi-engine route run, 24 Ollama calls returned LocalSummaryError and 24 returned URLError WinError 10061 connection refused."
+    },
+    {
+      "step": 2,
+      "observation": "curl /api/version and /api/tags returned http=000; tasklist showed no ollama.exe; netstat showed no listener on 11434."
+    },
+    {
+      "step": 3,
+      "observation": "Restart of <USERPROFILE>/AppData/Local/Programs/Ollama/ollama.exe serve logged version 0.40.18, OLLAMA_MODELS=<USERPROFILE>\\.ollama\\models, total blobs 0, cloud hydration timeout to ollama.com, and warning about incompatible ggml-base.dll from llama.cpp WinGet path."
+    },
+    {
+      "step": 4,
+      "observation": "HTTP requests hung (http=000) while process remained running."
+    },
+    {
+      "step": 5,
+      "observation": "Restart with OLLAMA_NO_CLOUD=1 and OLLAMA_MODELS=E:/OLLAMA_MODELS restored service; /api/tags then listed qwen3.5-defiant-uncensored:latest, gemma3:4b, phi4-mini:latest instead of earlier qwen3.5:4b-q4_K_M and qwen2.5:1.5b."
+    }
+  ],
+  "conclusion": "The transient failure was reproduced as service/store/network configuration drift, not a model inference defect. Earlier malformed done=false responses remain separately recorded and are not fully explained.",
+  "artifacts": [
+    "logs/model-routes.txt",
+    "logs/model-routes-v2.txt",
+    "logs/ollama-routes-v2.txt",
+    "MODEL_ROUTES.json",
+    "MODEL_ROUTES_OLLAMA.json"
+  ]
+}

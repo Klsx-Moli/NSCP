@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-11-28T00:12:31.826585+00:00",
+  "model_path": "<MODELS_DIR>\\Qwen3-Embedding-0.6B-Q8_0.gguf",
+  "runtime": "llama.cpp b9947 (3de7dd4c8) WinGet ggml.llamacpp",
+  "port": 18081,
+  "isolation": "process-local PATH override; no global env/PATH/Ollama/Hermes changes",
+  "classification": "EVIDENCE_PENDING",
+  "server": {
+    "command": [
+      "<USERPROFILE>\\AppData\\Local\\Microsoft\\WinGet\\Packages\\ggml.llamacpp_Microsoft.Winget.Source_8wekyb3d8bbwe\\llama-server.exe",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "18081",
+      "-m",
+      "<MODELS_DIR>\\Qwen3-Embedding-0.6B-Q8_0.gguf",
+      "--embedding",
+      "--ctx-size",
+      "512",
+      "-t",
+      "2",
+      "-tb",
+      "2",
+      "-ngl",
+      "0",
+      "--no-webui"
+    ],
+    "pid": 9352,
+    "startup_s": 48.08,
+    "healthy": true,
+    "exit_code_during_startup": null,
+    "final_exit_code": 1
+  },
+  "checks": {
+    "endpoint": "/v1/embeddings",
+    "latency_s": 2.953,
+    "usage": {
+      "prompt_tokens": 56,
+      "total_tokens": 56
+    },
+    "count": 7,
+    "dimension": 1024,
+    "all_finite": true,
+    "all_nonempty": true,
+    "norms": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "repeat_identical": false,
+    "cos_synonyms_es": 0.855036,
+    "cos_cat_en": 0.794698,
+    "cos_unrelated": 0.420352,
+    "cos_unicode": 0.453811,
+    "texts": [
+      "el gato duerme",
+      "un felino duerme",
+      "la dirección exacta del archivo es <REPO_ROOT>",
+      "the cat sleeps",
+      "ñandú y pingüino",
+      "quantum chromodynamics",
+      "el gato duerme"
+    ],
+    "first_vector_sample": [
+      -0.001714,
+      -0.029534,
+      -0.012274,
+      -0.03669,
+      0.007121,
+      -0.010491,
+      -0.01559,
+      0.026472
+    ]
+  },
+  "errors": [],
+  "verdict": "INCOMPLETE"
+}

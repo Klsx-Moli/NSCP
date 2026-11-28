@@ -1,0 +1,140 @@
+{
+  "campaign": "NSCP_LOCAL_CAMPAIGN_ITER02",
+  "phase": "CONTINUATION COMPLETE - ALL ITEMS ADDRESSED",
+  "updated": "2026-11-27T08:50:00+01:00",
+  "worktree": "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02",
+  "new_remote_sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "prior_sha": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+  "local_main_head": "fab8557528a346fa284637dc53b9088d20087a0d",
+  "evidence_dir": "<EVIDENCE_DIR>/2026-11-27_iter02",
+  "prior_evidence": "<EVIDENCE_DIR>/2026-11-27_b71fb0c",
+  "constraints": [
+    "main untouched",
+    "no push/merge",
+    "isolated worktree",
+    "no productive Hermes modification",
+    "no new paid providers or model downloads",
+    "no subagents"
+  ],
+  "findings": [
+    {
+      "priority": 0,
+      "status": "EVIDENCE",
+      "detail": "pytest --collect-only at b71fb0c=591 and 9e6646b=594, matching CI 591 at b71fb0c. CI targeted=119; locally reproduced 119 passed at b71fb0c and 122 passed at 9e6646b. Prior local 535+1 skipped (536 tests, 546 progress events incl. 10 subtests) is 55 tests short of collection; no filter/deselect evidence retained. Full local suite cannot complete: deterministic hang in test_apply_design_installs_focus_style after test_gui_b9.py; not a generic platform difference."
+    },
+    {
+      "priority": 0,
+      "status": "ROOT_CAUSE",
+      "detail": "apply_design() takes 0.001s with 0 MainWindow instances but hangs >40s with 8 closed-but-live instances (evidence logs/repolish_n0.txt, repolish_n8.txt). Minimal pytest repro: test_gui_b9.py + test_design_system.py hangs at ~70%; other GUI modules pass. Proposed fix: ensure window teardown/delete in GUI tests, or make apply_design avoid redundant setStyleSheet/setStyle for an already-installed style. Product code NOT modified."
+    },
+    {
+      "priority": 1,
+      "status": "EVIDENCE",
+      "detail": "Hermes SHA b71fb0c was false. ~/.hermes is not a git repo. Nested repo <HERMES_ROOT>/hermes-agent HEAD=a9ff9799e273f525b82718cdc69fdec71b1dca5a, remote NousResearch/hermes-agent, clean, describe v0.23.0+canary.20261107T064357Z-73-ga9ff9799e27. Live gateway PID 12796 uses tools python-3.14.9 -m hermes_cli.main gateway run. Active import path still to be proven."
+    },
+    {
+      "priority": 2,
+      "status": "EVIDENCE",
+      "detail": "Direct /api/chat qwen3.5:4b-q4_K_M: think=false -> content='OK', done_reason=stop (128/256/512/1024/2048 all PASS). think=true and think absent -> thinking_len=500, content='', done_reason=length (FAIL). Model template is '{{ .Prompt }}'; params temperature=1 top_k=20 top_p=0.95 presence_penalty=1.5. Root cause of prior empty content: inference parameter / benchmark omission of think=false, NOT model/template/Ollama/VRAM."
+    },
+    {
+      "priority": 3,
+      "status": "EVIDENCE",
+      "detail": "Worktree <VALIDATION_ROOT>/NSCP-validation-20261127-iter02 at 9e6646b418a34d36d8ba09eb354bd81191caff69. New transport imports local_summary.complete_summary; sends think=false, truncate=false, shift=false. Targeted 122 passed. Real loopback calls both legacy summarize_turns(strict=True) and complete_summary returned validated non-empty summaries (nscp_transport_real.json)."
+    },
+    {
+      "priority": 4,
+      "status": "EVIDENCE",
+      "detail": "Real Hermes identity: repo hermes-agent HEAD a9ff9799e273f525b82718cdc69fdec71b1dca5a. Isolated install into evidence/hermes_isolated_profile (no productive config touched). check_host_contract() FAILS: bind_session_state signature lacks persistence. With a test-only shim, update_model/persistence/selection/native route/failure/reset/clone all pass. REVIEWED_HERMES_COMMIT left unchanged at ed1cbc8."
+    },
+    {
+      "priority": 5,
+      "status": "EVIDENCE",
+      "detail": "53 cases executed with a deterministic harness: 34 PASS, 4 FAIL (S-27 duplicate append, S-33 missing session metadata, M-02 model hallucinated cause, plus one more), 15 BLOCKED (contract absent), 0 ERROR. Details in adversarial_execution.json."
+    },
+    {
+      "priority": 6,
+      "status": "EVIDENCE",
+      "detail": "8 mutations on disposable copies: 3 KILLED, 5 FALSE_COVERAGE (AUTH, ACCOUNT, ROLE, META, ID). Details in mutation_execution.json."
+    },
+    {
+      "priority": 7,
+      "status": "EVIDENCE",
+      "detail": "DXGI/dxdiag: Radeon RX 570 Dedicated Memory 8135 MB (8 GB physical); WMI AdapterRAM 4293918720 (~4 GB) is wrong. VRAM during live inference 3141638552 bytes at context 4096, RAM free ~4 GB. No 32768-token test attempted."
+    },
+    {
+      "priority": 8,
+      "status": "EVIDENCE",
+      "detail": "11 prototype checks executed: BM25, dedup, extractive, estimator calibration, real Qwen fragment selection, hierarchical memory, revocation, fidelity 1/5/10/20. See research_prototypes.json."
+    },
+    {
+      "priority": 3,
+      "status": "EVIDENCE",
+      "detail": "Exact hung test identified; root cause is app-wide ContextHelpButton event filters multiplying across MainWindow instances, not Windows as a blanket cause. Test-only plugin retires filters and full suite completes with no exclusions: 593 passed + 1 skipped + 10 subtests."
+    },
+    {
+      "priority": 4,
+      "status": "EVIDENCE",
+      "detail": "Reconciled with CI 594: local 593 pass + 1 skip; skip is test_typography_family_is_declared_and_available because offscreen Qt reports no fonts. See test_count_reconciliation.json."
+    },
+    {
+      "priority": 2,
+      "status": "EVIDENCE",
+      "detail": "Transport semantic check PASS: both legacy and strict outputs contain 11435 and config/service.py (transport_semantic_verification.json). No Qwen probe repeated."
+    },
+    {
+      "priority": 6,
+      "status": "EVIDENCE",
+      "detail": "Phase 6 extension in isolated HERMES_HOME with HERMES_DISABLE_LAZY_INSTALLS=1: local summary route report, cooperative cancellation, native compaction path, and nscp_recall registration in experimental mode all PASS using test-only stubs. Productive Hermes untouched."
+    }
+  ],
+  "environment": {
+    "ollama_version": "0.32.15",
+    "python_system": "3.11.15",
+    "python312": "3.12.10",
+    "uv": "0.13.1",
+    "ram_free_gb": 4.17,
+    "vulkaninfo": "C:/Windows/System32/vulkaninfo.exe",
+    "wmic": "absent"
+  },
+  "next_actions": [
+    "Remote agent disposition: 5 FALSE_COVERAGE mutations, Hermes bind_session_state signature, apply_design event-filter fix",
+    "No further local executable work in scope"
+  ],
+  "verification": {
+    "targeted_tests_9e6646b": "122 passed",
+    "targeted_tests_b71fb0c": "119 passed",
+    "collect_only": {
+      "b71fb0c": 591,
+      "9e6646b": 594
+    },
+    "ruff_9e6646b": "All checks passed",
+    "real_ollama_transport": "legacy and strict both PASS with non-empty validated content",
+    "hermes_host_contract": "FAIL on installed hermes HEAD a9ff9799 (bind_session_state lacks persistence)",
+    "adversarial": {
+      "total": 53,
+      "pass": 34,
+      "fail": 4,
+      "blocked": 15,
+      "error": 0
+    },
+    "mutations": {
+      "killed": 3,
+      "false_coverage": 5
+    },
+    "hardware": {
+      "rx570_dedicated_vram_mb": 8135,
+      "wmi_adapterram_bytes": 4293918720,
+      "vram_during_inference_bytes": 3141638552,
+      "ram_free_gb": 4.0
+    },
+    "full_suite_9e_with_test_only_plugin": "593 passed, 1 skipped (offscreen fonts), 10 subtests; zero excluded modules",
+    "transport_semantic": "PASS - both routes preserve 11435 and config/service.py",
+    "hermes_isolated_extended": {
+      "local_summary_route": "PASS",
+      "cancellation": "PASS",
+      "native_compaction": "PASS",
+      "nscp_recall_experimental": "PASS"
+    }
+  }
+}

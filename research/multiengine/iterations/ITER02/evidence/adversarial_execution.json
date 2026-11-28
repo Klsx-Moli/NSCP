@@ -1,0 +1,436 @@
+{
+  "campaign_sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "harness": "synthetic deterministic + real loopback Qwen where required",
+  "total": 53,
+  "counts": {
+    "PASS": 34,
+    "BLOCKED": 15,
+    "FAIL": 4
+  },
+  "cases": {
+    "S-01": {
+      "id": "S-01",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"# Contexto compactado (NSCP)\\nLa historia previa se compacto para caber en la ventana. L",
+      "evidence": "legacy compactor has no authorization-policy filter",
+      "duration_s": null
+    },
+    "S-02": {
+      "id": "S-02",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"# Contexto compactado (NSCP)\\nLa historia previa se compacto para caber en la ventana. Las instrucciones fijadas se conservan in",
+      "evidence": "no revocation tracking",
+      "duration_s": null
+    },
+    "S-03": {
+      "id": "S-03",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"# Contexto compactado (NSCP)\\nLa historia previa se compacto para caber en la ventana. Las instrucciones fijadas se conservan in",
+      "evidence": "no branch-scope enforcement",
+      "duration_s": null
+    },
+    "S-04": {
+      "id": "S-04",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "DECISION_FINAL=puerto-11435",
+      "evidence": "recent turns are always kept",
+      "duration_s": null
+    },
+    "S-05": {
+      "id": "S-05",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"SHA_A=b71fb0c SHA_B=b71fb0d\\n\\n# Contexto compactado (NSCP)\\nLa historia previa se compa",
+      "evidence": "SHA exact match",
+      "duration_s": null
+    },
+    "S-06": {
+      "id": "S-06",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"<REPO_ROOT> LOCAL\\\\src\\\\a b.py\\n\\n# Contexto compactado (NSCP)\\nLa historia previa se c",
+      "evidence": "verbatim path preservation, JSON-escaped",
+      "duration_s": null
+    },
+    "S-31": {
+      "id": "S-31",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"<REPO_ROOT> LOCAL café 嗨.py\\n\\n# Contexto compactado (NSCP)\\nLa historia previa se comp",
+      "evidence": "verbatim path preservation, JSON-escaped",
+      "duration_s": null
+    },
+    "S-07": {
+      "id": "S-07",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"café niño 嗨 🚀 «comillas»\"}, {\"role\": \"user\", \"content\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "evidence": "unicode round-trip",
+      "duration_s": null
+    },
+    "S-08": {
+      "id": "S-08",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "no_side_effect",
+      "evidence": "compactor never executes commands",
+      "duration_s": null
+    },
+    "S-09": {
+      "id": "S-09",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no test-state/conflict contract in NSCP compactor",
+      "evidence": "requires Hermes state model or a policy not implemented in NSCP",
+      "duration_s": null
+    },
+    "S-10": {
+      "id": "S-10",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no test-state/conflict contract in NSCP compactor",
+      "evidence": "requires Hermes state model or a policy not implemented in NSCP",
+      "duration_s": null
+    },
+    "S-11": {
+      "id": "S-11",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no test-state/conflict contract in NSCP compactor",
+      "evidence": "requires Hermes state model or a policy not implemented in NSCP",
+      "duration_s": null
+    },
+    "S-12": {
+      "id": "S-12",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "tool_role_rejected=True",
+      "evidence": "legacy compactor rejects tool protocol",
+      "duration_s": null
+    },
+    "S-13": {
+      "id": "S-13",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no tool_call_id identity contract in NSCP",
+      "evidence": "Hermes tool protocol scope",
+      "duration_s": null
+    },
+    "S-14": {
+      "id": "S-14",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no multi-tool-call protocol in NSCP",
+      "evidence": "Hermes tool protocol scope",
+      "duration_s": null
+    },
+    "S-15": {
+      "id": "S-15",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "tool_role_rejected=True",
+      "evidence": "orphan tool result discarded",
+      "duration_s": null
+    },
+    "S-16": {
+      "id": "S-16",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "transport metadata is not exposed as instructions in NSCP",
+      "evidence": "no metadata-to-instruction contract to exercise",
+      "duration_s": null
+    },
+    "S-17": {
+      "id": "S-17",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[{\"role\": \"system\", \"content\": \"Push push PUSH\\n\\n# Contexto compactado (NSCP)\\nLa historia previa se compacto para caber en la ve",
+      "evidence": "case-sensitive verbatim",
+      "duration_s": null
+    },
+    "S-18": {
+      "id": "S-18",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "tokens_after=649",
+      "evidence": "budget bound + final turn retained",
+      "duration_s": null
+    },
+    "S-19": {
+      "id": "S-19",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "Incomplete or unrecognized completion",
+      "evidence": "strict transport rejects done_reason=length",
+      "duration_s": null
+    },
+    "S-20": {
+      "id": "S-20",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "Local Ollama request failed: URLError",
+      "evidence": "connection refused, no remote fallback",
+      "duration_s": null
+    },
+    "S-21": {
+      "id": "S-21",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "Local Ollama request failed: HTTPError",
+      "evidence": "real Ollama rejects unknown local model",
+      "duration_s": null
+    },
+    "S-22": {
+      "id": "S-22",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "Invalid local context/output/timeout policy",
+      "evidence": "config budget validation",
+      "duration_s": null
+    },
+    "S-23": {
+      "id": "S-23",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no partial-JSON parser contract in NSCP",
+      "evidence": "requires structured tool-result layer",
+      "duration_s": null
+    },
+    "S-24": {
+      "id": "S-24",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no nscp_recall API in NSCP compactor",
+      "evidence": "Hermes recall scope",
+      "duration_s": null
+    },
+    "S-25": {
+      "id": "S-25",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[\"SECRETO_A\"]",
+      "evidence": "two sqlite files",
+      "duration_s": null
+    },
+    "S-26": {
+      "id": "S-26",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[\"PERSISTENTE\"]",
+      "evidence": "reopen same db",
+      "duration_s": null
+    },
+    "S-27": {
+      "id": "S-27",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "FAIL",
+      "actual": "count=2",
+      "evidence": "no idempotency key in ConversationStore.append",
+      "duration_s": null
+    },
+    "S-28": {
+      "id": "S-28",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "cyclic_tokens=1406",
+      "evidence": "two compression passes",
+      "duration_s": null
+    },
+    "S-29": {
+      "id": "S-29",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no separate rehydration API in NSCP legacy compactor",
+      "evidence": "Hermes context engine scope",
+      "duration_s": null
+    },
+    "S-30": {
+      "id": "S-30",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "HISTORICO_RELEVANTE\n\n# Contexto compactado (NSCP)\nLa historia previa se compacto",
+      "evidence": "pinned turn retained",
+      "duration_s": null
+    },
+    "S-32": {
+      "id": "S-32",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "No usable assistant summary",
+      "evidence": "strict transport rejects empty content",
+      "duration_s": null
+    },
+    "S-33": {
+      "id": "S-33",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "FAIL",
+      "actual": "compaction report has no session-metadata field",
+      "evidence": "_report schema: neuroprompt/compaction-result/v1",
+      "duration_s": null
+    },
+    "S-34": {
+      "id": "S-34",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "['system', 'user']",
+      "evidence": "role preserved by compact_history",
+      "duration_s": null
+    },
+    "S-35": {
+      "id": "S-35",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "FAIL",
+      "actual": "before=1000 after=1000 ratio=1.0",
+      "evidence": "single accounting in _report",
+      "duration_s": null
+    },
+    "S-36": {
+      "id": "S-36",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no message/reference ID schema in NSCP compactor",
+      "evidence": "identity layer absent",
+      "duration_s": null
+    },
+    "S-37": {
+      "id": "S-37",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no recall reference parser in NSCP",
+      "evidence": "Hermes recall scope",
+      "duration_s": null
+    },
+    "S-38": {
+      "id": "S-38",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "remote_rejected=True",
+      "evidence": "strict loopback-only transport",
+      "duration_s": null
+    },
+    "S-39": {
+      "id": "S-39",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "count_after_restart=1",
+      "evidence": "clean reopen",
+      "duration_s": null
+    },
+    "S-40": {
+      "id": "S-40",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "no cache-cost accounting model in local-only NSCP path",
+      "evidence": "no provider billing surface",
+      "duration_s": null
+    },
+    "S-41": {
+      "id": "S-41",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "[]",
+      "evidence": "distinct conversations in distinct stores",
+      "duration_s": null
+    },
+    "M-01": {
+      "id": "M-01",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "No realices commits directos en la rama principal (`main`); siempre debes crear una rama de trabajo, realizar tus cambios allí y luego fusionarlos (merge) o enviarlos (push) hacia `main`.",
+      "evidence": "real Qwen summary; required=['no', 'push']",
+      "duration_s": 2.88
+    },
+    "M-02": {
+      "id": "M-02",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "FAIL",
+      "actual": "El mensaje indica que **no se ha proporcionado la credencial de acceso correcta** (como un token de API o contraseña) al intentar subir el paquete a PyPI, lo que impide que el sistema valide y procese la publicación.",
+      "evidence": "real Qwen summary; required=['autoriz']",
+      "duration_s": 3.06
+    },
+    "M-03": {
+      "id": "M-03",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "El servidor está configurado para operar en el puerto **11435**, utilizando el archivo **`config/service.py`** como su punto de configuración principal.",
+      "evidence": "real Qwen summary; required=['11435', 'config/service.py']",
+      "duration_s": 2.21
+    },
+    "M-08": {
+      "id": "M-08",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "No se debe utilizar el comando `sudo` en este servidor.",
+      "evidence": "real Qwen summary; required=['sudo']",
+      "duration_s": 0.99
+    },
+    "M-04": {
+      "id": "M-04",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "{'chars': 1000, 'words': 1, 'approx_tokens': 250}",
+      "evidence": "token_estimator deterministic counters",
+      "duration_s": null
+    },
+    "M-05": {
+      "id": "M-05",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "1500->721",
+      "evidence": "real reduction from compact_history",
+      "duration_s": null
+    },
+    "M-06": {
+      "id": "M-06",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "No usable assistant summary",
+      "evidence": "strict transport strips and rejects empty content",
+      "duration_s": null
+    },
+    "M-07": {
+      "id": "M-07",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "false-PASS detection requires mutation evidence",
+      "evidence": "see mutation_execution.json",
+      "duration_s": null
+    },
+    "M-11": {
+      "id": "M-11",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "id retained",
+      "evidence": "pinned identifier preserved exactly",
+      "duration_s": null
+    },
+    "M-12": {
+      "id": "M-12",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "PASS",
+      "actual": "final state retained",
+      "evidence": "pinned final state preserved",
+      "duration_s": null
+    },
+    "M-09": {
+      "id": "M-09",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "cumulative fidelity needs the 1/5/10/20-cycle experiment",
+      "evidence": "see fidelity_cycles.json",
+      "duration_s": null
+    },
+    "M-10": {
+      "id": "M-10",
+      "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+      "verdict": "BLOCKED",
+      "actual": "archived tool-result isolation is a Hermes tool-protocol contract",
+      "evidence": "no NSCP tool messages accepted",
+      "duration_s": null
+    }
+  }
+}

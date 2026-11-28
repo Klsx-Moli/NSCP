@@ -1,0 +1,165 @@
+{
+  "route": "phi4mini_classifier",
+  "cases": 6,
+  "tokens": {
+    "prompt_eval_count": 3431,
+    "eval_count": 39,
+    "calls": 6
+  },
+  "selection_recall": 0.833,
+  "precision_mean": 0.555,
+  "false_positives_total": 6,
+  "cold_s": 0.768,
+  "warm_mean_s": 0.493,
+  "rows": [
+    {
+      "case_id": "C-001",
+      "lang": "es-es",
+      "category": "lexical_exact",
+      "offered_ids": [
+        5,
+        0,
+        2,
+        3,
+        7,
+        9
+      ],
+      "selected_ids": [
+        5,
+        7
+      ],
+      "seconds": 0.768,
+      "candidate_recall": true,
+      "selection_recall": true,
+      "precision": 0.5,
+      "literal_fidelity": true,
+      "semantic_fidelity": true,
+      "false_positives": 1,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-004",
+      "lang": "es-es",
+      "category": "numeric_id",
+      "offered_ids": [
+        5,
+        0,
+        2,
+        3,
+        7,
+        9
+      ],
+      "selected_ids": [
+        3,
+        7
+      ],
+      "seconds": 0.515,
+      "candidate_recall": true,
+      "selection_recall": false,
+      "precision": 0.0,
+      "literal_fidelity": false,
+      "semantic_fidelity": false,
+      "false_positives": 2,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-007",
+      "lang": "es-es",
+      "category": "negation",
+      "offered_ids": [
+        5,
+        0,
+        2,
+        3,
+        7,
+        9
+      ],
+      "selected_ids": [
+        5
+      ],
+      "seconds": 0.444,
+      "candidate_recall": true,
+      "selection_recall": true,
+      "precision": 1.0,
+      "literal_fidelity": true,
+      "semantic_fidelity": true,
+      "false_positives": 0,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-010",
+      "lang": "es-es",
+      "category": "revocation",
+      "offered_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "selected_ids": [
+        5
+      ],
+      "seconds": 0.378,
+      "candidate_recall": true,
+      "selection_recall": true,
+      "precision": 1.0,
+      "literal_fidelity": true,
+      "semantic_fidelity": true,
+      "false_positives": 0,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-013",
+      "lang": "es-es",
+      "category": "authorization_branch",
+      "offered_ids": [
+        5,
+        0,
+        2,
+        3,
+        7,
+        9
+      ],
+      "selected_ids": [
+        5,
+        7
+      ],
+      "seconds": 0.514,
+      "candidate_recall": true,
+      "selection_recall": true,
+      "precision": 0.5,
+      "literal_fidelity": true,
+      "semantic_fidelity": true,
+      "false_positives": 1,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-016",
+      "lang": "es-es",
+      "category": "state_change",
+      "offered_ids": [
+        5,
+        0,
+        2,
+        3,
+        7,
+        9
+      ],
+      "selected_ids": [
+        5,
+        7,
+        9
+      ],
+      "seconds": 0.612,
+      "candidate_recall": true,
+      "selection_recall": true,
+      "precision": 0.333,
+      "literal_fidelity": true,
+      "semantic_fidelity": true,
+      "false_positives": 2,
+      "abstention_correct": null
+    }
+  ]
+}

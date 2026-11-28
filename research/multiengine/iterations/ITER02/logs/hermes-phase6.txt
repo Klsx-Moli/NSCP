@@ -1,0 +1,12 @@
+host_contract FAIL RuntimeError: Unsupported native Hermes contract: bind_session_state
+construct_observe FAIL RuntimeError: Unsupported native Hermes contract: bind_session_state
+construct_with_shim PASS nscp_hybrid
+update_model PASS name=nscp_hybrid context=8192 threshold=0.75
+persistence_available PASS session=session-A persistence=set
+selection_contract PASS selection_type=NoneType mode=observe
+nscp_recall_manifest PASS schemas=0 nscp_recall=False
+native_route_identity PASS route=native name=nscp_hybrid
+controlled_local_failure PASS controlled_failure=LocalSummaryError
+reset_recovery PASS post_reset_compression_count=0
+signature_compatibility PASS clone_name=nscp_hybrid route=local
+DONE {'host_contract': 'FAIL', 'construct_observe': 'FAIL', 'construct_with_shim': 'PASS', 'update_model': 'PASS', 'persistence_available': 'PASS', 'selection_contract': 'PASS', 'nscp_recall_manifest': 'PASS', 'native_route_identity': 'PASS', 'controlled_local_failure': 'PASS', 'reset_recovery': 'PASS', 'signature_compatibility': 'PASS'}

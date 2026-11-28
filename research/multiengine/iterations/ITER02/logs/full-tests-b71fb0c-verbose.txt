@@ -1,0 +1,387 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.2.0, pluggy-1.7.0 -- <VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+PySide6 6.12.0 -- Qt runtime 6.12.0 -- Qt compiled 6.12.0
+rootdir: <VALIDATION_ROOT>/NSCP-validation-20261127-055413
+configfile: pyproject.toml
+plugins: cov-7.1.0, qt-4.5.0, timeout-2.4.0
+timeout: 60.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 591 items
+
+tests/test_advanced_mode.py::TestAdvancedSectionKeys::test_section_keys_count PASSED [  0%]
+tests/test_advanced_mode.py::TestAdvancedSectionKeys::test_section_defaults_es PASSED [  0%]
+tests/test_advanced_mode.py::TestAdvancedSectionKeys::test_section_defaults_en PASSED [  0%]
+tests/test_advanced_mode.py::TestAdvancedSectionKeys::test_placeholders_es_exist PASSED [  0%]
+tests/test_advanced_mode.py::TestAdvancedSectionKeys::test_placeholders_en_exist PASSED [  0%]
+tests/test_advanced_mode.py::TestCombinedPrompt::test_combined_prompt_format PASSED [  1%]
+tests/test_advanced_mode.py::TestCombinedPrompt::test_combined_prompt_all_empty PASSED [  1%]
+tests/test_advanced_mode.py::TestCombinedPrompt::test_sections_json_roundtrip PASSED [  1%]
+tests/test_advanced_mode.py::TestAboutDialog::test_app_constants PASSED  [  1%]
+tests/test_advanced_mode.py::TestAboutDialog::test_privacy_notes_exist PASSED [  1%]
+tests/test_advanced_mode.py::TestAboutDialog::test_limitations_non_empty PASSED [  1%]
+tests/test_advanced_mode.py::TestExportPreview::test_markdown_export_format PASSED [  2%]
+tests/test_advanced_mode.py::TestExportPreview::test_text_export_format PASSED [  2%]
+tests/test_advanced_mode.py::TestTemplateManagerSearch::test_template_manager_import PASSED [  2%]
+tests/test_advanced_mode.py::TestTemplateManagerSearch::test_template_manager_create PASSED [  2%]
+tests/test_advanced_mode.py::TestTemplateManagerSearch::test_template_search_by_name PASSED [  2%]
+tests/test_advanced_mode.py::TestTemplateManagerSearch::test_template_search_by_tag PASSED [  2%]
+tests/test_agent_context.py::test_request_only_and_protocol_preserved PASSED [  3%]
+tests/test_agent_context.py::test_recall_exact_pagination_and_isolation PASSED [  3%]
+tests/test_agent_context.py::test_missing_original_never_creates_unrecoverable_reference PASSED [  3%]
+tests/test_agent_context.py::test_missing_or_ambiguous_tool_result_preserved PASSED [  3%]
+tests/test_agent_context.py::test_replay_stable_and_no_recursive_reference PASSED [  3%]
+tests/test_agent_context.py::test_pinned_and_multimodal_results_are_protected PASSED [  3%]
+tests/test_agent_context.py::test_meter_no_reduction_does_not_rewrite PASSED [  4%]
+tests/test_agent_context.py::test_invalid_budget_and_meter PASSED        [  4%]
+tests/test_agent_context.py::test_cache_prefix_prefers_newest_eligible_result PASSED [  4%]
+tests/test_agent_context.py::test_focus_path_and_sidecar_protected_in_every_strategy PASSED [  4%]
+tests/test_agent_context.py::test_incremental_estimate_matches_full_unicode_and_custom_meter PASSED [  4%]
+tests/test_agent_context.py::test_adaptive_selects_route_by_pressure PASSED [  4%]
+tests/test_agent_context.py::test_output_metadata_is_independently_owned PASSED [  5%]
+tests/test_agent_context.py::test_parent_pin_and_recall_results_are_not_elided PASSED [  5%]
+tests/test_agent_context.py::test_focus_can_match_tool_arguments_without_matching_output PASSED [  5%]
+tests/test_agent_context.py::test_protect_first_does_not_split_protected_parent_from_result PASSED [  5%]
+tests/test_agent_context_benchmark.py::test_differential_benchmark_reports_unknowns_and_unmet_budget PASSED [  5%]
+tests/test_agent_context_benchmark.py::test_benchmark_rejects_mutated_tool_metadata_and_missing_reference PASSED [  5%]
+tests/test_agent_context_benchmark.py::test_all_routes_preserve_same_focus_and_recover_exactly PASSED [  6%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case01_ambiguous_detected PASSED [  6%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case02_safety_constraints_kept_and_nothing_invented PASSED [  6%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case03_variables_surfaced PASSED [  6%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case04_contradiction_flagged_and_nothing_invented PASSED [  6%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case05_empty_input_fails_controlled PASSED [  6%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case06_research_gap_detected PASSED [  7%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case07_json_contract_required PASSED [  7%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case08_sensitive_data_no_invention PASSED [  7%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case09_excellent_prompt_not_degraded PASSED [  7%]
+tests/test_benchmark_cases.py::TestCaseByCase::test_case10_unknown_target_clear_valueerror PASSED [  7%]
+tests/test_benchmark_cases.py::TestFullBenchmark::test_all_ten_cases_pass_together PASSED [  7%]
+tests/test_benchmark_harness.py::test_literal_requirements_finds_checkable_things PASSED [  8%]
+tests/test_benchmark_harness.py::test_literal_requirements_ignores_trivial_numbers PASSED [  8%]
+tests/test_benchmark_harness.py::test_preserved_ratio_detects_loss PASSED [  8%]
+tests/test_benchmark_harness.py::test_structure_score_rewards_real_structure_only PASSED [  8%]
+tests/test_benchmark_harness.py::test_structure_score_does_not_reward_padding PASSED [  8%]
+tests/test_benchmark_harness.py::test_aggregate_never_rewards_expansion PASSED [  8%]
+tests/test_benchmark_harness.py::test_corpus_is_varied_and_independent PASSED [  9%]
+tests/test_benchmark_harness.py::test_corpus_does_not_reuse_the_shipped_examples PASSED [  9%]
+tests/test_clarification_gate.py::TestThresholds::test_every_supported_profile_has_a_threshold_entry PASSED [  9%]
+tests/test_clarification_gate.py::TestThresholds::test_fast_never_gates PASSED [  9%]
+tests/test_clarification_gate.py::TestThresholds::test_standard_threshold_is_four PASSED [  9%]
+tests/test_clarification_gate.py::TestThresholds::test_advanced_gates_on_any_ambiguity PASSED [  9%]
+tests/test_clarification_gate.py::TestThresholds::test_alias_normalization_applies PASSED [ 10%]
+tests/test_clarification_gate.py::TestThresholds::test_caller_can_override_thresholds PASSED [ 10%]
+tests/test_clarification_gate.py::TestModes::test_invalid_mode_rejected PASSED [ 10%]
+tests/test_clarification_gate.py::TestModes::test_gate_mode_raises_listing_questions PASSED [ 10%]
+tests/test_clarification_gate.py::TestModes::test_prepend_block_is_visible_and_numbered PASSED [ 10%]
+tests/test_clarification_gate.py::TestModes::test_prepend_noop_when_not_required PASSED [ 10%]
+tests/test_clarification_gate.py::TestModes::test_render_block_lists_all_questions PASSED [ 11%]
+tests/test_clarification_gate.py::TestServiceIntegration::test_default_report_mode_changes_nothing_in_output PASSED [ 11%]
+tests/test_clarification_gate.py::TestServiceIntegration::test_report_mode_attaches_decision_when_required PASSED [ 11%]
+tests/test_clarification_gate.py::TestServiceIntegration::test_gate_mode_refuses_over_threshold PASSED [ 11%]
+tests/test_clarification_gate.py::TestServiceIntegration::test_gate_mode_compiles_clean_input PASSED [ 11%]
+tests/test_clarification_gate.py::TestServiceIntegration::test_prepend_mode_marks_execution_prompt PASSED [ 12%]
+tests/test_clarification_gate.py::TestServiceIntegration::test_gui_entry_point_accepts_clarify PASSED [ 12%]
+tests/test_clarification_gate.py::TestServiceIntegration::test_fast_profile_never_gates_even_in_gate_mode PASSED [ 12%]
+tests/test_code_protection.py::test_code_turn_kept_verbatim_with_summarizer PASSED [ 12%]
+tests/test_code_protection.py::test_summarizer_never_receives_code_turns PASSED [ 12%]
+tests/test_code_protection.py::test_code_dropped_is_explicit_when_it_does_not_fit PASSED [ 12%]
+tests/test_code_protection.py::test_properties_over_random_histories PASSED [ 13%]
+tests/test_compact_cli.py::test_cli_ok_writes_json PASSED                [ 13%]
+tests/test_compact_cli.py::test_cli_strict_blocked_exit_2 PASSED         [ 13%]
+tests/test_compact_cli.py::test_cli_passthrough_small PASSED             [ 13%]
+tests/test_compact_cli.py::test_cli_invalid_input_exit_1 PASSED          [ 13%]
+tests/test_compact_cli.py::test_cli_missing_file_exit_1 PASSED           [ 13%]
+tests/test_compact_cli.py::test_cli_stdout_and_messages_wrapper PASSED   [ 14%]
+tests/test_compact_cli.py::test_gate_policy_default_when_config_missing PASSED [ 14%]
+tests/test_compact_cli.py::test_cli_never_overwrites_source PASSED       [ 14%]
+tests/test_compaction_verifier.py::test_extract_facts_kinds PASSED       [ 14%]
+tests/test_compaction_verifier.py::test_passthrough_scores_100 PASSED    [ 14%]
+tests/test_compaction_verifier.py::test_lost_fact_lowers_score_and_reports_counts PASSED [ 14%]
+tests/test_compaction_verifier.py::test_missing_code_block_is_critical PASSED [ 15%]
+tests/test_compaction_verifier.py::test_tampered_recent_detected PASSED  [ 15%]
+tests/test_compaction_verifier.py::test_missing_pinned_detected PASSED   [ 15%]
+tests/test_compaction_verifier.py::test_offloaded_facts_count_as_recoverable PASSED [ 15%]
+tests/test_compaction_verifier.py::test_gate_pass_and_fail_reasons PASSED [ 15%]
+tests/test_compaction_verifier.py::test_strict_blocks_when_gate_fails PASSED [ 15%]
+tests/test_compaction_verifier.py::test_non_strict_is_advisory PASSED    [ 16%]
+tests/test_compaction_verifier.py::test_fallback_truncation_runs_when_summarizer_attempt_fails PASSED [ 16%]
+tests/test_compaction_verifier.py::test_blocked_after_fallback_raises PASSED [ 16%]
+tests/test_compaction_verifier.py::test_report_compatible_with_npsc_evaluate_strict PASSED [ 16%]
+tests/test_compaction_verifier.py::test_passthrough_tampering_does_not_get_perfect_score PASSED [ 16%]
+tests/test_compaction_verifier.py::test_recent_role_tampering_is_critical PASSED [ 16%]
+tests/test_compaction_verifier.py::test_strict_user_authority_cannot_be_waived PASSED [ 17%]
+tests/test_compaction_verifier.py::test_strict_keeps_user_turns_if_they_fit PASSED [ 17%]
+tests/test_compaction_verifier.py::test_tampered_offload_not_recoverable PASSED [ 17%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_auto_select_examples
+tests/test_compilation_profiles.py::CompilationProfileTests::test_auto_select_examples PASSED [ 17%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_cli_accepts_profile_and_keeps_level_compatibility PASSED [ 17%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_config_contains_required_profiles PASSED [ 17%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_constraint_aliases_are_normalized PASSED [ 18%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_fast_generates_more_compact_output_than_advanced PASSED [ 18%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_fast_simple_prompt_has_no_internal_contamination_and_is_compact PASSED [ 18%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_gui_compile_path_uses_core_nsl PASSED [ 18%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_hash_only_privacy_removes_sensitive_text_from_serialized_outputs PASSED [ 18%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_new_artifacts_and_custom_model_name PASSED [ 18%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_original_prompt_and_critical_constraints_are_preserved PASSED [ 19%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_qt_gui_smoke_uses_core_offscreen PASSED [ 19%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_research_max_uses_maximum_preservation PASSED [ 19%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_rop_includes_template_and_output_schema PASSED [ 19%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_seed_dictionary_has_minimum_validated_size PASSED [ 19%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_sha256_and_hybrid_json_schema PASSED [ 19%]
+tests/test_compilation_profiles.py::CompilationProfileTests::test_standard_is_default_profile PASSED [ 20%]
+tests/test_compression_policy.py::test_default_level_is_safe PASSED      [ 20%]
+tests/test_compression_policy.py::test_known_levels_exist PASSED         [ 20%]
+tests/test_compression_policy.py::test_triggers_at PASSED                [ 20%]
+tests/test_compression_policy.py::test_needs_compaction_threshold PASSED [ 20%]
+tests/test_compression_policy.py::test_unknown_level_and_bad_num_ctx_raise PASSED [ 20%]
+tests/test_context_compactor.py::test_passthrough_below_threshold PASSED [ 21%]
+tests/test_context_compactor.py::test_partition_keeps_recent_and_pinned PASSED [ 21%]
+tests/test_context_compactor.py::test_pinned_merged_into_first_system_message PASSED [ 21%]
+tests/test_context_compactor.py::test_order_preserved_in_assembled_messages PASSED [ 21%]
+tests/test_context_compactor.py::test_offload_moves_large_blocks PASSED  [ 21%]
+tests/test_context_compactor.py::test_code_blocks_are_never_offloaded PASSED [ 21%]
+tests/test_context_compactor.py::test_without_summarizer_drops_oldest_middle PASSED [ 22%]
+tests/test_context_compactor.py::test_with_summarizer_injected PASSED    [ 22%]
+tests/test_context_compactor.py::test_insufficient_window_raises PASSED  [ 22%]
+tests/test_context_compactor.py::test_offload_integrated_in_compact_history PASSED [ 22%]
+tests/test_context_compactor.py::test_history_input_not_mutated PASSED   [ 22%]
+tests/test_context_compactor.py::test_stale_token_counts_cannot_bypass_budget PASSED [ 23%]
+tests/test_context_compactor.py::test_non_system_pinned_is_not_promoted PASSED [ 23%]
+tests/test_context_compactor.py::test_legacy_rejects_tool_messages PASSED [ 23%]
+tests/test_context_compactor.py::test_summary_over_budget_is_not_truncated PASSED [ 23%]
+tests/test_context_compactor.py::test_offload_refuses_corrupt_existing_content PASSED [ 23%]
+tests/test_context_loss.py::ContextLossTests::test_cli_demo_generates_expected_files PASSED [ 23%]
+tests/test_context_loss.py::ContextLossTests::test_strict_policy_thresholds PASSED [ 24%]
+tests/test_context_loss.py::ContextLossTests::test_verifier_flags_missing_safety PASSED [ 24%]
+tests/test_contextual_help.py::ContextualHelpTests::test_help_opens_and_escape_closes PASSED [ 24%]
+tests/test_contextual_help.py::ContextualHelpTests::test_no_long_tooltips_on_invasive_containers PASSED [ 24%]
+tests/test_contextual_help.py::ContextualHelpTests::test_popover_word_wrap_and_width PASSED [ 24%]
+tests/test_contextual_help.py::ContextualHelpTests::test_privacy_help_has_distinct_modes PASSED [ 24%]
+tests/test_contextual_help.py::ContextualHelpTests::test_section_help_buttons_exist
+tests/test_contextual_help.py::ContextualHelpTests::test_section_help_buttons_exist PASSED [ 25%]
+tests/test_conversation_store.py::test_append_and_load_roundtrip PASSED  [ 25%]
+tests/test_conversation_store.py::test_isolation_between_conversations PASSED [ 25%]
+tests/test_conversation_store.py::test_pinned_persists PASSED            [ 25%]
+tests/test_conversation_store.py::test_mark_summarized_is_not_destructive PASSED [ 25%]
+tests/test_conversation_store.py::test_store_file_created PASSED         [ 25%]
+tests/test_copyable_prompt_structure.py::test_copyable_prompt_has_each_section[Role:] PASSED [ 26%]
+tests/test_copyable_prompt_structure.py::test_copyable_prompt_has_each_section[Objective:] PASSED [ 26%]
+tests/test_copyable_prompt_structure.py::test_copyable_prompt_has_each_section[Tasks:] PASSED [ 26%]
+tests/test_copyable_prompt_structure.py::test_copyable_prompt_has_each_section[Constraints:] PASSED [ 26%]
+tests/test_copyable_prompt_structure.py::test_copyable_prompt_has_each_section[Expected output:] PASSED [ 26%]
+tests/test_copyable_prompt_structure.py::test_copyable_prompt_has_each_section[Verification:] PASSED [ 26%]
+tests/test_copyable_prompt_structure.py::test_copyable_prompt_has_each_section[If blocked:] PASSED [ 27%]
+tests/test_copyable_prompt_structure.py::test_objective_keeps_the_user_words_verbatim PASSED [ 27%]
+tests/test_copyable_prompt_structure.py::test_constraints_use_canonical_form_for_traceability PASSED [ 27%]
+tests/test_copyable_prompt_structure.py::test_no_unsupported_additions_are_reported PASSED [ 27%]
+tests/test_copyable_prompt_structure.py::test_prompt_remains_useful_and_not_bloated PASSED [ 27%]
+tests/test_copyable_prompt_structure.py::test_fast_profile_stays_minimal PASSED [ 27%]
+tests/test_design_system.py::test_tokens_are_frozen PASSED               [ 28%]
+tests/test_design_system.py::test_theme_exposes_both_palettes PASSED     [ 28%]
+tests/test_design_system.py::test_builder_has_no_duplicate_selectors[dark] PASSED [ 28%]
+tests/test_design_system.py::test_builder_has_no_duplicate_selectors[light] PASSED [ 28%]
+tests/test_design_system.py::test_builder_emits_state_rules[dark] PASSED [ 28%]
+tests/test_design_system.py::test_builder_emits_state_rules[light] PASSED [ 28%]
+tests/test_design_system.py::test_builder_source_has_no_hardcoded_colours PASSED [ 29%]
+tests/test_design_system.py::test_theme_facade_is_single_source PASSED   [ 29%]
+tests/test_design_system.py::test_typography_family_is_declared_and_available SKIPPED [ 29%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-text_primary-dark] PASSED [ 29%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-text_primary-light] PASSED [ 29%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-text_secondary-dark] PASSED [ 29%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-text_secondary-light] PASSED [ 30%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-text_tertiary-dark] PASSED [ 30%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-text_tertiary-light] PASSED [ 30%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-accent_brand-dark] PASSED [ 30%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-accent_brand-light] PASSED [ 30%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-success-dark] PASSED [ 30%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-success-light] PASSED [ 31%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-warning-dark] PASSED [ 31%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-warning-light] PASSED [ 31%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-error-dark] PASSED [ 31%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_base-error-light] PASSED [ 31%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-text_primary-dark] PASSED [ 31%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-text_primary-light] PASSED [ 32%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-text_secondary-dark] PASSED [ 32%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-text_secondary-light] PASSED [ 32%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-text_tertiary-dark] PASSED [ 32%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-text_tertiary-light] PASSED [ 32%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-accent_brand-dark] PASSED [ 32%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-accent_brand-light] PASSED [ 33%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-success-dark] PASSED [ 33%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-success-light] PASSED [ 33%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-warning-dark] PASSED [ 33%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-warning-light] PASSED [ 33%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-error-dark] PASSED [ 34%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_surface-error-light] PASSED [ 34%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-text_primary-dark] PASSED [ 34%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-text_primary-light] PASSED [ 34%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-text_secondary-dark] PASSED [ 34%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-text_secondary-light] PASSED [ 34%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-text_tertiary-dark] PASSED [ 35%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-text_tertiary-light] PASSED [ 35%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-accent_brand-dark] PASSED [ 35%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-accent_brand-light] PASSED [ 35%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-success-dark] PASSED [ 35%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-success-light] PASSED [ 35%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-warning-dark] PASSED [ 36%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-warning-light] PASSED [ 36%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-error-dark] PASSED [ 36%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_raised-error-light] PASSED [ 36%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-text_primary-dark] PASSED [ 36%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-text_primary-light] PASSED [ 36%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-text_secondary-dark] PASSED [ 37%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-text_secondary-light] PASSED [ 37%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-text_tertiary-dark] PASSED [ 37%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-text_tertiary-light] PASSED [ 37%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-accent_brand-dark] PASSED [ 37%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-accent_brand-light] PASSED [ 37%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-success-dark] PASSED [ 38%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-success-light] PASSED [ 38%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-warning-dark] PASSED [ 38%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-warning-light] PASSED [ 38%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-error-dark] PASSED [ 38%]
+tests/test_design_system.py::test_text_contrast_meets_aa[bg_input-error-light] PASSED [ 38%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[accent_primary-dark] PASSED [ 39%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[accent_primary-light] PASSED [ 39%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[accent_hover-dark] PASSED [ 39%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[accent_hover-light] PASSED [ 39%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[success_filled-dark] PASSED [ 39%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[success_filled-light] PASSED [ 39%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[error_filled-dark] PASSED [ 40%]
+tests/test_design_system.py::test_text_on_filled_accent_meets_aa[error_filled-light] PASSED [ 40%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_raised-dark] PASSED [ 40%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_raised-light] PASSED [ 40%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_input-dark] PASSED [ 40%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_input-light] PASSED [ 40%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_surface-dark] PASSED [ 41%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_surface-light] PASSED [ 41%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_base-dark] PASSED [ 41%]
+tests/test_design_system.py::test_interactive_border_meets_non_text_contrast[bg_base-light] PASSED [ 41%]
+tests/test_design_system.py::test_status_chip_maps_all_six_states PASSED [ 41%]
+tests/test_design_system.py::test_segmented_control_is_exclusive_and_indexed PASSED [ 41%]
+tests/test_design_system.py::test_result_card_states[92-warnings0-errors0-success] PASSED [ 42%]
+tests/test_design_system.py::test_result_card_states[70-warnings1-errors1-warning] PASSED [ 42%]
+tests/test_design_system.py::test_result_card_states[50-warnings2-errors2-error] PASSED [ 42%]
+tests/test_design_system.py::test_result_card_states[0-warnings3-errors3-error] PASSED [ 42%]
+tests/test_design_system.py::test_result_card_idle_and_clear PASSED      [ 42%]
+tests/test_design_system.py::test_field_error_and_focus_states PASSED    [ 42%]
+tests/test_design_system.py::test_progress_indicator_indeterminate PASSED [ 43%]
+tests/test_design_system.py::test_toast_state_and_message PASSED         [ 43%]
+tests/test_design_system.py::test_apply_design_installs_focus_style +++++++++++++++++++++++++++++++++++ Timeout +++++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~ Stack of MainThread (15304) ~~~~~~~~~~~~~~~~~~~~~~~~~
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pytest\__main__.py", line 9, in <module>
+    raise SystemExit(_console_main())
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\config\__init__.py", line 286, in _console_main
+    code = _main(prog=_get_prog_name(sys.argv))
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\config\__init__.py", line 262, in _main
+    ret: ExitCode | int = config.hook.pytest_cmdline_main(config=config)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197, in __call__
+    return self._hookexec(
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 380, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 333, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 387, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197, in __call__
+    return self._hookexec(
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 411, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197, in __call__
+    return self._hookexec(
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 118, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 139, in runtestprotocol
+    reports.append(call_and_report(item, "call", log))
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 249, in call_and_report
+    call = CallInfo.from_call(
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 361, in from_call
+    result: TResult | None = func()
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 250, in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197, in __call__
+    return self._hookexec(
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\python.py", line 1798, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197, in __call__
+    return self._hookexec(
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\python.py", line 187, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\tests\test_design_system.py", line 271, in test_apply_design_installs_focus_style
+    apply_design(qapp, get_theme("light"))
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\tests\..\src\npsc_gui\design\style.py", line 85, in apply_design
+    app.setStyleSheet(build_qss(theme))
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\tests\..\src\npsc_gui\help_popover.py", line 183, in eventFilter
+    def eventFilter(self, watched, event) -> bool:
++++++++++++++++++++++++++++++++++++ Timeout +++++++++++++++++++++++++++++++++++
+Windows fatal exception: access violation
+
+Current thread 0x00000e18 (most recent call first):
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\tests\..\src\npsc_gui\help_popover.py", line 184 in eventFilter
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pytest_timeout.py", line 542 in timeout_timer
+  File "<USERPROFILE>\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1433 in run
+  File "<USERPROFILE>\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "<USERPROFILE>\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00003bc8 (most recent call first):
+  File "<USERPROFILE>\AppData\Local\Programs\Python\Python312\Lib\enum.py", line 720 in __call__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\tests\..\src\npsc_gui\help_popover.py", line 184 in eventFilter
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\tests\..\src\npsc_gui\design\style.py", line 85 in apply_design
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\tests\test_design_system.py", line 271 in test_apply_design_installs_focus_style
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\python.py", line 187 in pytest_pyfunc_call
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\python.py", line 1798 in runtest
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 411 in pytest_runtestloop
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 387 in _main
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 333 in wrap_session
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\main.py", line 380 in pytest_cmdline_main
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_execution.py", line 147 in _multicall
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_manager.py", line 183 in _hookexec
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pluggy\_caller.py", line 197 in __call__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\config\__init__.py", line 262 in _main
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\config\__init__.py", line 286 in _console_main
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\pytest\__main__.py", line 9 in <module>
+  File "<frozen runpy>", line 88 in _run_code
+  File "<frozen runpy>", line 198 in _run_module_as_main

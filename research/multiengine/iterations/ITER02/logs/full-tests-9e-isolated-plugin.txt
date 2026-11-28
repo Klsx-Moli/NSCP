@@ -1,0 +1,327 @@
+........................................................................ [ 12%]
+..............................................Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\tests\..\src\npsc_gui\main_window.py", line 2133, in <lambda>
+    lambda: self.simple_result_card.copy_button.set_idle_text(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\tests\..\src\npsc_gui\components\buttons.py", line 86, in set_idle_text
+    self.setText(text)
+RuntimeError: libshiboken: Internal C++ object (PrimaryButton) already deleted.
+________________________________________________________________________________
+F..................... [ 23%]
+...FFFFF.........................s...................................... [ 35%]
+........................................................................ [ 47%]
+............FFFFFFFFFFFFF............................................... [ 59%]
+........................................................................ [ 72%]
+........................................................................ [ 84%]
+........................................................................ [ 96%]
+......................                                                   [100%]
+================================== FAILURES ===================================
+__________ CompilationProfileTests.test_standard_is_default_profile ___________
+CALL ERROR: Exceptions caught in Qt event loop:
+________________________________________________________________________________
+Traceback (most recent call last):
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\tests\..\src\npsc_gui\main_window.py", line 2133, in <lambda>
+    lambda: self.simple_result_card.copy_button.set_idle_text(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\tests\..\src\npsc_gui\components\buttons.py", line 86, in set_idle_text
+    self.setText(text)
+RuntimeError: libshiboken: Internal C++ object (PrimaryButton) already deleted.
+________________________________________________________________________________
+
+---------------------------- Captured stdout call -----------------------------
+[NPSC] target=codex profile=STANDARD requested_level=profile_default chosen=balanced score=99
+[NPSC] sha256=27ac9aeff7afdd66516aa6d605cc01565f8b47e5ea464a7814b6218fbba7a36e
+[NPSC] outputs=<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\outputs\test_profile_default
+____________ ContextualHelpTests.test_help_opens_and_escape_closes ____________
+tests\test_contextual_help.py:27: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+______ ContextualHelpTests.test_no_long_tooltips_on_invasive_containers _______
+tests\test_contextual_help.py:27: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+____________ ContextualHelpTests.test_popover_word_wrap_and_width _____________
+tests\test_contextual_help.py:27: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+__________ ContextualHelpTests.test_privacy_help_has_distinct_modes ___________
+tests\test_contextual_help.py:27: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+_____________ ContextualHelpTests.test_section_help_buttons_exist _____________
+tests\test_contextual_help.py:27: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+_____ GlossaryGuiTests.test_advanced_mode_exposes_human_technical_labels ______
+tests\test_glossary_ux.py:136: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+__________ GlossaryGuiTests.test_context_help_can_open_glossary_term __________
+tests\test_glossary_ux.py:136: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+__ GlossaryGuiTests.test_no_long_tooltips_on_panels_after_glossary_addition ___
+tests\test_glossary_ux.py:136: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+_________ GlossaryGuiTests.test_sidebar_order_and_simple_mode_labels __________
+tests\test_glossary_ux.py:136: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+_________ GlossaryGuiTests.test_visible_labels_map_to_internal_values _________
+tests\test_glossary_ux.py:136: in setUp
+    self.window = MainWindow()
+                  ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+______ TestQualityScoreVisible.test_quality_label_shows_score_and_counts ______
+tests\test_gui_b9.py:55: in test_quality_label_shows_score_and_counts
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+________ TestQualityScoreVisible.test_quality_tooltip_lists_top_issues ________
+tests\test_gui_b9.py:64: in test_quality_tooltip_lists_top_issues
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+________ TestQualityScoreVisible.test_clean_input_still_shows_quality _________
+tests\test_gui_b9.py:74: in test_clean_input_still_shows_quality
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+________ TestOpenQuestionsVisible.test_questions_tab_lists_ambiguities ________
+tests\test_gui_b9.py:82: in test_questions_tab_lists_ambiguities
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+_ TestOpenQuestionsVisible.test_questions_tab_come_from_clarification_gate_first _
+tests\test_gui_b9.py:96: in test_questions_tab_come_from_clarification_gate_first
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+_______ TestOpenQuestionsVisible.test_complete_input_shows_clean_state ________
+tests\test_gui_b9.py:108: in test_complete_input_shows_clean_state
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+_ TestOpenQuestionsVisible.test_legacy_result_without_b2_fields_degrades_cleanly _
+tests\test_gui_b9.py:118: in test_legacy_result_without_b2_fields_degrades_cleanly
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+___ TestInitialFocus.test_prompt_editor_has_keyboard_focus_after_activation ___
+tests\test_gui_b9.py:144: in test_prompt_editor_has_keyboard_focus_after_activation
+    w = MainWindow()
+        ^^^^^^^^^^^^
+src\npsc_gui\main_window.py:263: in __init__
+    self._restore_settings()
+src\npsc_gui\main_window.py:1419: in _restore_settings
+    self._switch_to_mode(startup_mode)
+src\npsc_gui\main_window.py:1192: in _switch_to_mode
+    close_context_help_popovers()
+src\npsc_gui\help_popover.py:19: in close_context_help_popovers
+    popover.hide_now()
+src\npsc_gui\help_popover.py:85: in hide_now
+    self.hide()
+E   RuntimeError: libshiboken: Internal C++ object (ContextHelpPopover) already deleted.
+=========================== short test summary info ===========================
+FAILED tests/test_compilation_profiles.py::CompilationProfileTests::test_standard_is_default_profile
+FAILED tests/test_contextual_help.py::ContextualHelpTests::test_help_opens_and_escape_closes
+FAILED tests/test_contextual_help.py::ContextualHelpTests::test_no_long_tooltips_on_invasive_containers
+FAILED tests/test_contextual_help.py::ContextualHelpTests::test_popover_word_wrap_and_width
+FAILED tests/test_contextual_help.py::ContextualHelpTests::test_privacy_help_has_distinct_modes
+FAILED tests/test_contextual_help.py::ContextualHelpTests::test_section_help_buttons_exist
+FAILED tests/test_glossary_ux.py::GlossaryGuiTests::test_advanced_mode_exposes_human_technical_labels
+FAILED tests/test_glossary_ux.py::GlossaryGuiTests::test_context_help_can_open_glossary_term
+FAILED tests/test_glossary_ux.py::GlossaryGuiTests::test_no_long_tooltips_on_panels_after_glossary_addition
+FAILED tests/test_glossary_ux.py::GlossaryGuiTests::test_sidebar_order_and_simple_mode_labels
+FAILED tests/test_glossary_ux.py::GlossaryGuiTests::test_visible_labels_map_to_internal_values
+FAILED tests/test_gui_b9.py::TestQualityScoreVisible::test_quality_label_shows_score_and_counts
+FAILED tests/test_gui_b9.py::TestQualityScoreVisible::test_quality_tooltip_lists_top_issues
+FAILED tests/test_gui_b9.py::TestQualityScoreVisible::test_clean_input_still_shows_quality
+FAILED tests/test_gui_b9.py::TestOpenQuestionsVisible::test_questions_tab_lists_ambiguities
+FAILED tests/test_gui_b9.py::TestOpenQuestionsVisible::test_questions_tab_come_from_clarification_gate_first
+FAILED tests/test_gui_b9.py::TestOpenQuestionsVisible::test_complete_input_shows_clean_state
+FAILED tests/test_gui_b9.py::TestOpenQuestionsVisible::test_legacy_result_without_b2_fields_degrades_cleanly
+FAILED tests/test_gui_b9.py::TestInitialFocus::test_prompt_editor_has_keyboard_focus_after_activation
+19 failed, 574 passed, 1 skipped, 4 subtests passed in 73.15s (0:01:13)

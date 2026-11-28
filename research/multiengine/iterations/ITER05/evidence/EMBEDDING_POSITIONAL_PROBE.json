@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-11-28T00:15:08.715538+00:00",
+  "classification": "VERIFIED_BY_ME",
+  "healthy": true,
+  "duplicate_at_0_and_6": {
+    "max_abs_diff": 0.002463502809405327,
+    "cosine": 0.99977876,
+    "identical": false
+  },
+  "duplicate_only_two": {
+    "max_abs_diff": 0.003244633786380291,
+    "cosine": 0.99970017,
+    "identical": false
+  }
+}

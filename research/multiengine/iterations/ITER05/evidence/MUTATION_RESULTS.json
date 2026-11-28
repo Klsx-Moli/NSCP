@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-11-28T00:42:13.420280+00:00",
+  "total": 8,
+  "passed": 8,
+  "cases": [
+    {
+      "id": "MUT-NAN-VECTOR",
+      "case": "vector NaN/Inf rechazado",
+      "status": "PASS",
+      "source": "MEMORY_INDEX_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    },
+    {
+      "id": "MUT-WRONG-DIM",
+      "case": "vector de dimensión incorrecta excluido de búsqueda",
+      "status": "PASS",
+      "source": "MEMORY_INDEX_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    },
+    {
+      "id": "MUT-SESSION-ISOLATION",
+      "case": "aislamiento entre sesiones",
+      "status": "PASS",
+      "source": "MEMORY_INDEX_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    },
+    {
+      "id": "MUT-INJECTION-AS-DATA",
+      "case": "prompt injection conservado como dato, no ejecutado",
+      "status": "PASS",
+      "source": "MEMORY_INDEX_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    },
+    {
+      "id": "MUT-MODEL-INVALIDATION",
+      "case": "cambio de identidad del embedding invalida índice",
+      "status": "PASS",
+      "source": "MEMORY_INDEX_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    },
+    {
+      "id": "MUT-RESTART",
+      "case": "rehidratación exacta tras reinicio de DB",
+      "status": "PASS",
+      "source": "MEMORY_INDEX_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    },
+    {
+      "id": "MUT-UNKNOWN-NOT-PASS",
+      "case": "motor caído => RECOVERY, nunca UNKNOWN como PASS",
+      "status": "PASS",
+      "source": "MULTIENGINE_ROUTER_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    },
+    {
+      "id": "MUT-MALFORMED-STATE",
+      "case": "estado vacío/tipos inválidos no rompe router",
+      "status": "PASS",
+      "source": "MULTIENGINE_ROUTER_PROTOTYPE/results.json",
+      "classification": "VERIFIED_BY_ME"
+    }
+  ]
+}

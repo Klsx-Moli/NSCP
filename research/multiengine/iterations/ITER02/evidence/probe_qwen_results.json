@@ -1,0 +1,239 @@
+{
+  "think_False_np128": {
+    "request": {
+      "model": "qwen3.5:4b-q4_K_M",
+      "stream": false,
+      "think": false,
+      "truncate": false,
+      "shift": false,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Responde exclusivamente con la palabra OK."
+        }
+      ],
+      "options": {
+        "num_ctx": 4096,
+        "num_predict": 128,
+        "temperature": 0
+      }
+    },
+    "case": "think_False_np128",
+    "http_status": 200,
+    "response": {
+      "content": "OK",
+      "thinking_len": 0,
+      "thinking_head": "",
+      "tool_calls": null,
+      "done": true,
+      "done_reason": "stop",
+      "eval_count": 2,
+      "prompt_eval_count": 20
+    },
+    "verdict": "PASS",
+    "duration_s": 21.03
+  },
+  "think_True_np128": {
+    "request": {
+      "model": "qwen3.5:4b-q4_K_M",
+      "stream": false,
+      "think": true,
+      "truncate": false,
+      "shift": false,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Responde exclusivamente con la palabra OK."
+        }
+      ],
+      "options": {
+        "num_ctx": 4096,
+        "num_predict": 128,
+        "temperature": 0
+      }
+    },
+    "case": "think_True_np128",
+    "http_status": 200,
+    "response": {
+      "content": "",
+      "thinking_len": 500,
+      "thinking_head": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: \"Responde exclusivamente con la palabra OK.\" (Respond exclusively with the word OK.)\n    *   Constraint: The response must be *only* the ",
+      "tool_calls": null,
+      "done": true,
+      "done_reason": "length",
+      "eval_count": 128,
+      "prompt_eval_count": 18
+    },
+    "verdict": "FAIL",
+    "duration_s": 7.34
+  },
+  "think_absent_np128": {
+    "request": {
+      "model": "qwen3.5:4b-q4_K_M",
+      "stream": false,
+      "truncate": false,
+      "shift": false,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Responde exclusivamente con la palabra OK."
+        }
+      ],
+      "options": {
+        "num_ctx": 4096,
+        "num_predict": 128,
+        "temperature": 0
+      }
+    },
+    "case": "think_absent_np128",
+    "http_status": 200,
+    "response": {
+      "content": "",
+      "thinking_len": 500,
+      "thinking_head": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: \"Responde exclusivamente con la palabra OK.\" (Respond exclusively with the word OK.)\n    *   Constraint: The response must be *only* the ",
+      "tool_calls": null,
+      "done": true,
+      "done_reason": "length",
+      "eval_count": 128,
+      "prompt_eval_count": 18
+    },
+    "verdict": "FAIL",
+    "duration_s": 7.76
+  },
+  "think_false_np256": {
+    "request": {
+      "model": "qwen3.5:4b-q4_K_M",
+      "stream": false,
+      "think": false,
+      "truncate": false,
+      "shift": false,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Responde exclusivamente con la palabra OK."
+        }
+      ],
+      "options": {
+        "num_ctx": 4096,
+        "num_predict": 256,
+        "temperature": 0
+      }
+    },
+    "case": "think_false_np256",
+    "http_status": 200,
+    "response": {
+      "content": "OK",
+      "thinking_len": 0,
+      "thinking_head": "",
+      "tool_calls": null,
+      "done": true,
+      "done_reason": "stop",
+      "eval_count": 2,
+      "prompt_eval_count": 20
+    },
+    "verdict": "PASS",
+    "duration_s": 0.4
+  },
+  "think_false_np512": {
+    "request": {
+      "model": "qwen3.5:4b-q4_K_M",
+      "stream": false,
+      "think": false,
+      "truncate": false,
+      "shift": false,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Responde exclusivamente con la palabra OK."
+        }
+      ],
+      "options": {
+        "num_ctx": 4096,
+        "num_predict": 512,
+        "temperature": 0
+      }
+    },
+    "case": "think_false_np512",
+    "http_status": 200,
+    "response": {
+      "content": "OK",
+      "thinking_len": 0,
+      "thinking_head": "",
+      "tool_calls": null,
+      "done": true,
+      "done_reason": "stop",
+      "eval_count": 2,
+      "prompt_eval_count": 20
+    },
+    "verdict": "PASS",
+    "duration_s": 0.25
+  },
+  "think_false_np1024": {
+    "request": {
+      "model": "qwen3.5:4b-q4_K_M",
+      "stream": false,
+      "think": false,
+      "truncate": false,
+      "shift": false,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Responde exclusivamente con la palabra OK."
+        }
+      ],
+      "options": {
+        "num_ctx": 4096,
+        "num_predict": 1024,
+        "temperature": 0
+      }
+    },
+    "case": "think_false_np1024",
+    "http_status": 200,
+    "response": {
+      "content": "OK",
+      "thinking_len": 0,
+      "thinking_head": "",
+      "tool_calls": null,
+      "done": true,
+      "done_reason": "stop",
+      "eval_count": 2,
+      "prompt_eval_count": 20
+    },
+    "verdict": "PASS",
+    "duration_s": 0.27
+  },
+  "think_false_np2048": {
+    "request": {
+      "model": "qwen3.5:4b-q4_K_M",
+      "stream": false,
+      "think": false,
+      "truncate": false,
+      "shift": false,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Responde exclusivamente con la palabra OK."
+        }
+      ],
+      "options": {
+        "num_ctx": 4096,
+        "num_predict": 2048,
+        "temperature": 0
+      }
+    },
+    "case": "think_false_np2048",
+    "http_status": 200,
+    "response": {
+      "content": "OK",
+      "thinking_len": 0,
+      "thinking_head": "",
+      "tool_calls": null,
+      "done": true,
+      "done_reason": "stop",
+      "eval_count": 2,
+      "prompt_eval_count": 20
+    },
+    "verdict": "PASS",
+    "duration_s": 0.24
+  }
+}

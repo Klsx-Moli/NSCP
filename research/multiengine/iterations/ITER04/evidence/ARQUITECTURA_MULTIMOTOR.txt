@@ -1,0 +1,56 @@
+PROPUESTA DE ARQUITECTURA MULTIMOTOR - NSCP (NO APLICADA A PRODUCCION)
+
+Principio: ningun modelo gana por siete ejemplos. Cada funcion tiene su propio
+criterio y su propio gate. BM25 y Qwen3.5 4B se conservan como baselines.
+
+1) GENERACION DE CANDIDATOS (determinista, sin modelo)
+   - extractive_context.rank_spans / candidate_pool.
+   - 108 casos prerregistrados: candidate_recall 1.000 en las cuatro rutas
+     deterministas. Es el unico momento en que se decide que evidencia puede
+     ser vista por un modelo. Si aqui falla, ningun selector puede recuperarla.
+
+2) RECUPERACION SEMANTICA (pendiente / bloqueada)
+   - Qwen3-Embedding-0.6B-Q8_0.gguf existe en <MODELS_DIR>.
+   - llama-server cargo el modelo, pero /embedding no respondio en 90s y registro
+     una advertencia de token de control. No se declara funcional.
+   - Proxy conceptual lexical y hybrid medidos: selection_recall 1.000,
+     precision 0.089 (hybrid). No sustituyen embeddings.
+
+3) CLASIFICACION DE RELEVANCIA / RERANKING
+   - phi4-mini:latest: 5/6 selection recall, precision 0.555,
+     0.768s frio / 0.493s caliente, 3431 prompt + 39 completion tokens.
+   - Funcion: gate barato antes de gastar un selector mas caro.
+   - No usar como extractor final: introduce falsos positivos.
+
+4) SELECCION DE FRAGMENTOS
+   - Qwen_Qwen3.5-4B-Q4_K_M.gguf via llama.cpp: 6/6 recall, precision 1.000,
+     62.883s frio / 26.937s caliente, 5946 prompt + 24 completion tokens (6 llamadas).
+   - gemma3:4b: IDs validos pero envueltos en markdown; JSON estricto 0/24.
+     Tras parseo tolerante offline: recall 1.000, precision 0.307.
+     Cross-lingual es-en: recall 1.000, precision 0.333, JSON estricto 0/6.
+   - Conclusion: el modelo correcto para extraccion es Qwen3.5 4B GGUF;
+     gemma3 requiere un wrapper que extraiga el array antes de validar.
+
+5) COMPACTACION GENERATIVA Y MEMORIA ESTRUCTURADA
+   - gemma3:4b: retencion literal 1.000 tras 1, 5, 10 y 20 compactaciones;
+     7012 tokens acumulados a 20 ciclos; 12.597s frio / 8.397s caliente.
+   - La instruccion falsa CTOOL quedo como dato etiquetado, no ejecutada.
+   - Funcion: resumen agéntico, con verificador de identificadores externo.
+
+6) INTEGRIDAD Y FALLBACK
+   - Toda salida de modelo debe pasar por _validate_ids y por verificacion de
+     SHA/rutas antes de tocar el plano de contexto.
+   - Si el selector falla: volver a BM25 sobre el pool determinista.
+   - Si Ollama no responde: no fallback remoto. El fallo transitorio se reprodujo
+     como configuration drift del servicio (store, nube, PATH con ggml), no como
+     defecto de inferencia.
+
+7) LO QUE NO SE PUEDE AFIRMAR AUN
+   - Los nueve candidatos especializados remotos no estan descargados: no se
+     ejecutaron ni se puntuan.
+   - Compactor-Qwen3.5, viscer, paritok, kompress, llmlingua, MiniCPM5, Prism
+     reranker y mn-context quedan como candidatos NO_LOCALES.
+   - No se declara ganador global: se declara funcion optima medida.
+
+Rollback: no se modifico NSCP productivo, Hermes ni main. Basta con descartar
+el worktree iter03 y detener los servidores locales iniciados para la prueba.

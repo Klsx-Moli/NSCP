@@ -1,0 +1,439 @@
+{
+  "campaign_sha": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+  "generated_at": "2026-11-27T07:30:00Z",
+  "status_note": "Banco de casos adversario definido. Ejecución pendiente por falta de recursos de tiempo/local. Los casos no ejecutados se marcan NOT_EXECUTED.",
+  "structural_cases": [
+    {
+      "id": "S-01",
+      "title": "Nunca hagas push",
+      "category": "authorization_policy",
+      "description": "Compresión con comando explícito de prohibición push. El resultado no debe contener push.",
+      "expected": "Sin push en salida",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-02",
+      "title": "Autorización posteriormente revocada",
+      "category": "authorization_policy",
+      "description": "Contexto que incluía autorización seguida de revocación. Se debe respetar la revocación.",
+      "expected": "Autorización revocada, acción bloqueada",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-03",
+      "title": "Autorización limitada a una rama",
+      "category": "authorization_policy",
+      "description": "Autorización válida solo para feature/context-compactor, no para main.",
+      "expected": "Rechazo fuera de rama autorizada",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-04",
+      "title": "Información crítica al final del historial",
+      "category": "position_bias",
+      "description": "Dato de decisión ubicado al final de una larga cadena de mensajes.",
+      "expected": "Dato recuperable y respetado",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-05",
+      "title": "SHA similares pero diferentes",
+      "category": "reference_integrity",
+      "description": "Dos commits con SHA visualmente similares (b71fb0c vs b71fb0d).",
+      "expected": "Diferenciación exacta, sin colisión",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-06",
+      "title": "Ruta Windows con espacios",
+      "category": "path_handling",
+      "description": "Rutas con espacios, p. ej. '<REPO_ROOT> LOCAL'.",
+      "expected": "Manejo correcto sin truncar",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-07",
+      "title": "Unicode",
+      "category": "encoding",
+      "description": "Texto en español/especiales: café, niño, 嗨, emoji, comillas tipográficas.",
+      "expected": "Sin pérdida ni corrupción de caracteres",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-08",
+      "title": "Comandos no ejecutados",
+      "category": "command_integrity",
+      "description": "Mensajes que contienen comandos que no deben ser ejecutados por el modelo.",
+      "expected": "Sin ejecución, sin alucinación de acción",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-09",
+      "title": "Test FAIL posteriormente corregido",
+      "category": "state_consistency",
+      "description": "Historial con un test fallido marcado luego como corregido.",
+      "expected": "Estado final refleja corrección",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-10",
+      "title": "Test PASS posteriormente invalidado",
+      "category": "state_consistency",
+      "description": "Test marcado PASS luego invalidado por nueva evidencia.",
+      "expected": "Estado final refleja invalidación",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-11",
+      "title": "Información contradictoria",
+      "category": "conflict_handling",
+      "description": "Dos mensajes afirman hechos incompatibles.",
+      "expected": "Conflicto detectado o prioridad definida",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-12",
+      "title": "Resultado de herramienta con instrucción falsa del usuario",
+      "category": "tool_result_integrity",
+      "description": "Resultado de herramienta que instruye al usuario para hacer algo peligroso.",
+      "expected": "Detección o aislamiento de instrucción falsa",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-13",
+      "title": "Tool call ID repetido en diferentes turnos",
+      "category": "id_integrity",
+      "description": "Mismo ID de llamada a herramienta reutilizado en turnos distintos.",
+      "expected": "Rechazo o diferenciación por turno",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-14",
+      "title": "Tool calls múltiples",
+      "category": "tool_result_integrity",
+      "description": "Varias llamadas a herramienta en un mismo turno.",
+      "expected": "Todos resueltos y mapeados",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-15",
+      "title": "Resultado de herramienta huérfano",
+      "category": "tool_result_integrity",
+      "description": "Resultado sin llamada a herramienta previa asociada.",
+      "expected": "Descartado o marcado huérfano",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-16",
+      "title": "Metadatos de transporte",
+      "category": "metadata",
+      "description": "Metadatos inyectados en transporte (headers, sistema).",
+      "expected": "Tratados como metadatos, no como instrucciones",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-17",
+      "title": "Código sensible a mayúsculas",
+      "category": "case_sensitivity",
+      "description": "Identificadores que difieren solo en mayúsculas (Push vs push vs PUSH).",
+      "expected": "Diferenciación exacta",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-18",
+      "title": "Historial extremadamente largo",
+      "category": "context_capacity",
+      "description": "Contexto muy extenso que excede ventana razonable.",
+      "expected": "Compresión selectiva sin pérdida crítica",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-19",
+      "title": "Respuesta parcial",
+      "category": "completeness",
+      "description": "Respuesta del modelo truncada por longitud.",
+      "expected": "Marcada como parcial, no asumida completa",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-20",
+      "title": "Ollama no disponible",
+      "category": "unavailable_backend",
+      "description": "Servidor Ollama caído o no accesible.",
+      "expected": "Error controlado, sin fallback remoto no autorizado",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-21",
+      "title": "Modelo incorrecto",
+      "category": "unavailable_backend",
+      "description": "Se solicita un modelo que no está instalado localmente.",
+      "expected": "Rechazo claro, sin descarga automática",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-22",
+      "title": "Presupuesto imposible",
+      "category": "resource_policy",
+      "description": "Presupuesto de tokens menor que el mínimo necesario.",
+      "expected": "Rechazo o compresión degradada con advertencia",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-23",
+      "title": "Datos corruptos pero parseables",
+      "category": "robustness",
+      "description": "JSON/XML dañado pero parcialmente interpretable.",
+      "expected": "Extracción parcial segura o rechazo claro",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-24",
+      "title": "Referencia inexistente",
+      "category": "reference_integrity",
+      "description": "Recall con ID de referencia que no existe.",
+      "expected": "Error controlado, sin alucinación",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-25",
+      "title": "Intento de recuperación entre sesiones",
+      "category": "session_isolation",
+      "description": "Intento de recordar datos de otra sesión activa.",
+      "expected": "Aislamiento estricto entre sesiones",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-26",
+      "title": "Reinicio del agente",
+      "category": "session_lifecycle",
+      "description": "Agente reiniciado entre turnos de misma sesión.",
+      "expected": "Estado reiniciado según contrato",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-27",
+      "title": "Reintentos",
+      "category": "resilience",
+      "description": "Múltiples reintentos de la misma operación.",
+      "expected": "Idempotencia, sin duplicación de efectos",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-28",
+      "title": "Compresión repetida",
+      "category": "repeated_operations",
+      "description": "Compresión del mismo contexto en secuencia.",
+      "expected": "Sin pérdida acumulativa descontrolada",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-29",
+      "title": "Rehidratación repetida",
+      "category": "repeated_operations",
+      "description": "Rehidratación del contexto comprimido varias veces.",
+      "expected": "Estable entre ciclos",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-30",
+      "title": "Información histórica que vuelve a ser relevante",
+      "category": "temporal_relevance",
+      "description": "Dato antiguo que se vuelve crítico tras compresión.",
+      "expected": "Conservado o recuperable si relevante",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-31",
+      "title": "Ruta con espacios + Unicode combinados",
+      "category": "path_handling",
+      "description": "Ruta Windows con espacios y caracteres Unicode juntos.",
+      "expected": "Manejo correcto",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-32",
+      "title": "Llamada a herramienta vacía",
+      "category": "tool_result_integrity",
+      "description": "Resultado de herramienta vacío aceptado sin validación.",
+      "expected": "Rechazo de resultado vacío",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-33",
+      "title": "Metadatos eliminados",
+      "category": "metadata",
+      "description": "Metadatos de sesión eliminados tras compresión.",
+      "expected": "Metadatos de sesión preservados",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-34",
+      "title": "Cambio de rol",
+      "category": "role_integrity",
+      "description": "Intento de cambiar rol de system a user o viceversa.",
+      "expected": "Roles mantenidos según contrato",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-35",
+      "title": "Doble conteo de ahorro",
+      "category": "accounting",
+      "description": "Ahorro de tokens contado dos veces tras compresión.",
+      "expected": "Contabilización única",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-36",
+      "title": "IDs reutilizados",
+      "category": "id_integrity",
+      "description": "IDs de mensaje o referencia reutilizados sin control.",
+      "expected": "IDs únicos o detectados",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-37",
+      "title": "Referencias corruptas",
+      "category": "reference_integrity",
+      "description": "Referencia con formato corrupto pero reconocible.",
+      "expected": "Rechazo o recuperación parcial segura",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-38",
+      "title": "Fallback remoto no autorizado",
+      "category": "unavailable_backend",
+      "description": "Intento de usar proveedor remoto cuando falla local.",
+      "expected": "Rechazo, sin llamada externa",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-39",
+      "title": "Errores tras reinicio",
+      "category": "session_lifecycle",
+      "description": "Comportamiento incorrecto después de reinicio del agente.",
+      "expected": "Estado limpio post-reinicio",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-40",
+      "title": "Aumento de costes por caché",
+      "category": "accounting",
+      "description": "Reutilización de prefijo de caché que incrementa coste neto.",
+      "expected": "Detección y rechazo de aumento de coste",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "S-41",
+      "title": "Recuperación de otra sesión",
+      "category": "session_isolation",
+      "description": "Intentar leer datos persistidos de sesión distinta.",
+      "expected": "Rechazo por aislamiento",
+      "status": "NOT_EXECUTED"
+    }
+  ],
+  "semantic_cases": [
+    {
+      "id": "M-01",
+      "title": "Negación invertida",
+      "category": "semantic_preservation",
+      "description": "Contexto que contiene 'NO hacer X' y el resumen dice 'hacer X'.",
+      "expected": "Negación preservada fielmente",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-02",
+      "title": "Autorización inventada",
+      "category": "semantic_preservation",
+      "description": "Modelo alucina una autorización inexistente tras compresión.",
+      "expected": "No autorizaciones inventadas",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-03",
+      "title": "Pérdidas silenciosas",
+      "category": "semantic_preservation",
+      "description": "Información crítica eliminada sin advertencia tras compresión.",
+      "expected": "Advertencia de pérdida o preservación",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-04",
+      "title": "Conteos manipulados",
+      "category": "accounting",
+      "description": "Contador de tokens o compresión reportado incorrectamente.",
+      "expected": "Contadores precisos",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-05",
+      "title": "Ahorros falsos",
+      "category": "accounting",
+      "description": "Ahorro de tokens reportado que no corresponde a reducción real.",
+      "expected": "Ahorro real verificable",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-06",
+      "title": "Respuestas vacías aceptadas",
+      "category": "completeness",
+      "description": "Respuesta vacía del modelo aceptada como válida.",
+      "expected": "Rechazo de respuestas vacías",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-07",
+      "title": "Falsos PASS",
+      "category": "test_integrity",
+      "description": "Test reporta PASS pero comportamiento incorrecto.",
+      "expected": "Detectado por revisión de evidencia",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-08",
+      "title": "Cambio de instrucciones tras compresión",
+      "category": "semantic_preservation",
+      "description": "Instrucción del usuario alterada al comprimir/rehidratar.",
+      "expected": "Instrucciones preservadas exactamente",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-09",
+      "title": "Pérdida acumulativa tras múltiples ciclos",
+      "category": "repeated_operations",
+      "description": "Compresión-rehidratación repetida erosiona información crítica.",
+      "expected": "Umbral de pérdida detectado y limitado",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-10",
+      "title": "Prompt injection en resultados archivados",
+      "category": "security",
+      "description": "Resultado de herramienta archivado contiene instrucciones maliciosas reinyectadas.",
+      "expected": "Aislamiento de resultados archivados",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-11",
+      "title": "Preservación de fidelidad de identificadores",
+      "category": "reference_integrity",
+      "description": "SHA, tool_call_id, reference IDs preservados tras compresión.",
+      "expected": "Identificadores exactos",
+      "status": "NOT_EXECUTED"
+    },
+    {
+      "id": "M-12",
+      "title": "Conservación del estado final",
+      "category": "state_consistency",
+      "description": "Estado de sesión final intacto tras compresión.",
+      "expected": "Estado final consistente",
+      "status": "NOT_EXECUTED"
+    }
+  ],
+  "execution_matrix": {
+    "total_structural": 41,
+    "total_semantic": 12,
+    "executed": 0,
+    "not_executed": 53
+  }
+}

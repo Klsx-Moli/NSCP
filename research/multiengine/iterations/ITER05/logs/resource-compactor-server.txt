@@ -1,0 +1,16 @@
+0.00.145.973 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.150.201 I srv          init: The UI is disabled
+0.00.150.210 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.154.548 I srv    load_model: loading model '<MODELS_DIR>\Compactor-Qwen3.5-4B.Q4_K_M.gguf'
+0.02.081.542 W resolve_fused_ops: layer 0 is assigned to device CPU but fused Gated Delta Net (chunked) is assigned to device Vulkan0 (usually due to missing support)
+0.02.081.557 W resolve_fused_ops: fused Gated Delta Net (chunked) not supported, set to disabled
+0.05.450.234 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 8192, kv_unified = 'true'
+0.05.495.459 I srv  llama_server: model loaded
+0.05.495.532 I srv  llama_server: listening on http://127.0.0.1:18090
+0.05.580.032 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.05.580.152 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.24.816.110 I slot print_timing: id  3 | task 0 | prompt eval time =    3926.10 ms /    65 tokens (   60.40 ms per token,    16.56 tokens per second)
+0.24.816.125 I slot print_timing: id  3 | task 0 |        eval time =   15309.72 ms /    64 tokens (  239.21 ms per token,     4.18 tokens per second)
+0.24.816.127 I slot print_timing: id  3 | task 0 |       total time =   19235.82 ms /   129 tokens
+0.24.816.128 I slot print_timing: id  3 | task 0 |    graphs reused =         63
+0.24.816.212 I slot      release: id  3 | task 0 | stop processing: n_tokens = 128, truncated = 0

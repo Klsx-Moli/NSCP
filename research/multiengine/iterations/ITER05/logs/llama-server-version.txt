@@ -1,0 +1,5 @@
+{
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "version: 9947 (3de7dd4c8)\nbuilt with Clang 20.1.8 for Windows x86_64\n"
+}

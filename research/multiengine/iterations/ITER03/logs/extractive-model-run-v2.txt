@@ -1,0 +1,11 @@
+negation valid True bm25_hit True qwen_hit True ids [26] err None
+revocation valid True bm25_hit True qwen_hit True ids [26] err None
+unicode valid True bm25_hit True qwen_hit True ids [26] err None
+state_change valid True bm25_hit True qwen_hit True ids [26] err None
+semantic_gap valid True bm25_hit False qwen_hit False ids [] err None
+fake_authority valid True bm25_hit True qwen_hit True ids [26] err None
+semantic_access valid True bm25_hit False qwen_hit False ids [] err None
+repeat {'attempt': 1, 'pool_size': 9, 'ids': [26], 'valid': True, 'seconds': 0.769}
+repeat {'attempt': 2, 'pool_size': 9, 'ids': [26], 'valid': True, 'seconds': 0.547}
+repeat {'attempt': 3, 'pool_size': 9, 'ids': [26], 'valid': True, 'seconds': 0.55}
+SUMMARY {'cases': 7, 'bm25_hits': 5, 'qwen_hits': 5, 'qwen_valid_responses': 7, 'bm25_hit_rate': 0.714, 'qwen_hit_rate': 0.714, 'total_prompt_tokens': 11424, 'total_completion_tokens': 44, 'total_wall_s': 76.48, 'mean_wall_s': 7.648}

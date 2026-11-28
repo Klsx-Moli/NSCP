@@ -1,0 +1,147 @@
+{
+  "generated_at": "2026-11-28T00:37:35.923043+00:00",
+  "classification": "VERIFIED_BY_ME",
+  "scenarios": {
+    "short_no_need": {
+      "expected": "PASSTHROUGH",
+      "got": "PASSTHROUGH",
+      "reason": "low context pressure, short history, no retrieval need",
+      "engines_touched": [
+        "PASSTHROUGH"
+      ],
+      "PASS": true
+    },
+    "code_present": {
+      "expected": "DETERMINISTIC",
+      "got": "DETERMINISTIC",
+      "reason": "code preserved verbatim by deterministic path",
+      "engines_touched": [
+        "DETERMINISTIC"
+      ],
+      "PASS": true
+    },
+    "semantic_full": {
+      "expected": "HYBRID_RETRIEVAL",
+      "got": "HYBRID_RETRIEVAL",
+      "reason": "semantic need with embedding+reranker available",
+      "engines_touched": [
+        "EMBEDDING",
+        "BM25",
+        "RERANKER"
+      ],
+      "PASS": true
+    },
+    "semantic_no_reranker": {
+      "expected": "EMBEDDING",
+      "got": "EMBEDDING",
+      "reason": "semantic need with embedding only",
+      "engines_touched": [
+        "EMBEDDING"
+      ],
+      "PASS": true
+    },
+    "no_models": {
+      "expected": "DETERMINISTIC",
+      "got": "DETERMINISTIC",
+      "reason": "semantic need but no retrieval engine; deterministic fallback",
+      "engines_touched": [
+        "DETERMINISTIC"
+      ],
+      "PASS": true
+    },
+    "lexical": {
+      "expected": "BM25",
+      "got": "BM25",
+      "reason": "lexical retrieval sufficient, no inference needed",
+      "engines_touched": [
+        "BM25"
+      ],
+      "PASS": true
+    },
+    "high_pressure": {
+      "expected": "COMPACTOR",
+      "got": "COMPACTOR",
+      "reason": "high context pressure; specialized compactor authorized",
+      "engines_touched": [
+        "COMPACTOR"
+      ],
+      "PASS": true
+    },
+    "high_pressure_no_compactor": {
+      "expected": "DETERMINISTIC",
+      "got": "DETERMINISTIC",
+      "reason": "high pressure but no healthy compactor; deterministic fallback",
+      "engines_touched": [
+        "DETERMINISTIC"
+      ],
+      "PASS": true
+    },
+    "compactor_failed": {
+      "expected": "RECOVERY",
+      "got": "RECOVERY",
+      "reason": "engine compactor unhealthy; safe fallback, status DEGRADED",
+      "engines_touched": [
+        "RECOVERY"
+      ],
+      "PASS": true
+    },
+    "extraction": {
+      "expected": "EXTRACTIVE",
+      "got": "EXTRACTIVE",
+      "reason": "extraction need with available extractive engine",
+      "engines_touched": [
+        "EXTRACTIVE"
+      ],
+      "PASS": true
+    },
+    "budget_zero": {
+      "expected": "ABORT",
+      "got": "ABORT",
+      "reason": "critical risk or exhausted budget",
+      "engines_touched": [
+        "ABORT"
+      ],
+      "PASS": true
+    },
+    "critical_risk": {
+      "expected": "ABORT",
+      "got": "ABORT",
+      "reason": "critical risk or exhausted budget",
+      "engines_touched": [
+        "ABORT"
+      ],
+      "PASS": true
+    }
+  },
+  "adversarial": {
+    "no_all_engines": {
+      "got": [
+        "EMBEDDING",
+        "semantic need with embedding only",
+        [
+          "EMBEDDING"
+        ]
+      ],
+      "PASS": true
+    },
+    "unknown_not_pass": {
+      "healthy_false_routes_to_recovery": true,
+      "PASS": true
+    },
+    "state_empty": {
+      "got": "PASSTHROUGH",
+      "PASS": true
+    },
+    "state_bad_types": {
+      "got": "PASSTHROUGH",
+      "PASS": true
+    },
+    "state_negative": {
+      "got": "ABORT",
+      "PASS": true
+    }
+  },
+  "errors": [],
+  "passed": 17,
+  "total": 17
+}

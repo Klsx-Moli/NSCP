@@ -1,0 +1,22 @@
+{
+  "source": "nscp_transport_real.json",
+  "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "model": "qwen3.5:4b-q4_K_M",
+  "semantic_verdict": "PASS",
+  "routes": {
+    "legacy_summarize_turns": {
+      "status": "PASS",
+      "has_port_11435": true,
+      "has_config_service_py": true,
+      "both": true,
+      "content": "- OBJETIVO VIGENTE: Servidor en puerto 11435 usando archivo config/service.py.\n- DECISIONES TOMADAS: Se estableció el uso del puerto 11435 y el archivo config/service.py.\n- ARCHIVOS/SISTEMAS TOCADOS: config/service.py.\n- RESTRICCIONES DEL USUARIO: Ninguna especificada en el historial.\n- PENDIENTES: Ninguna especificada en el historial."
+    },
+    "strict_complete_summary": {
+      "status": "PASS",
+      "has_port_11435": true,
+      "has_config_service_py": true,
+      "both": true,
+      "content": "Para ejecutar la aplicación, debe iniciar el servicio utilizando el puerto 11435 a través del archivo de configuración `config/service.py`."
+    }
+  }
+}

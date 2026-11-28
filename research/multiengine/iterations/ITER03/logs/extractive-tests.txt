@@ -1,0 +1,30 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.2.0, pluggy-1.7.0 -- <ITER03_WORKTREE>\.venv\Scripts\python.exe
+PySide6 6.12.0 -- Qt runtime 6.12.0 -- Qt compiled 6.12.0
+rootdir: <ITER03_WORKTREE>
+configfile: pyproject.toml
+plugins: cov-7.1.0, qt-4.5.0, timeout-2.4.0
+collecting ... collected 20 items
+
+tests/test_extractive_context.py::test_exact_spans_unicode_and_bm25 PASSED [  5%]
+tests/test_extractive_context.py::test_plan_excerpts_exact_source_and_recall PASSED [ 10%]
+tests/test_extractive_context.py::test_invalid_model_ids_only_fallback_to_exact_lexical[bad0] PASSED [ 15%]
+tests/test_extractive_context.py::test_invalid_model_ids_only_fallback_to_exact_lexical[bad1] PASSED [ 20%]
+tests/test_extractive_context.py::test_invalid_model_ids_only_fallback_to_exact_lexical[bad2] PASSED [ 25%]
+tests/test_extractive_context.py::test_invalid_model_ids_only_fallback_to_exact_lexical[bad3] PASSED [ 30%]
+tests/test_extractive_context.py::test_invalid_model_ids_only_fallback_to_exact_lexical[bad4] PASSED [ 35%]
+tests/test_extractive_context.py::test_invalid_model_ids_only_fallback_to_exact_lexical[bad5] PASSED [ 40%]
+tests/test_extractive_context.py::test_valid_model_ids_not_generated_text_and_empty_respected PASSED [ 45%]
+tests/test_extractive_context.py::test_no_selection_if_unreachable_missing_source_or_protected PASSED [ 50%]
+tests/test_extractive_context.py::test_reserve_and_replay_never_rewrite_existing_preview PASSED [ 55%]
+tests/test_extractive_context.py::test_local_selector_only_accepts_ids_from_transmitted_pool PASSED [ 60%]
+tests/test_extractive_context.py::test_call_limit_and_large_source_skip PASSED [ 65%]
+tests/test_extractive_context.py::test_candidate_pool_diversity_and_nonlexical_coverage PASSED [ 70%]
+tests/test_extractive_context.py::test_failed_selection_reports_without_leaking_error_body PASSED [ 75%]
+tests/test_extractive_context.py::test_cli_offline_extractive_route PASSED [ 80%]
+tests/test_extractive_benchmark.py::test_benchmark_preserves_unknown_and_distinguishes_answer_key_from_model PASSED [ 85%]
+tests/test_extractive_benchmark.py::test_benchmark_detects_invented_excerpt_even_if_manifest_unchanged PASSED [ 90%]
+tests/test_extractive_benchmark.py::test_benchmark_detects_corrupted_span_digest PASSED [ 95%]
+tests/test_extractive_benchmark.py::test_benchmark_no_clobber PASSED     [100%]
+
+============================= 20 passed in 2.31s ==============================

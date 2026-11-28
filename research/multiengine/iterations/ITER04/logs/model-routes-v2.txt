@@ -1,0 +1,4 @@
+ollama_qwen35_selector sel 0.0 cold 6.814 warm 2.068 debug [('C-001', [], [5, 0, 2, 3]), ('C-002', [], [5, 0, 2, 3])]
+qwen25_classifier sel 0.0 cold 2.15 warm 2.033 debug [('C-001', [], [5, 0, 2, 3]), ('C-002', [], [5, 0, 2, 3])]
+llamacpp_qwen35_gguf_selector sel 1.0 cold 62.883 warm 26.937 debug [('C-001', [5], [5, 0, 2, 3]), ('C-002', [5], [5, 0, 2, 3])]
+DONE {'ollama_qwen35_selector': 0.0, 'qwen25_classifier': 0.0, 'llamacpp_qwen35_gguf_selector': 1.0}

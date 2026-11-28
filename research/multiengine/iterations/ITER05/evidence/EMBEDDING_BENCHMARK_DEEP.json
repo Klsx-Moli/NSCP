@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-11-28T00:14:05.355014+00:00",
+  "model": "<MODELS_DIR>\\Qwen3-Embedding-0.6B-Q8_0.gguf",
+  "classification": "VERIFIED_BY_ME",
+  "pairs": {
+    "sinonimos_es": 0.858515,
+    "es_en_gato": 0.797257,
+    "unrelated": 0.416898,
+    "revocado_vs_vigente": 0.619004,
+    "sha_vs_error": 0.375005
+  },
+  "determinism": {
+    "single_request_maxdiff_01": 0.0,
+    "single_request_maxdiff_02": 0.0,
+    "single_request_cos_01": 1.00000009,
+    "single_request_identical": true,
+    "batch_vs_single_maxdiff": 0.0,
+    "batch_vs_single_cos": 1.00000009
+  },
+  "scaling": {
+    "1": {
+      "latency_s": 0.031,
+      "count": 1,
+      "dim": 1024,
+      "finite": true
+    },
+    "4": {
+      "latency_s": 0.875,
+      "count": 4,
+      "dim": 1024,
+      "finite": true
+    },
+    "16": {
+      "latency_s": 3.265,
+      "count": 16,
+      "dim": 1024,
+      "finite": true
+    },
+    "32": {
+      "latency_s": 5.5,
+      "count": 32,
+      "dim": 1024,
+      "finite": true
+    }
+  },
+  "vulkan": {
+    "boot_s": 15.58,
+    "healthy": true,
+    "argv": [
+      "<USERPROFILE>\\AppData\\Local\\Microsoft\\WinGet\\Packages\\ggml.llamacpp_Microsoft.Winget.Source_8wekyb3d8bbwe\\llama-server.exe",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "18083",
+      "-m",
+      "<MODELS_DIR>\\Qwen3-Embedding-0.6B-Q8_0.gguf",
+      "--embedding",
+      "--ctx-size",
+      "512",
+      "-t",
+      "2",
+      "-tb",
+      "2",
+      "-ngl",
+      "99",
+      "--no-webui"
+    ],
+    "latency_s": 0.438,
+    "dim": 1024,
+    "finite": true,
+    "norm": 1.0
+  },
+  "errors": [],
+  "cpu_boot_s": 2.55
+}

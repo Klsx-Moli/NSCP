@@ -1,0 +1,72 @@
+{
+  "campaign": "NSCP_MULTI_ENGINE_RESEARCH",
+  "sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+  "worktree": "<ITER03_WORKTREE>",
+  "evidence": "<EVIDENCE_DIR>/2026-11-27_iter04_multiengine/",
+  "phase": "MULTIENGINE RESEARCH COMPLETE - ARTIFACTS WRITTEN",
+  "preregistered_cases": 108,
+  "cases_sha256": "009e798aa362ee07",
+  "languages": [
+    "es-es",
+    "en-en",
+    "es-en"
+  ],
+  "specialized_candidates_remote_not_downloaded": [
+    "schneewolflabs/Compactor-Qwen3.5-4B",
+    "mradermacher/Compactor-Qwen3.5-4B-GGUF",
+    "TheWickedGustav/viscer-4b",
+    "homerquan/mn-context-engine-model-v-Q4_K_M",
+    "paritok/paritok-4b-v1",
+    "chopratejas/kompress-v2-base",
+    "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+    "BonkusCheemus/MiniCPM5-2B-Context-Compressor-GGUF",
+    "infgrad/Prism-Qwen3.5-Reranker-2B"
+  ],
+  "local_models": {
+    "ollama": [
+      "qwen3.5:4b-q4_K_M",
+      "qwen2.5:1.5b"
+    ],
+    "gguf_count": 30,
+    "specialized_gguf": [
+      "Qwen3-Embedding-0.6B-Q8_0.gguf",
+      "Qwen_Qwen3.5-4B-Q4_K_M.gguf"
+    ]
+  },
+  "constraints": "no downloads, no production changes, no push, no productive Hermes changes",
+  "next": [
+    "Remote agent review",
+    "No further local executable work in this scope"
+  ],
+  "artifacts": [
+    "PREREGISTERED_CASES.json",
+    "DETERMINISTIC_RESULTS.json",
+    "MODEL_ROUTES.json",
+    "MODEL_ROUTES_OLLAMA.json",
+    "GEMMA3_OFFLINE_RESCORE.json",
+    "PHI4MINI_CLASSIFIER.json",
+    "CROSS_LINGUAL_PROBE.json",
+    "CUMULATIVE_COMPACTION.json",
+    "OLLAMA_TRANSIENT_INVESTIGATION.json",
+    "gguf_inventory_raw.json",
+    "BENCHMARK_RESULTS.json",
+    "MODEL_SPECIALIZATION_MATRIX.json",
+    "ARQUITECTURA_MULTIMOTOR.txt"
+  ],
+  "key_results": {
+    "cases": 108,
+    "llamacpp_qwen35_4b_gguf_selection": {
+      "recall": 1.0,
+      "precision": 1.0,
+      "cold_s": 62.883,
+      "warm_s": 26.937
+    },
+    "gemma3_raw_json_valid": "0/24",
+    "gemma3_rescored_recall": 1.0,
+    "phi4mini_recall": 0.833,
+    "cross_lingual_es_en_recall": 1.0,
+    "compaction_literal_retention_20": 1.0,
+    "embeddings": "BLOCKED"
+  },
+  "no_production_changes": true
+}

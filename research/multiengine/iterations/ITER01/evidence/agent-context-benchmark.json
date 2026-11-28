@@ -1,0 +1,659 @@
+{
+  "schema": "nscp/request-benchmark/v1",
+  "data_origin": "synthetic",
+  "token_accounting": "utf8_heuristic",
+  "provider_tokens": null,
+  "cache_hits": null,
+  "billed_cost": null,
+  "semantic_task_success": null,
+  "cases": [
+    {
+      "name": "12-batches-False-moderate",
+      "messages": 41,
+      "budget": 7787,
+      "focus": false,
+      "fixture_sha256": "ae0ccd685691b8f2a8be949c7f50bbbd4d1f199e896b055a7cb377c2d8615ae7",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 9734,
+          "tokens_after": 9734,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 41,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 9734,
+          "tokens_after": 7050,
+          "estimated_tokens_saved": 2684,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 3,
+          "exact_recovery": "pass",
+          "planning_ms": 1.631
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 9734,
+          "tokens_after": 7367,
+          "estimated_tokens_saved": 2367,
+          "unchanged_prefix_messages": 19,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 3,
+          "exact_recovery": "pass",
+          "planning_ms": 1.503
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 9734,
+          "tokens_after": 6974,
+          "estimated_tokens_saved": 2760,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 3,
+          "exact_recovery": "pass",
+          "planning_ms": 1.408
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 9734,
+          "tokens_after": 7367,
+          "estimated_tokens_saved": 2367,
+          "unchanged_prefix_messages": 19,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 3,
+          "exact_recovery": "pass",
+          "planning_ms": 1.512
+        }
+      ]
+    },
+    {
+      "name": "12-batches-False-high",
+      "messages": 41,
+      "budget": 3406,
+      "focus": false,
+      "fixture_sha256": "ae0ccd685691b8f2a8be949c7f50bbbd4d1f199e896b055a7cb377c2d8615ae7",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 9734,
+          "tokens_after": 9734,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 41,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.378
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.604
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.545
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.455
+        }
+      ]
+    },
+    {
+      "name": "12-batches-False-unreachable",
+      "messages": 41,
+      "budget": 97,
+      "focus": false,
+      "fixture_sha256": "ae0ccd685691b8f2a8be949c7f50bbbd4d1f199e896b055a7cb377c2d8615ae7",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 9734,
+          "tokens_after": 9734,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 41,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.392
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.687
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.482
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "tokens_before": 9734,
+          "tokens_after": 5577,
+          "estimated_tokens_saved": 4157,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 5,
+          "exact_recovery": "pass",
+          "planning_ms": 1.796
+        }
+      ]
+    },
+    {
+      "name": "60-batches-False-moderate",
+      "messages": 185,
+      "budget": 41304,
+      "focus": false,
+      "fixture_sha256": "7b9a7a4d89b312c91d4c3c615f7721e7ea8004136f105f2b92a52dc847192c12",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 51630,
+          "tokens_after": 51630,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 185,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 51630,
+          "tokens_after": 40817,
+          "estimated_tokens_saved": 10813,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 13,
+          "exact_recovery": "pass",
+          "planning_ms": 8.519
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51630,
+          "tokens_after": 41114,
+          "estimated_tokens_saved": 10516,
+          "unchanged_prefix_messages": 124,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 12,
+          "exact_recovery": "pass",
+          "planning_ms": 8.31
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 51630,
+          "tokens_after": 40637,
+          "estimated_tokens_saved": 10993,
+          "unchanged_prefix_messages": 46,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 10,
+          "exact_recovery": "pass",
+          "planning_ms": 8.489
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51630,
+          "tokens_after": 41114,
+          "estimated_tokens_saved": 10516,
+          "unchanged_prefix_messages": 124,
+          "fits_metered_budget": true,
+          "focus_protected": 0,
+          "changed_results": 12,
+          "exact_recovery": "pass",
+          "planning_ms": 8.632
+        }
+      ]
+    },
+    {
+      "name": "60-batches-False-high",
+      "messages": 185,
+      "budget": 18070,
+      "focus": false,
+      "fixture_sha256": "7b9a7a4d89b312c91d4c3c615f7721e7ea8004136f105f2b92a52dc847192c12",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 51630,
+          "tokens_after": 51630,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 185,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 7.217
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 8.79
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 8.057
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 8.533
+        }
+      ]
+    },
+    {
+      "name": "60-batches-False-unreachable",
+      "messages": 185,
+      "budget": 516,
+      "focus": false,
+      "fixture_sha256": "7b9a7a4d89b312c91d4c3c615f7721e7ea8004136f105f2b92a52dc847192c12",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 51630,
+          "tokens_after": 51630,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 185,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 8.094
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 8.479
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 8.655
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "tokens_before": 51630,
+          "tokens_after": 20769,
+          "estimated_tokens_saved": 30861,
+          "unchanged_prefix_messages": 4,
+          "fits_metered_budget": false,
+          "focus_protected": 0,
+          "changed_results": 36,
+          "exact_recovery": "pass",
+          "planning_ms": 8.257
+        }
+      ]
+    },
+    {
+      "name": "60-batches-True-moderate",
+      "messages": 185,
+      "budget": 41307,
+      "focus": true,
+      "fixture_sha256": "6381a934e726e30003a5e7ffc31a20a7a4086a653de1cfd691c2b53b3651ecae",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 51634,
+          "tokens_after": 51634,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 185,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 51634,
+          "tokens_after": 41023,
+          "estimated_tokens_saved": 10611,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": true,
+          "focus_protected": 1,
+          "changed_results": 13,
+          "exact_recovery": "pass",
+          "planning_ms": 8.116
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51634,
+          "tokens_after": 41118,
+          "estimated_tokens_saved": 10516,
+          "unchanged_prefix_messages": 124,
+          "fits_metered_budget": true,
+          "focus_protected": 1,
+          "changed_results": 12,
+          "exact_recovery": "pass",
+          "planning_ms": 8.6
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 51634,
+          "tokens_after": 40641,
+          "estimated_tokens_saved": 10993,
+          "unchanged_prefix_messages": 46,
+          "fits_metered_budget": true,
+          "focus_protected": 1,
+          "changed_results": 10,
+          "exact_recovery": "pass",
+          "planning_ms": 8.799
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51634,
+          "tokens_after": 41118,
+          "estimated_tokens_saved": 10516,
+          "unchanged_prefix_messages": 124,
+          "fits_metered_budget": true,
+          "focus_protected": 1,
+          "changed_results": 12,
+          "exact_recovery": "pass",
+          "planning_ms": 8.798
+        }
+      ]
+    },
+    {
+      "name": "60-batches-True-high",
+      "messages": 185,
+      "budget": 18071,
+      "focus": true,
+      "fixture_sha256": "6381a934e726e30003a5e7ffc31a20a7a4086a653de1cfd691c2b53b3651ecae",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 51634,
+          "tokens_after": 51634,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 185,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 8.167
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 8.6
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 8.87
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 10.095
+        }
+      ]
+    },
+    {
+      "name": "60-batches-True-unreachable",
+      "messages": 185,
+      "budget": 516,
+      "focus": true,
+      "fixture_sha256": "6381a934e726e30003a5e7ffc31a20a7a4086a653de1cfd691c2b53b3651ecae",
+      "results": [
+        {
+          "strategy": "unchanged",
+          "tokens_before": 51634,
+          "tokens_after": 51634,
+          "estimated_tokens_saved": 0,
+          "unchanged_prefix_messages": 185,
+          "fits_metered_budget": false,
+          "changed_results": 0,
+          "exact_recovery": "not_applicable",
+          "planning_ms": 0.0
+        },
+        {
+          "strategy": "oldest",
+          "selected_strategy": "oldest",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 7.756
+        },
+        {
+          "strategy": "cache_prefix",
+          "selected_strategy": "cache_prefix",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 8.48
+        },
+        {
+          "strategy": "relevance",
+          "selected_strategy": "relevance",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 8.35
+        },
+        {
+          "strategy": "adaptive",
+          "selected_strategy": "relevance",
+          "tokens_before": 51634,
+          "tokens_after": 21706,
+          "estimated_tokens_saved": 29928,
+          "unchanged_prefix_messages": 10,
+          "fits_metered_budget": false,
+          "focus_protected": 1,
+          "changed_results": 35,
+          "exact_recovery": "pass",
+          "planning_ms": 8.575
+        }
+      ]
+    }
+  ]
+}

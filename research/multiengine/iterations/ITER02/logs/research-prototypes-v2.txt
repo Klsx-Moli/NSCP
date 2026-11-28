@@ -1,0 +1,12 @@
+bm25 PASS {'top': 'Puerto 11435 configurado en config/service.py'}
+exact_dedup PASS {'in': 4, 'out': 3}
+extractive_selection PASS {'selected': ['El puerto es 11435.', 'No uses sudo.', 'El archivo es config/service.py.']}
+estimator_calibration PASS [{'chars': 10, 'estimate': 3, 'ratio': 0.3}, {'chars': 11, 'estimate': 3, 'ratio': 0.2727}, {'chars': 500, 'estimate': 125, 'ratio': 0.25},
+qwen_fragment_selection PASS B) puerto 11435
+hierarchical_memory PASS {'layers': [4, 2, 1]}
+revoked_retrieval PASS {'active': ['a1', 'a3']}
+fidelity_after_1 PASS {'retained': ['PUERTO=11435', 'SIN_SUDO', 'BACKUP=0300'], 'count': 3, 'facts_retained': 3}
+fidelity_after_5 PASS {'retained': ['PUERTO=11435', 'BACKUP=0300'], 'count': 2, 'facts_retained': 2}
+fidelity_after_10 PASS {'retained': ['PUERTO=11435', 'BACKUP=0300'], 'count': 2, 'facts_retained': 2}
+fidelity_after_20 PASS {'retained': ['PUERTO=11435', 'BACKUP=0300'], 'count': 2, 'facts_retained': 2}
+DONE 11

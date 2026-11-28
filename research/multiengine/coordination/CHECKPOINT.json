@@ -1,0 +1,25 @@
+{
+  "updated_at": "2026-11-28T02:21:14.001253+00:00",
+  "branch": "research/multiengine",
+  "base_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+  "phase": "ITER05_TRANSFERRED_FIRST_CHECKPOINT",
+  "status": "TESTED",
+  "verified": {
+    "embedding": "VERIFIED_BY_EXECUTOR",
+    "reranker": "VERIFIED_BY_EXECUTOR",
+    "compactor": "VERIFIED_BY_EXECUTOR",
+    "memory": 12,
+    "router": 17,
+    "differential_hard_selection": 1.0
+  },
+  "not_executed": [
+    "ITER06",
+    "routes H/I/J",
+    "systematic VRAM measurement"
+  ],
+  "next": [
+    "remote agent audits ITER05 prototypes",
+    "provide ITER06 artifacts if they exist",
+    "decide on product integration only after review"
+  ]
+}

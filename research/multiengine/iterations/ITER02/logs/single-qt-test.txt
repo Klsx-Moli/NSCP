@@ -1,0 +1,8 @@
+.                                                                        [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\_pytest\cacheprovider.py:487
+  <VALIDATION_ROOT>/NSCP-validation-20261127-055413\.venv\Lib\site-packages\_pytest\cacheprovider.py:487: PytestCacheWarning: cache could not write path <VALIDATION_ROOT>/NSCP-validation-20261127-055413\.pytest_cache\v\cache\nodeids: [Errno 13] Permission denied: '<VALIDATION_ROOT>/NSCP-validation-20261127-055413\\.pytest_cache\\v\\cache\\nodeids'
+    config.cache.set("cache/nodeids", sorted(str(n) for n in self.cached_nodeids))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 1 warning in 0.28s

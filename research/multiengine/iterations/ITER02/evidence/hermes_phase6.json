@@ -1,0 +1,143 @@
+{
+  "profile": "<EVIDENCE_DIR>\\2026-11-27_iter02\\hermes_isolated_profile",
+  "hermes_root": "<HERMES_ROOT>/hermes-agent",
+  "reviewed_constant": "ed1cbc8de49b233bb71f38e96ed013b52f43ee20",
+  "checks": {
+    "host_contract": {
+      "status": "FAIL",
+      "error": "RuntimeError: Unsupported native Hermes contract: bind_session_state",
+      "seconds": 0.0
+    },
+    "construct_observe": {
+      "status": "FAIL",
+      "error": "RuntimeError: Unsupported native Hermes contract: bind_session_state",
+      "seconds": 0.0
+    },
+    "construct_with_shim": {
+      "status": "PASS",
+      "value": "nscp_hybrid",
+      "seconds": 0.0
+    },
+    "update_model": {
+      "status": "PASS",
+      "value": "name=nscp_hybrid context=8192 threshold=0.75",
+      "seconds": 0.0
+    },
+    "persistence_available": {
+      "status": "PASS",
+      "value": "session=session-A persistence=set",
+      "seconds": 0.0
+    },
+    "selection_contract": {
+      "status": "PASS",
+      "value": "selection_type=NoneType mode=observe",
+      "seconds": 0.0
+    },
+    "nscp_recall_manifest": {
+      "status": "PASS",
+      "value": "schemas=0 nscp_recall=False",
+      "seconds": 0.0
+    },
+    "native_route_identity": {
+      "status": "PASS",
+      "value": "route=native name=nscp_hybrid",
+      "seconds": 0.0
+    },
+    "controlled_local_failure": {
+      "status": "PASS",
+      "value": "controlled_failure=LocalSummaryError",
+      "seconds": 0.13
+    },
+    "reset_recovery": {
+      "status": "PASS",
+      "value": "post_reset_compression_count=0",
+      "seconds": 0.0
+    },
+    "signature_compatibility": {
+      "status": "PASS",
+      "value": "clone_name=nscp_hybrid route=local",
+      "seconds": 0.0
+    }
+  },
+  "hermes_git_head": "a9ff9799e273f525b82718cdc69fdec71b1dca5a",
+  "import_paths": {
+    "ContextCompressor": "agent.context_compressor",
+    "nscp_hybrid": "<EVIDENCE_DIR>\\2026-11-27_iter02\\hermes_isolated_profile\\plugins\\nscp_hybrid\\__init__.py",
+    "compressor_file": "<HERMES_ROOT>/hermes-agent\\agent\\context_compressor.py"
+  },
+  "signature_audit": {
+    "__init__": {
+      "missing": [],
+      "actual": [
+        "abort_on_summary_failure",
+        "api_key",
+        "api_mode",
+        "base_url",
+        "config_context_length",
+        "custom_providers",
+        "max_tokens",
+        "min_tail_user_messages",
+        "model",
+        "model_thresholds",
+        "proactive_prune_min_reclaim_tokens",
+        "proactive_prune_min_result_chars",
+        "proactive_prune_tokens",
+        "protect_first_n",
+        "protect_last_n",
+        "provider",
+        "quiet_mode",
+        "self",
+        "summary_model_override",
+        "summary_target_ratio",
+        "tail_mode",
+        "threshold_percent",
+        "threshold_tokens_cap"
+      ]
+    },
+    "update_model": {
+      "missing": [],
+      "actual": [
+        "api_key",
+        "api_mode",
+        "base_url",
+        "context_length",
+        "max_tokens",
+        "model",
+        "provider",
+        "self"
+      ]
+    },
+    "compress": {
+      "missing": [],
+      "actual": [
+        "bypass_cooldown",
+        "current_tokens",
+        "focus_topic",
+        "force",
+        "memory_context",
+        "messages",
+        "self"
+      ]
+    },
+    "bind_session_state": {
+      "missing": [
+        "persistence"
+      ],
+      "actual": [
+        "self",
+        "session_db",
+        "session_id"
+      ]
+    },
+    "_call_summary_llm": {
+      "missing": [
+        "messages"
+      ],
+      "actual": [
+        "prompt",
+        "prompt_started_at",
+        "self"
+      ]
+    }
+  }
+}

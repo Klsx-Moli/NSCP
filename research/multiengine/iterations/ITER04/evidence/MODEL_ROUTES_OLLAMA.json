@@ -1,0 +1,952 @@
+{
+  "prereg_sha256": "009e798aa362ee0710722a4517c8478010ca962367425d90c0d3c3858eba5820",
+  "models": {
+    "selector": "gemma3:4b"
+  },
+  "routes": {
+    "gemma3_selector": {
+      "cases": 24,
+      "candidate_recall": 1.0,
+      "selection_recall": 0.0,
+      "precision_mean": null,
+      "literal_fidelity": 0.0,
+      "semantic_fidelity": 0.0,
+      "false_positives_total": 0,
+      "correct_abstentions": 2,
+      "incorrect_abstentions": 0,
+      "cold_s": 82.616,
+      "warm_mean_s": 6.759,
+      "tokens": {
+        "prompt_eval_count": 20106,
+        "eval_count": 447,
+        "calls": 24
+      },
+      "rows": [
+        {
+          "case_id": "C-001",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 82.616,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-002",
+          "lang": "es-es",
+          "category": "lexical_exact",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.623,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-004",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.062,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-005",
+          "lang": "es-es",
+          "category": "numeric_id",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 10.119,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-007",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.822,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-008",
+          "lang": "es-es",
+          "category": "negation",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.13,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-010",
+          "lang": "es-es",
+          "category": "revocation",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.543,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-011",
+          "lang": "es-es",
+          "category": "revocation",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.529,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-013",
+          "lang": "es-es",
+          "category": "authorization_branch",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.074,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-014",
+          "lang": "es-es",
+          "category": "authorization_branch",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 11.016,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-016",
+          "lang": "es-es",
+          "category": "state_change",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.152,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-017",
+          "lang": "es-es",
+          "category": "state_change",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 5.962,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-019",
+          "lang": "es-es",
+          "category": "unicode_path",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.453,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-020",
+          "lang": "es-es",
+          "category": "unicode_path",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            3,
+            7,
+            9,
+            10,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.135,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-022",
+          "lang": "es-es",
+          "category": "cross_lingual_shared_id",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            1,
+            3,
+            7,
+            4,
+            9,
+            6,
+            10,
+            12,
+            8,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 6.356,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-023",
+          "lang": "es-es",
+          "category": "cross_lingual_shared_id",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            5,
+            0,
+            2,
+            1,
+            3,
+            7,
+            4,
+            9,
+            6,
+            10,
+            12,
+            8,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 6.859,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-025",
+          "lang": "es-es",
+          "category": "cross_lingual_no_overlap",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 7.184,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-026",
+          "lang": "es-es",
+          "category": "cross_lingual_no_overlap",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.594,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-028",
+          "lang": "es-es",
+          "category": "semantic_paraphrase",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 7.221,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-029",
+          "lang": "es-es",
+          "category": "semantic_paraphrase",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.59,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-031",
+          "lang": "es-es",
+          "category": "prompt_injection",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.789,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-032",
+          "lang": "es-es",
+          "category": "prompt_injection",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "selected_ids": [],
+          "seconds": 6.559,
+          "candidate_recall": true,
+          "selection_recall": false,
+          "precision": null,
+          "literal_fidelity": false,
+          "semantic_fidelity": false,
+          "false_positives": 0,
+          "abstention_correct": null,
+          "abstention_incorrect": null
+        },
+        {
+          "case_id": "C-034",
+          "lang": "es-es",
+          "category": "abstention_no_evidence",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 5.568,
+          "candidate_recall": null,
+          "selection_recall": null,
+          "precision": null,
+          "literal_fidelity": null,
+          "semantic_fidelity": null,
+          "false_positives": 0,
+          "abstention_correct": true,
+          "abstention_incorrect": false
+        },
+        {
+          "case_id": "C-035",
+          "lang": "es-es",
+          "category": "abstention_no_evidence",
+          "route": "gemma3_selector",
+          "offered_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "selected_ids": [],
+          "seconds": 5.109,
+          "candidate_recall": null,
+          "selection_recall": null,
+          "precision": null,
+          "literal_fidelity": null,
+          "semantic_fidelity": null,
+          "false_positives": 0,
+          "abstention_correct": true,
+          "abstention_incorrect": false
+        }
+      ]
+    }
+  },
+  "telemetry": [
+    {
+      "route": "gemma3_selector",
+      "prompt": 852,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 852,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 849,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 849,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 849,
+      "eval": 25,
+      "content": "```json\n[10, 5, 9, 2, 3, 7]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 849,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 839,
+      "eval": 24,
+      "content": "```json\n[5, 6, 0, 1, 2, 3]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 839,
+      "eval": 24,
+      "content": "```json\n[5, 6, 0, 1, 2, 3]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 849,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 849,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 852,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 852,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 846,
+      "eval": 22,
+      "content": "```json\n[5, 10, 9, 2, 7]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 846,
+      "eval": 13,
+      "content": "```json\n[5, 10]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 847,
+      "eval": 15,
+      "content": "```json\n[5, 1, 4]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 847,
+      "eval": 15,
+      "content": "```json\n[5, 1, 4]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 837,
+      "eval": 24,
+      "content": "```json\n[6, 5, 4, 3, 2, 1]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 837,
+      "eval": 24,
+      "content": "```json\n[6, 5, 4, 3, 2, 1]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 842,
+      "eval": 24,
+      "content": "```json\n[5, 6, 1, 2, 3, 4]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 842,
+      "eval": 24,
+      "content": "```json\n[5, 6, 1, 2, 3, 4]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 841,
+      "eval": 24,
+      "content": "```json\n[5, 6, 0, 1, 2, 3]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 841,
+      "eval": 24,
+      "content": "```json\n[5, 6, 0, 1, 2, 3]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 750,
+      "eval": 24,
+      "content": "```json\n[5, 4, 3, 2, 1, 0]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "route": "gemma3_selector",
+      "prompt": 750,
+      "eval": 24,
+      "content": "```json\n[5, 4, 3, 2, 1, 0]\n```"
+    },
+    {
+      "route": "gemma3_selector",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "summary": {
+    "campaign_sha": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+    "worktree": "<VALIDATION_ROOT>/NSCP-validation-20261127-055413",
+    "test_run_duration_seconds": 57.17,
+    "total_tests": 536,
+    "tests_passed": 535,
+    "tests_skipped": 1,
+    "subtests_passed": 10,
+    "failures": 0,
+    "errors": 0,
+    "overall_status": "PASS",
+    "evidence_log": "<EVIDENCE_DIR>\\2026-11-27_b71fb0c\\logs\\full-tests.txt"
+  },
+  "ci_checks": {
+    "compileall": {"command": "python -m compileall -q src scripts tools integrations tests", "status": "PASS"},
+    "ruff": {"command": "python -m ruff check src tests integrations/hermes scripts/install_hermes_context.py tools/benchmark_agent_context.py --select E,F,W --ignore E501", "status": "PASS"},
+    "envvars": {"PYTHONPATH": "src", "QT_QPA_PLATFORM": "offscreen"}
+  },
+  "skipped_test": {
+    "detail": "1 test skipped - not marked as PASS"
+  },
+  "notes": [
+    "Targeted CI test collection failed initially due to PYTHONPATH propagation; resolved by setting env vars explicitly per call.",
+    "Full suite executed once successfully (535 passed, 1 skipped). Not repeated due to time cost."
+  ]
+}

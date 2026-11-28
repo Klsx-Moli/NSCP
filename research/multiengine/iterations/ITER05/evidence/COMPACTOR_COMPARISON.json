@@ -1,0 +1,275 @@
+{
+  "generated_at": "2026-11-28T00:28:26.952078+00:00",
+  "classification": "VERIFIED_BY_ME",
+  "comparison": {
+    "C_deterministic_nscp": {
+      "source": "context_compactor.py @ 97ea9e9, real call",
+      "report": {
+        "schema": "neuroprompt/compaction-result/v1",
+        "level": "safe",
+        "num_ctx": 3200,
+        "trigger_ratio": 0.7,
+        "triggered": false,
+        "tokens_before": 1032,
+        "tokens_after": 1032,
+        "compression_ratio": 1.0,
+        "actions": {},
+        "token_accounting": "content_only_estimate",
+        "verification": {
+          "status": "not_verified"
+        }
+      },
+      "exact": {
+        "found": [
+          "sha",
+          "branch",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": [],
+        "count": 12,
+        "total": 12,
+        "invented_shas": [],
+        "chars": 4118
+      },
+      "paraphrase_proxy": {
+        "count": 12,
+        "total": 12,
+        "found": [
+          "sha",
+          "branch",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": []
+      },
+      "chars": 4118
+    },
+    "B_compactor_specialized": {
+      "source": "llama-server real inference; output_head cap 1500 chars",
+      "exact": {
+        "found": [
+          "sha",
+          "branch",
+          "error",
+          "path",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": [
+          "permission",
+          "test",
+          "decision",
+          "next"
+        ],
+        "count": 8,
+        "total": 12,
+        "invented_shas": [],
+        "chars": 739
+      },
+      "paraphrase_proxy": {
+        "count": 12,
+        "total": 12,
+        "found": [
+          "sha",
+          "branch",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": []
+      },
+      "chars": 739,
+      "latency_s": 75.235,
+      "usage": {
+        "completion_tokens": 265,
+        "prompt_tokens": 649,
+        "total_tokens": 914,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    "B_compactor_generic": {
+      "source": "llama-server real inference; output_head cap 1500 chars",
+      "exact": {
+        "found": [
+          "branch"
+        ],
+        "missing": [
+          "sha",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "count": 1,
+        "total": 12,
+        "invented_shas": [],
+        "chars": 1456
+      },
+      "paraphrase_proxy": {
+        "count": 6,
+        "total": 12,
+        "found": [
+          "branch",
+          "permission",
+          "next",
+          "model",
+          "owner",
+          "vram"
+        ],
+        "missing": [
+          "sha",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "gate"
+        ]
+      },
+      "chars": 1456,
+      "latency_s": 111.86,
+      "usage": {
+        "completion_tokens": 415,
+        "prompt_tokens": 594,
+        "total_tokens": 1009,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    "E_uncompressed_upper_bound": {
+      "source": "fixture itself (no compaction)",
+      "exact": {
+        "found": [
+          "sha",
+          "branch",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": [],
+        "count": 12,
+        "total": 12,
+        "invented_shas": [],
+        "chars": 2037
+      },
+      "paraphrase_proxy": {
+        "count": 12,
+        "total": 12,
+        "found": [
+          "sha",
+          "branch",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": []
+      },
+      "chars": 2037
+    },
+    "A_original_qwen35": {
+      "source": "<MODEL_ROOT>\\00_CONTROL_OFICIAL\\bartowski--Qwen_Qwen3.5-4B-GGUF\\Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+      "exact": {
+        "found": [
+          "sha",
+          "branch",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "owner",
+          "vram"
+        ],
+        "missing": [
+          "permission",
+          "test",
+          "error",
+          "gate"
+        ],
+        "count": 8,
+        "total": 12,
+        "invented_shas": [],
+        "chars": 806
+      },
+      "paraphrase_proxy": {
+        "count": 12,
+        "total": 12,
+        "found": [
+          "sha",
+          "branch",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": []
+      },
+      "chars": 806,
+      "latency_s": 83.016,
+      "usage": {
+        "completion_tokens": 274,
+        "prompt_tokens": 649,
+        "total_tokens": 923,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "output_head": "HECHO: SHA 97ea9e987656bf64234cfc56ee3a89196a3b579d en feature/context-compactor.\nHECHO: Permiso de push revocado por moli a las 10:00.\nHECHO: 535 tests passed, 1 skipped; error en tests/test_agent_context.py (file or directory not found).\nHECHO: Ruta <EVIDENCE_DIR>.\nHECHO: Decision: no modificar main ni Hermes activo.\nHECHO: Próxima acción: ejecutar ITER05 en worktree aislado.\nHECHO: Modelo Qwen3-Embedding-0.6B Q8_0.\nHECHO: Gate CHECKMATE PASS.\nHECHO: Owner THEKEY gobierna, Hermes implementa.\nHECHO: VRAM RX 570 4 GB reportados.\nHECHO: Corrección: informe anterior erróneo sobre vigencia del permiso de push.\nHECHO: Corrección: resumen viejo indicaba 591 tests passed (dato no reproducible localmente).\nHECHO: Notas de seguimiento 0-19 confirmadas sin cambios relevantes."
+    }
+  },
+  "errors": [],
+  "original_server_healthy": true
+}

@@ -1,0 +1,2 @@
+ollama_qwen35_selector sel 0.0 cold 5.464 warm 2.066
+qwen25_classifier sel 0.0 cold 6.926 warm 2.033

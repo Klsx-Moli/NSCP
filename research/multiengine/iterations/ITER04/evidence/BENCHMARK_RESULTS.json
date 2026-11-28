@@ -1,0 +1,224 @@
+{
+  "schema": "nscp/multiengine-benchmark/v1",
+  "sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+  "preregistration_sha256": "009e798aa362ee0710722a4517c8478010ca962367425d90c0d3c3858eba5820",
+  "case_count": 108,
+  "languages": [
+    "es-es",
+    "en-en",
+    "es-en"
+  ],
+  "categories": [
+    "lexical_exact",
+    "numeric_id",
+    "negation",
+    "revocation",
+    "authorization_branch",
+    "state_change",
+    "unicode_path",
+    "cross_lingual_shared_id",
+    "cross_lingual_no_overlap",
+    "semantic_paraphrase",
+    "prompt_injection",
+    "abstention_no_evidence"
+  ],
+  "caveat": "Expected answers were frozen before model calls. Synthetic cases, not production traffic.",
+  "deterministic_routes": {
+    "bm25": {
+      "cases": 108,
+      "candidate_recall": 1.0,
+      "selection_recall": 0.606,
+      "precision_mean": 0.875,
+      "literal_fidelity": 0.606,
+      "semantic_fidelity": 0.606,
+      "false_positives_total": 45,
+      "correct_abstentions": 9,
+      "incorrect_abstentions": 0,
+      "cross_lingual_selection_recall": 0.5,
+      "planning_seconds": 0.128
+    },
+    "conceptual_lexical_proxy": {
+      "cases": 108,
+      "candidate_recall": 1.0,
+      "selection_recall": 0.758,
+      "precision_mean": 0.9,
+      "literal_fidelity": 0.758,
+      "semantic_fidelity": 0.758,
+      "false_positives_total": 45,
+      "correct_abstentions": 9,
+      "incorrect_abstentions": 0,
+      "cross_lingual_selection_recall": 0.5,
+      "planning_seconds": 0.03
+    },
+    "hybrid": {
+      "cases": 108,
+      "candidate_recall": 1.0,
+      "selection_recall": 1.0,
+      "precision_mean": 0.153,
+      "literal_fidelity": 1.0,
+      "semantic_fidelity": 1.0,
+      "false_positives_total": 549,
+      "correct_abstentions": 0,
+      "incorrect_abstentions": 9,
+      "cross_lingual_selection_recall": 1.0,
+      "planning_seconds": 0.025
+    },
+    "rerank_proxy": {
+      "cases": 108,
+      "candidate_recall": 1.0,
+      "selection_recall": 1.0,
+      "precision_mean": 0.153,
+      "literal_fidelity": 1.0,
+      "semantic_fidelity": 1.0,
+      "false_positives_total": 549,
+      "correct_abstentions": 0,
+      "incorrect_abstentions": 9,
+      "cross_lingual_selection_recall": 1.0,
+      "planning_seconds": 0.023
+    }
+  },
+  "model_routes": {
+    "llamacpp_qwen35_gguf_selector": {
+      "cases": 6,
+      "candidate_recall": 1.0,
+      "selection_recall": 1.0,
+      "precision_mean": 1.0,
+      "literal_fidelity": 1.0,
+      "semantic_fidelity": 1.0,
+      "false_positives_total": 0,
+      "correct_abstentions": 0,
+      "incorrect_abstentions": 0,
+      "cold_s": 62.883,
+      "warm_mean_s": 26.937,
+      "tokens": {
+        "prompt_tokens": 5946,
+        "completion_tokens": 24,
+        "calls": 6
+      },
+      "language_selection_recall": {
+        "es-es": 1.0
+      }
+    },
+    "gemma3_selector_raw": {
+      "cases": 24,
+      "candidate_recall": 1.0,
+      "selection_recall": 0.0,
+      "precision_mean": null,
+      "false_positives_total": 0,
+      "cold_s": 82.616,
+      "warm_mean_s": 6.759,
+      "tokens": {
+        "prompt_eval_count": 20106,
+        "eval_count": 447,
+        "calls": 24
+      },
+      "raw_json_valid": "0/24",
+      "reason": "valid IDs wrapped in markdown code fences"
+    },
+    "gemma3_selector_offline_rescored": {
+      "case_count": 24,
+      "raw_json_valid": "0/24 (fenced markdown)",
+      "selection_recall": 1.0,
+      "precision_mean": 0.307,
+      "false_positives_total": 75,
+      "correct_abstentions": 0
+    },
+    "phi4mini_classifier": {
+      "cases": 6,
+      "selection_recall": 0.833,
+      "precision_mean": 0.555,
+      "false_positives_total": 6,
+      "cold_s": 0.768,
+      "warm_mean_s": 0.493,
+      "tokens": {
+        "prompt_eval_count": 3431,
+        "eval_count": 39,
+        "calls": 6
+      },
+      "language_selection_recall": {
+        "es-es": 0.833
+      }
+    },
+    "failed_service_routes": {
+      "qwen35_ollama_selector": "LocalSummaryError x24 (service unavailable)",
+      "qwen25_classifier": "URLError 10061 x24 (service unavailable)",
+      "note": "not model-quality results"
+    },
+    "gemma3_selector_cross_lingual_es_en": {
+      "route": "gemma3_selector_cross_lingual_es_en_offline_rescored",
+      "raw_json_valid": "0/6 (fenced markdown)",
+      "case_count": 6,
+      "selection_recall": 1.0,
+      "precision_mean": 0.333
+    }
+  },
+  "iter03_baseline_reference": {
+    "case_count": 7,
+    "bm25_hit_rate": 0.714,
+    "qwen_hit_rate": 0.714,
+    "qwen_valid": 7,
+    "different_case_set": true
+  },
+  "cumulative_compaction": {
+    "model": "gemma3:4b",
+    "cycles": {
+      "1": {
+        "literal_retention": 1.0,
+        "semantic_fidelity": 1.0,
+        "injection_followed": false,
+        "injection_as_labeled_data": true,
+        "tokens": 370
+      },
+      "5": {
+        "literal_retention": 1.0,
+        "semantic_fidelity": 1.0,
+        "injection_followed": false,
+        "injection_as_labeled_data": true,
+        "tokens": 1792
+      },
+      "10": {
+        "literal_retention": 1.0,
+        "semantic_fidelity": 1.0,
+        "injection_followed": false,
+        "injection_as_labeled_data": true,
+        "tokens": 3532
+      },
+      "20": {
+        "literal_retention": 1.0,
+        "semantic_fidelity": 1.0,
+        "injection_followed": false,
+        "injection_as_labeled_data": true,
+        "tokens": 7012
+      }
+    },
+    "latency": {
+      "calls": 36,
+      "cold_s": 12.597,
+      "warm_mean_s": 8.397
+    }
+  },
+  "hardware": {
+    "ram_free_gb": 6.02,
+    "ollama_vram_bytes_gemma3": 2905929152,
+    "ollama_vram_bytes_phi4mini": 3100198829,
+    "source": "ollama /api/ps + OS free RAM"
+  },
+  "transient_investigation": "ENVIRONMENT_SERVICE_CONFIGURATION",
+  "embedding_route": {
+    "model": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+    "status": "BLOCKED",
+    "reason": "llama-server loaded model but /embedding requests did not return within 90s; control-token warning logged"
+  },
+  "artifacts": [
+    "PREREGISTERED_CASES.json",
+    "DETERMINISTIC_RESULTS.json",
+    "MODEL_ROUTES.json",
+    "MODEL_ROUTES_OLLAMA.json",
+    "GEMMA3_OFFLINE_RESCORE.json",
+    "PHI4MINI_CLASSIFIER.json",
+    "CUMULATIVE_COMPACTION.json",
+    "OLLAMA_TRANSIENT_INVESTIGATION.json",
+    "gguf_inventory_raw.json",
+    "CROSS_LINGUAL_PROBE.json"
+  ]
+}

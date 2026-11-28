@@ -1,0 +1,6 @@
+PREREGISTERED 108 009e798aa362ee07
+bm25 cand 1.0 sel 0.606 fp 45
+conceptual_lexical_proxy cand 1.0 sel 0.758 fp 45
+hybrid cand 1.0 sel 1.0 fp 549
+rerank_proxy cand 1.0 sel 1.0 fp 549
+DONE

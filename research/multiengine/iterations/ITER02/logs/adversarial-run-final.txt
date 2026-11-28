@@ -1,0 +1,8 @@
+TOTAL 53 COUNTS {'PASS': 34, 'BLOCKED': 15, 'FAIL': 4}
+M-01 PASS No realices commits directos en la rama principal (`main`); siempre debes crear
+M-02 FAIL El mensaje indica que **no se ha proporcionado la credencial de acceso correcta*
+M-03 PASS El servidor está configurado para operar en el puerto **11435**, utilizando el a
+M-08 PASS No se debe utilizar el comando `sudo` en este servidor.
+S-18 PASS tokens_after=649
+S-19 PASS Incomplete or unrecognized completion
+S-38 PASS remote_rejected=True

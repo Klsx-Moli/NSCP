@@ -1,0 +1,126 @@
+{
+  "schema": "nscp/model-specialization-matrix/v1",
+  "sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+  "principle": "Best model per NSCP function, not a single general winner.",
+  "local_gguf_inventory_count": 30,
+  "entries": [
+    {
+      "model": "Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+      "function": "extraction/span selection",
+      "availability": "local",
+      "selection_recall": 1.0,
+      "precision": 1.0,
+      "cold_s": 62.883,
+      "warm_s": 26.937,
+      "tokens": {
+        "prompt_tokens": 5946,
+        "completion_tokens": 24,
+        "calls": 6
+      },
+      "evidence": "BENCHMARK_RESULTS.json"
+    },
+    {
+      "model": "gemma3:4b",
+      "function": "generative compaction",
+      "availability": "local",
+      "selection_recall": 0.0,
+      "precision": null,
+      "cold_s": 82.616,
+      "warm_s": 6.759,
+      "tokens": {
+        "prompt_eval_count": 20106,
+        "eval_count": 447,
+        "calls": 24
+      },
+      "evidence": "BENCHMARK_RESULTS.json"
+    },
+    {
+      "model": "phi4-mini:latest",
+      "function": "relevance classification/reranking",
+      "availability": "local",
+      "selection_recall": 0.833,
+      "precision": 0.555,
+      "cold_s": 0.768,
+      "warm_s": 0.493,
+      "tokens": {
+        "prompt_eval_count": 3431,
+        "eval_count": 39,
+        "calls": 6
+      },
+      "evidence": "BENCHMARK_RESULTS.json"
+    },
+    {
+      "model": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+      "function": "embeddings",
+      "availability": "local",
+      "status": "BLOCKED",
+      "reason": "embedding request stalled >90s"
+    },
+    {
+      "model": "BM25 (extractive_context.rank_spans)",
+      "function": "deterministic candidate generation",
+      "availability": "built-in",
+      "selection_recall": 0.606,
+      "precision": 0.875
+    },
+    {
+      "model": "conceptual_lexical_proxy + hybrid",
+      "function": "semantic proxy / hybrid retrieval",
+      "availability": "prototype",
+      "selection_recall": 1.0,
+      "precision": 0.153,
+      "note": "not embeddings"
+    },
+    {
+      "model": "gemma3:4b cumulative compaction",
+      "function": "structured memory / generative compaction",
+      "availability": "local",
+      "literal_retention_20": 1.0,
+      "injection_followed": false
+    },
+    {
+      "model": "gemma3:4b es-en cross-lingual",
+      "function": "multilingual selection",
+      "availability": "local",
+      "selection_recall": 1.0,
+      "precision": 0.333,
+      "raw_json_valid": "0/6 (fenced markdown)"
+    }
+  ],
+  "remote_candidates_not_local": [
+    "schneewolflabs/Compactor-Qwen3.5-4B",
+    "mradermacher/Compactor-Qwen3.5-4B-GGUF",
+    "TheWickedGustav/viscer-4b",
+    "homerquan/mn-context-engine-model-v-Q4_K_M",
+    "paritok/paritok-4b-v1",
+    "chopratejas/kompress-v2-base",
+    "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+    "BonkusCheemus/MiniCPM5-2B-Context-Compressor-GGUF",
+    "infgrad/Prism-Qwen3.5-Reranker-2B"
+  ],
+  "user_requested_gguf_found": {
+    "Qwen3.5-4B": [
+      "<MODEL_ROOT>\\00_CONTROL_OFICIAL\\bartowski--Qwen_Qwen3.5-4B-GGUF\\Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+      "<MODEL_ROOT>\\01_QAT_Y_CUANTIZACION_MEJORADA\\YoozLabs--Qwen3.5-4B-qat-GGUF\\Qwen3.5-4B-qat-Q4_0.gguf",
+      "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\AdvancedDataIntelligence--adi-qwen3.5-4b-glm5.2-general-GGUF\\adi-qwen3.5-4b-glm5.2-general-q4_k_m.gguf",
+      "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwen3.5-4B-Claude-4.6-Opus-Reasoning-Distilled-v2-GGUF\\Qwen3.5-4B.Q4_K_M.gguf",
+      "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwen3.5-4B-Neo-GGUF\\Qwen3.5-4B.Q4_K_M.gguf",
+      "<MODEL_ROOT>\\02_RAZONAMIENTO_GENERAL\\Jackrong--Qwopus3.5-4B-v3-GGUF\\Qwen3.5-4B.Q4_K_M.gguf",
+      "<MODEL_ROOT>\\04_AGENTES_Y_HERRAMIENTAS\\limnmn--Qwen3.5-4B-AgentTools-GGUF\\Qwen3.5-4B-AgentTools-v0.8-Q4_K_M.gguf",
+      "<MODEL_ROOT>\\90_EXPERIMENTALES\\jica98--qwen3.5-4B-super-coder\\qwen3.5-4B-super-coder.Q4_0.gguf"
+    ],
+    "LFM2.5-8B-A1B": [
+      "<MODEL_ROOT>\\05_MODELOS_ALTERNATIVOS\\LiquidAI--LFM2.5-8B-A1B-GGUF\\LFM2.5-8B-A1B-Q4_K_M.gguf"
+    ],
+    "Qwopus3.5-9B-Coder": [
+      "<MODEL_ROOT>\\03_PROGRAMACION\\Jackrong--Qwopus3.5-9B-Coder-GGUF\\Qwopus3.5-9B-coder-Exp-Q4_K_M.gguf"
+    ],
+    "Qwen2.5-Coder 7B": [
+      "D:\\MODELOS\\qwen2.5-coder-7b-instruct-q4_k_m.gguf"
+    ],
+    "Gemma 4": [
+      "<MODEL_ROOT>\\01_QAT_Y_CUANTIZACION_MEJORADA\\google--gemma-4-E2B-it-qat-q4_0-gguf\\gemma-4-E2B_q4_0-it.gguf",
+      "<MODEL_ROOT>\\01_QAT_Y_CUANTIZACION_MEJORADA\\google--gemma-4-E4B-it-qat-q4_0-gguf\\gemma-4-E4B_q4_0-it.gguf"
+    ]
+  }
+}

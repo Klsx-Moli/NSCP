@@ -1,0 +1,71 @@
+{
+  "campaign_sha": "b71fb0c6774f715d420889ce064c8e9d2728d5cf",
+  "status": "MUTATIONS_PENDING_EXECUTION",
+  "disclaimer": "No mutations applied to synchronized checkout or production app. Only planned secondary copies for Phase 12 execution.",
+  "mutation_plan": [
+    {
+      "mutation_id": "MUT-NEG-001",
+      "description": "Invert negaciones en compresión (negar un 'do not' a 'do').",
+      "target_contract": "context_compactor / local_summary",
+      "expected_detecting_test": "tests/test_context_compactor.py, tests/test_local_summary.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    },
+    {
+      "mutation_id": "MUT-AUTH-001",
+      "description": "Inventar autorización después de compresión.",
+      "target_contract": "compression_policy / context_compactor",
+      "expected_detecting_test": "tests/test_compression_policy.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    },
+    {
+      "mutation_id": "MUT-SILENT-001",
+      "description": "Pérdida silenciosa de información crítica.",
+      "target_contract": "context_loss_verifier / context_compactor",
+      "expected_detecting_test": "tests/test_context_loss.py, tests/test_context_loss_verifier.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    },
+    {
+      "mutation_id": "MUT-ACCOUNT-001",
+      "description": "Manipular contadores de tokens o ahorros.",
+      "target_contract": "token_estimator / context_compactor",
+      "expected_detecting_test": "tests/test_agent_context_benchmark.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    },
+    {
+      "mutation_id": "MUT-ROLE-001",
+      "description": "Cambiar rol de mensaje tras compresión.",
+      "target_contract": "context_compactor",
+      "expected_detecting_test": "tests/test_context_compactor.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    },
+    {
+      "mutation_id": "MUT-META-001",
+      "description": "Eliminar metadatos de transporte/referencia.",
+      "target_contract": "agent_context / context_compactor",
+      "expected_detecting_test": "tests/test_agent_context.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    },
+    {
+      "mutation_id": "MUT-COUNT-001",
+      "description": "Doble conteo de ahorro o de tokens.",
+      "target_contract": "token_estimator",
+      "expected_detecting_test": "tests/test_context_compactor.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    },
+    {
+      "mutation_id": "MUT-ID-001",
+      "description": "Reutilizar IDs de tool call o referencia.",
+      "target_contract": "context_compactor / agent_context",
+      "expected_detecting_test": "tests/test_hermes_context_adapter.py, tests/test_context_compactor.py",
+      "status": "NOT_EXECUTED",
+      "verified": false
+    }
+  ]
+}

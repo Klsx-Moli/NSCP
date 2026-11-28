@@ -1,0 +1,1 @@
+phi 0.833 0.555 0.768 0.493 tokens {'prompt_eval_count': 3431, 'eval_count': 39, 'calls': 6}

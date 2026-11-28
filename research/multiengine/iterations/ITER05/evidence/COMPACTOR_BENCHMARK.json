@@ -1,0 +1,123 @@
+{
+  "generated_at": "2026-11-28T00:21:07.380392+00:00",
+  "model": "<MODELS_DIR>\\Compactor-Qwen3.5-4B.Q4_K_M.gguf",
+  "classification": "VERIFIED_BY_ME",
+  "conditions": {
+    "specialized": {
+      "latency_s": 75.235,
+      "usage": {
+        "completion_tokens": 265,
+        "prompt_tokens": 649,
+        "total_tokens": 914,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "retention": {
+        "found": [
+          "sha",
+          "branch",
+          "error",
+          "path",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "missing": [
+          "permission",
+          "test",
+          "decision",
+          "next"
+        ],
+        "count": 8,
+        "total": 12,
+        "invented_shas": [],
+        "chars": 739
+      },
+      "output_chars": 739,
+      "output_head": "HECHO: SHA 97ea9e987656bf64234cfc56ee3a89196a3b579d en branch feature/context-compactor.\nHECHO: Permiso de push revocado por moli a las 10:00.\nHECHO: 535 tests passed, 1 skipped.\nHECHO: Error pendiente: tests/test_agent_context.py file or directory not found.\nHECHO: Ruta: <EVIDENCE_DIR>.\nHECHO: Decision: No modificar main ni Hermes activo.\nHECHO: Próxima acción: Ejecutar ITER05 en worktree aislado.\nHECHO: Modelo: Qwen3-Embedding-0.6B Q8_0.\nHECHO: Gate: CHECKMATE exige gates PASS.\nHECHO: Propietario: THEKEY gobierna, Hermes implementa.\nHECHO: VRAM: RX 570 4 GB reportados.\nHECHO: Corrección: El permiso de push no sigue vigente.\nHECHO: Nota de seguimiento 0-19: Revisión de estados sin cambios relevantes.",
+      "reasoning_content": ""
+    },
+    "generic": {
+      "latency_s": 111.86,
+      "usage": {
+        "completion_tokens": 415,
+        "prompt_tokens": 594,
+        "total_tokens": 1009,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "retention": {
+        "found": [
+          "branch"
+        ],
+        "missing": [
+          "sha",
+          "permission",
+          "test",
+          "error",
+          "path",
+          "decision",
+          "next",
+          "model",
+          "gate",
+          "owner",
+          "vram"
+        ],
+        "count": 1,
+        "total": 12,
+        "invented_shas": [],
+        "chars": 1456
+      },
+      "output_chars": 1456,
+      "output_head": "Aquí tienes un resumen ejecutivo del estado actual del proyecto:\n\n### 📊 Resumen General\nEl proyecto se encuentra en una **racha de estabilidad operativa**. Tras una serie de revisiones de estado (0 al 19) que no mostraron cambios relevantes, el sistema ha confirmado que la infraestructura y los permisos están en su configuración correcta.\n\n### 🚨 Corrección Crítica\nSe ha identificado y corregido un **error de información anterior**:\n*   **Error previo:** Se reportaba erróneamente que el permiso de `push` seguía activo.\n*   **Estado actual:** El permiso de `push` fue **revocado** por `moli` a las 10:00.\n\n### 🧪 Resultados de Pruebas\n*   **Test Suite:** 535 pruebas pasadas, 1 saltada.\n*   **Error detectado:** Falta el archivo `tests/test_agent_context.py`.\n*   **Historial:** Un informe antiguo indicaba 591 tests pasados, pero este dato no es reproducible en el entorno local actual.\n\n### 🛠️ Configuración y Entorno\n*   **Rama:** `feature/context-compactor`\n*   **Modelo:** Qwen3-Embedding-0.6B (cuantizado Q8_0).\n*   **Hardware:** Tarjeta gráfica RX 570 (4 GB).\n*   **Gestión:** El sistema está bajo el control de `THEKEY` (gobierno) con implementación de `Hermes`.\n\n### 📅 Próximos Pasos\nEl siguiente paso programado es la **ejecución de ITER05** en un *worktree* aislado.\n\n---\n**Conclusión:** El sistema está listo para proceder a la siguiente iteración (ITER05) tras la validación de los estados previos y la corrección de los permisos de acceso.",
+      "reasoning_content": ""
+    }
+  },
+  "baseline": {},
+  "ollama": {
+    "error": "URLError: <urlopen error [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión>"
+  },
+  "errors": [
+    "NSCP baseline: ValueError: Ventana insuficiente: instrucciones fijadas + turnos recientes no caben en num_ctx."
+  ],
+  "fixture_facts": {
+    "sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+    "branch": "feature/context-compactor",
+    "permission": "moli revoco el permiso de push a las 10:00",
+    "test": "535 passed, 1 skipped",
+    "error": "tests/test_agent_context.py file or directory not found",
+    "path": "<EVIDENCE_DIR>",
+    "decision": "no modificar main ni Hermes activo",
+    "next": "ejecutar ITER05 en worktree aislado",
+    "model": "Qwen3-Embedding-0.6B Q8_0",
+    "gate": "CHECKMATE exige gates PASS",
+    "owner": "THEKEY gobierna, Hermes implementa",
+    "vram": "RX 570 4 GB reportados"
+  },
+  "note": "retention by exact substring; no semantic paraphrase credit",
+  "fixture_chars": 2037,
+  "command": [
+    "<USERPROFILE>\\AppData\\Local\\Microsoft\\WinGet\\Packages\\ggml.llamacpp_Microsoft.Winget.Source_8wekyb3d8bbwe\\llama-server.exe",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18086",
+    "-m",
+    "<MODELS_DIR>\\Compactor-Qwen3.5-4B.Q4_K_M.gguf",
+    "--ctx-size",
+    "8192",
+    "-t",
+    "2",
+    "-tb",
+    "2",
+    "-ngl",
+    "0",
+    "--reasoning",
+    "off",
+    "--no-webui"
+  ],
+  "server_healthy": true
+}

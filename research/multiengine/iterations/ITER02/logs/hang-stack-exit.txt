@@ -1,0 +1,13 @@
+WINDOW_0_CREATED 0.493s
+WINDOW_1_CREATED 0.947s
+WINDOW_2_CREATED 1.460s
+WINDOW_3_CREATED 1.972s
+WINDOW_4_CREATED 2.526s
+WINDOW_5_CREATED 3.005s
+WINDOW_6_CREATED 3.568s
+Timeout (0:00:15)!
+Thread 0x000033d8 (most recent call first):
+  File "<USERPROFILE>\AppData\Local\Programs\Python\Python312\Lib\enum.py", line 1138 in __new__
+  File "<USERPROFILE>\AppData\Local\Programs\Python\Python312\Lib\enum.py", line 751 in __call__
+  File "<VALIDATION_ROOT>/NSCP-validation-20261127-iter02\src\npsc_gui\help_popover.py", line 192 in eventFilter
+  File

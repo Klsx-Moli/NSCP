@@ -1,0 +1,27 @@
+{
+  "profile": "<EVIDENCE_DIR>\\2026-11-27_iter02\\hermes_isolated_profile",
+  "hermes_head": "a9ff9799e273f525b82718cdc69fdec71b1dca5a",
+  "checks": {
+    "local_summary_route_report": {
+      "status": "PASS",
+      "value": "content='RESUMEN_LOCAL_DE_PRUEBA' report={'route': 'local', 'model': 'qwen3.5:4b-q4_K_M', 'prompt_eval_count': 11, 'eval_count': 3, 'input_wire_bytes': 64, 'outcome': 'response_received'}",
+      "seconds": 0.0
+    },
+    "cooperative_cancellation": {
+      "status": "PASS",
+      "value": "AuxiliaryExplicitCancellation raised",
+      "seconds": 0.0
+    },
+    "native_compaction_path": {
+      "status": "PASS",
+      "value": "messages_out=6 first_role=system",
+      "seconds": 7.355
+    },
+    "nscp_recall_experimental": {
+      "status": "PASS",
+      "value": "nscp_recall=True schemas=1",
+      "seconds": 0.0
+    }
+  },
+  "reviewed_constant": "ed1cbc8de49b233bb71f38e96ed013b52f43ee20"
+}

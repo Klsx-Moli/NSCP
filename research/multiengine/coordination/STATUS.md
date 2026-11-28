@@ -1,0 +1,15 @@
+SHARED STATUS — research/multiengine
+Updated: 2026-11-28T02:21:14.001253+00:00
+Base: 97ea9e987656bf64234cfc56ee3a89196a3b579d (origin/feature/context-compactor, verified by fetch)
+Repo visibility: PUBLIC — all published text sanitized of personal paths.
+
+Local main: fab8557 (ahead 2, untouched). Original checkout untouched.
+Worktree: <REPO_ROOT>-research-multiengine (sanitized in docs as <WORKTREE>).
+Remote branch before this commit: absent. Created from verified base.
+
+Transferred: ITER01-ITER05 evidence/harnesses/prototypes, sanitized.
+ITER06: NOT_ACCESSIBLE — no ITER06 directory or files found in evidence root.
+
+Verified: embeddings real, reranker real, compactor A/B real, differential
+hard/discriminating, memory 12/12, router 17/17, mutation 8/8.
+Pending: remote review, VRAM measurement, H/I/J routes, ITER06 evidence.

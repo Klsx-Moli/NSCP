@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-11-28T00:08:18.231372+00:00",
+  "llama_server": {
+    "path": "<USERPROFILE>\\AppData\\Local\\Microsoft\\WinGet\\Packages\\ggml.llamacpp_Microsoft.Winget.Source_8wekyb3d8bbwe\\llama-server.exe",
+    "exists": true,
+    "version": {
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "version: 9947 (3de7dd4c8)\nbuilt with Clang 20.1.8 for Windows x86_64\n"
+    },
+    "help_chars": 52204
+  },
+  "ollama_processes": [],
+  "relevant_ports": [],
+  "isolated_env_vars": {
+    "OLLAMA_KEEP_ALIVE": "10m"
+  },
+  "global_changes_made": false,
+  "notes": [
+    "No Ollama configuration, PATH, models store or Hermes config modified.",
+    "Inference processes must be started per-process with explicit isolated env and sequential execution.",
+    "help_chars>0 means --help was actually captured in this session."
+  ]
+}

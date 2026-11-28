@@ -1,0 +1,19 @@
+{
+  "sha": "9e6646b418a34d36d8ba09eb354bd81191caff69",
+  "exact_test": "tests/test_design_system.py::test_apply_design_installs_focus_style",
+  "suite_context": "hangs when preceded by tests/test_gui_b9.py (8 MainWindow instances)",
+  "minimal_repro": "pytest tests/test_gui_b9.py tests/test_design_system.py  -> timeout at ~70%",
+  "stack_evidence": "logs/hang-stack-exit.txt: faulthandler frame npsc_gui/help_popover.py:192/200 in ContextHelpButton.eventFilter; dump truncated by Qt segfault",
+  "scaling": {
+    "N=0": "0.001s",
+    "N=1": "0.939s dark / 3.685s light",
+    "N=2": "2.924s dark / 13.067s light",
+    "N=4": ">10.7s then timeout"
+  },
+  "scaling_log": "logs/scale_apply_design.txt",
+  "root_cause": "ContextHelpButton installs an application-wide QApplication event filter (help_popover.py:125). Each live MainWindow adds many such filters; stylesheet re-polish in apply_design dispatches events through all filters, producing superlinear growth and eventual hang. MainWindow construction itself is ~0.5s each due to VersionHistory._load_all, but is not the blocker.",
+  "proposed_fix": "Remove stale app-wide event filters on widget teardown (or scope filters to the parent window) before calling setStyleSheet; do not exclude the test.",
+  "fix_applied_to_production": false,
+  "test_only_plugin": "nscp_isolation_plugin.py (retires filters, keeps widgets alive)",
+  "plugin_full_run": "593 passed, 1 skipped, 10 subtests"
+}

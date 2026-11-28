@@ -1,0 +1,349 @@
+{
+  "route": "gemma3_selector_offline_rescored",
+  "raw_json_valid": "0/24 (fenced markdown)",
+  "rescored_from_stored_outputs": true,
+  "case_count": 24,
+  "selection_recall": 1.0,
+  "precision_mean": 0.307,
+  "false_positives_total": 75,
+  "correct_abstentions": 0,
+  "rows": [
+    {
+      "case_id": "C-001",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-002",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-004",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-005",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-007",
+      "ids": [
+        10,
+        5,
+        9,
+        2,
+        3,
+        7
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-008",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-010",
+      "ids": [
+        5,
+        6,
+        0,
+        1,
+        2,
+        3
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-011",
+      "ids": [
+        5,
+        6,
+        0,
+        1,
+        2,
+        3
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-013",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-014",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-016",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-017",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-019",
+      "ids": [
+        5,
+        10,
+        9,
+        2,
+        7
+      ],
+      "selection_recall": true,
+      "precision": 0.2,
+      "false_positives": 4,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-020",
+      "ids": [
+        5,
+        10
+      ],
+      "selection_recall": true,
+      "precision": 0.5,
+      "false_positives": 1,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-022",
+      "ids": [
+        5,
+        1,
+        4
+      ],
+      "selection_recall": true,
+      "precision": 0.333,
+      "false_positives": 2,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-023",
+      "ids": [
+        5,
+        1,
+        4
+      ],
+      "selection_recall": true,
+      "precision": 0.333,
+      "false_positives": 2,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-025",
+      "ids": [
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-026",
+      "ids": [
+        6,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-028",
+      "ids": [
+        5,
+        6,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-029",
+      "ids": [
+        5,
+        6,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-031",
+      "ids": [
+        5,
+        6,
+        0,
+        1,
+        2,
+        3
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-032",
+      "ids": [
+        5,
+        6,
+        0,
+        1,
+        2,
+        3
+      ],
+      "selection_recall": true,
+      "precision": 0.167,
+      "false_positives": 5,
+      "literal_fidelity": null,
+      "abstention_correct": null
+    },
+    {
+      "case_id": "C-034",
+      "ids": [
+        5,
+        4,
+        3,
+        2,
+        1,
+        0
+      ],
+      "selection_recall": null,
+      "precision": 0.0,
+      "false_positives": 6,
+      "literal_fidelity": null,
+      "abstention_correct": false
+    },
+    {
+      "case_id": "C-035",
+      "ids": [
+        5,
+        4,
+        3,
+        2,
+        1,
+        0
+      ],
+      "selection_recall": null,
+      "precision": 0.0,
+      "false_positives": 6,
+      "literal_fidelity": null,
+      "abstention_correct": false
+    }
+  ]
+}
