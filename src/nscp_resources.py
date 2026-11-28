@@ -193,6 +193,8 @@ def run_cli(argv=None):
     sub.add_parser("verify")
     routing = sub.add_parser("plan-route", help="Read-only resource admission and route preview")
     routing.add_argument("--policy", required=True, type=Path)
+    routing.add_argument("--live-ram", action="store_true", help="Cap policy RAM with current observation")
+    sub.add_parser("snapshot", help="Read current physical RAM; VRAM remains unknown")
     imp = sub.add_parser("import-local")
     imp.add_argument("--from-dir", action="append", required=True)
     imp.add_argument("--model-id", action="append", choices=tuple(CATALOG),
@@ -200,6 +202,11 @@ def run_cli(argv=None):
     imp.add_argument("--apply", action="store_true", help="Without this flag, read-only plan")
     args = parser.parse_args(argv)
     try:
+        if args.command == "snapshot":
+            from resource_snapshot import snapshot
+            result = snapshot()
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0 if result["ram_status"] == "observed" else 2
         if args.command == "plan-route":
             from context_route_policy import plan_resource_route
             with args.policy.open("rb") as stream:
@@ -209,7 +216,15 @@ def run_cli(argv=None):
             policy = json.loads(raw)
             if not isinstance(policy, dict):
                 raise ValueError("Expected resource policy object")
+            observation = None
+            if args.live_ram:
+                from resource_snapshot import cap_live_ram, snapshot
+                observation = snapshot()
+                policy["capacity"] = cap_live_ram(policy["capacity"], observation)
             result = plan_resource_route(**policy)
+            if observation is not None:
+                result["capacity_measurement"] = "live_ram_capped_by_policy;vram_caller_supplied"
+                result["resource_snapshot"] = observation
             print(json.dumps(result, ensure_ascii=False, allow_nan=False, indent=2))
             return 2 if result["decision"]["route"] in ("ABORT", "RECOVERY") else 0
         root = root_path(args.root)

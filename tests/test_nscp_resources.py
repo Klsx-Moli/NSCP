@@ -136,3 +136,34 @@ def test_resource_plan_cli_is_read_only_and_reports_unresolved_need(tmp_path, ca
     policy.write_text(" " * 65537, encoding="utf-8")
     assert run_cli(args) == 2
     assert "byte limit" in capsys.readouterr().err
+
+
+def test_live_resource_cli_cannot_override_a_smaller_explicit_cap(tmp_path, capsys, monkeypatch):
+    import resource_snapshot
+    observed = {"schema": "nscp/resource-snapshot/v1", "capacity": {"ram_bytes": 40, "vram_bytes": None},
+                "ram_status": "observed", "vram_status": "unknown", "allocation_guaranteed": False}
+    monkeypatch.setattr(resource_snapshot, "snapshot", lambda: observed)
+    assert run_cli(["snapshot"]) == 0
+    assert json.loads(capsys.readouterr().out) == observed
+    data = {"capacity": {"ram_bytes": 100, "vram_bytes": None},
+            "reserve": {"ram_bytes": 10, "vram_bytes": 0},
+            "costs": {"embedding": {"ram_bytes": 31, "vram_bytes": 0}},
+            "context_tokens": 200, "request_budget": 100,
+            "need": "semantic", "health": {"embedding": "ready"}}
+    path = tmp_path / "policy.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    args = ["plan-route", "--policy", str(path), "--live-ram"]
+    assert run_cli(args) == 2
+    result = json.loads(capsys.readouterr().out)
+    assert result["capacity"]["ram_bytes"] == 40
+    assert result["decision"]["route"] == "RECOVERY"
+    assert result["resource_snapshot"] == observed
+    data["capacity"]["ram_bytes"] = 20
+    data["costs"]["embedding"]["ram_bytes"] = 10
+    path.write_text(json.dumps(data), encoding="utf-8")
+    assert run_cli(args) == 0
+    assert json.loads(capsys.readouterr().out)["capacity"]["ram_bytes"] == 20
+    observed["capacity"]["ram_bytes"] = None
+    observed["ram_status"] = "unknown"
+    assert run_cli(args) == 2
+    assert json.loads(capsys.readouterr().out)["capacity"]["ram_bytes"] is None

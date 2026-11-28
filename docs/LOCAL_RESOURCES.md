@@ -71,3 +71,20 @@ A candidate route is not a successful compression. Health and resource values
 are caller-supplied, not measurements or attestations; there is no atomic
 reservation, live hardware sampler, cross-process lock, model launch or
 automatic Hermes integration in this preview. Revalidate at execution time.
+
+
+## Live RAM observation (read-only)
+
+`nscp-resources snapshot` observes available physical RAM via Windows
+GlobalMemoryStatusEx or Linux MemAvailable capped by all visible cgroup v2
+memory.max/current ancestors. Unsupported or unreadable layouts report unknown.
+Windows job limits, hidden cgroup ancestors and concurrent allocation races
+are not covered. This is a point-in-time observation, not an allocation guarantee.
+Pagefile/swap and disk space are not counted as physical RAM. Free VRAM remains
+unknown; installed GPU memory is not a substitute.
+
+`nscp-resources plan-route --policy policy.json --live-ram` caps the caller's
+RAM value with the live observation (never increases an explicit cap).
+An unreadable observation becomes unknown, not the stale caller value.
+VRAM remains caller-supplied and is labeled as such. This is still a preview,
+not automatic runtime admission or Hermes integration. No processes are started.

@@ -30,6 +30,7 @@ py-modules = [
   "memory_index",
   "semantic_ranking",
   "context_route_policy",
+  "resource_snapshot",
   "local_onnx",
   "local_retrieval",
   "context_state",
