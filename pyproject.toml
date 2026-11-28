@@ -26,6 +26,7 @@ py-modules = [
   "semantic_memory",
   "semantic_ranking",
   "context_route_policy",
+  "local_onnx",
   "extractive_context",
   "npsc_agent_cli",
   "benchmark_quality",

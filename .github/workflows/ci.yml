@@ -42,7 +42,7 @@ jobs:
           pip install pytest pytest-cov ruff==0.16.9
 
       - name: Lint (ruff — errors + warnings, ignore line-length)
-        run: ruff check src/ tests/ integrations/hermes/ scripts/install_hermes_context.py tools/benchmark_agent_context.py tools/benchmark_extractive_context.py tools/benchmark_specialized_engines.py --select E,F,W --ignore E501
+        run: ruff check src/ tests/ integrations/hermes/ scripts/install_hermes_context.py tools/benchmark_agent_context.py tools/benchmark_extractive_context.py tools/benchmark_specialized_engines.py tools/benchmark_onnx_context.py --select E,F,W --ignore E501
 
       - name: Agent-context regression (independent of GUI)
         timeout-minutes: 3
@@ -51,7 +51,7 @@ jobs:
             tests/test_agent_context.py tests/test_hermes_context_adapter.py tests/test_agent_context_benchmark.py \
             tests/test_code_protection.py tests/test_compact_cli.py \
             tests/test_compaction_verifier.py tests/test_compression_policy.py \
-            tests/test_context_compactor.py tests/test_conversation_store.py tests/test_summarizer.py tests/test_local_summary.py tests/test_hermes_hybrid.py tests/test_extractive_context.py tests/test_extractive_benchmark.py tests/test_nscp_resources.py tests/test_semantic_memory.py tests/test_specialized_benchmark.py tests/test_context_route_policy.py
+            tests/test_context_compactor.py tests/test_conversation_store.py tests/test_summarizer.py tests/test_local_summary.py tests/test_hermes_hybrid.py tests/test_extractive_context.py tests/test_extractive_benchmark.py tests/test_nscp_resources.py tests/test_semantic_memory.py tests/test_specialized_benchmark.py tests/test_context_route_policy.py tests/test_local_onnx.py
         env:
           PYTHONPATH: src
           QT_QPA_PLATFORM: offscreen
