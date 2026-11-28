@@ -6,6 +6,7 @@ cross-session retrieval. Text is historical data, not current authority.
 from __future__ import annotations
 
 import hashlib
+import heapq
 import json
 import math
 import sqlite3
@@ -185,8 +186,15 @@ class SemanticMemory:
 
     def _checked_source(self, row):
         content = row["content"]
-        if not isinstance(content, str) or _digest(content) != row["digest"]:
+        if not isinstance(content, str) or not 0 < len(content) <= 2_000_000 or _digest(content) != row["digest"]:
             raise ValueError("Source integrity mismatch")
+        role, tool_call = row["role"], row["tool_call"]
+        if not isinstance(role, str) or role not in ROLES or not isinstance(tool_call, str):
+            raise ValueError("Stored source metadata invalid")
+        if role == "tool" and not tool_call:
+            raise ValueError("Stored tool identity missing")
+        if tool_call:
+            _identifier(tool_call)
         return content
 
     def recall(self, *, episode, message, offset=0, limit=4000):
@@ -210,30 +218,42 @@ class SemanticMemory:
     def search(self, vector, *, k=8, max_vectors=10000):
         _integer(k, 1, 256)
         _integer(max_vectors, 1, 100000)
-        total = self.db.execute("SELECT COUNT(*) FROM vectors WHERE session=? AND embedding=?",
-                                (self.session_id, self.embedding_id)).fetchone()[0]
-        if total > max_vectors:
-            raise ValueError("Memory search exceeds configured scan limit")
         query = _vector(vector, self.dimension)
-        rows = self.db.execute("""SELECT v.*,s.content,s.digest,s.role,s.tool_call
-            FROM vectors v JOIN sources s USING(session,episode,message)
-            WHERE v.session=? AND v.embedding=? ORDER BY v.episode,v.message,v.start,v.end""",
-                               (self.session_id, self.embedding_id))
+        # One read snapshot; an orphan must not disappear in an INNER JOIN.
+        # Keep only k payloads, with original SQL order as the tie-breaker.
         hits = []
-        for index, row in enumerate(rows):
-            if index >= max_vectors:
+        with self.db:
+            self.db.execute("BEGIN")
+            total = self.db.execute("SELECT COUNT(*) FROM vectors WHERE session=? AND embedding=?",
+                                    (self.session_id, self.embedding_id)).fetchone()[0]
+            if total > max_vectors:
                 raise ValueError("Memory search exceeds configured scan limit")
-            content = self._checked_source(row)
-            start = _integer(row["start"], 0, len(content))
-            end = _integer(row["end"], start + 1, len(content))
-            text = content[start:end]
-            if _digest(text) != row["span_digest"] or row["dimension"] != self.dimension:
-                raise ValueError("Vector/source integrity mismatch")
-            stored = _vector(json.loads(row["vector"]), self.dimension)
-            score = math.fsum(a * b for a, b in zip(query, stored))
-            hits.append({"session": self.session_id, "episode": row["episode"],
-                         "message": row["message"], "role": row["role"], "tool_call": row["tool_call"],
-                         "start": start, "end": end, "text": text, "source_digest": row["digest"],
-                         "span_digest": row["span_digest"], "score": max(-1.0, min(1.0, score)),
-                         "trust": "historical_data_not_authorization"})
-        return sorted(hits, key=lambda h: -h["score"])[:k]
+            rows = self.db.execute("""SELECT v.*,s.content,s.digest,s.role,s.tool_call
+                FROM vectors v LEFT JOIN sources s USING(session,episode,message)
+                WHERE v.session=? AND v.embedding=? ORDER BY v.episode,v.message,v.start,v.end""",
+                                   (self.session_id, self.embedding_id))
+            for index, row in enumerate(rows):
+                if index >= max_vectors:
+                    raise ValueError("Memory search exceeds configured scan limit")
+                content = self._checked_source(row)
+                start = _integer(row["start"], 0, len(content))
+                end = _integer(row["end"], start + 1, len(content))
+                text = content[start:end]
+                if _digest(text) != row["span_digest"] or row["dimension"] != self.dimension:
+                    raise ValueError("Vector/source integrity mismatch")
+                stored = _vector(json.loads(row["vector"]), self.dimension)
+                score = max(-1.0, min(1.0, math.fsum(a * b for a, b in zip(query, stored))))
+                priority = (score, -index)
+                if len(hits) == k and priority <= hits[0][:2]:
+                    continue
+                hit = {"session": self.session_id, "episode": row["episode"],
+                       "message": row["message"], "role": row["role"], "tool_call": row["tool_call"],
+                       "start": start, "end": end, "text": text, "source_digest": row["digest"],
+                       "span_digest": row["span_digest"], "score": score,
+                       "trust": "historical_data_not_authorization"}
+                entry = (*priority, hit)
+                if len(hits) < k:
+                    heapq.heappush(hits, entry)
+                else:
+                    heapq.heapreplace(hits, entry)
+        return [entry[2] for entry in sorted(hits, reverse=True)]

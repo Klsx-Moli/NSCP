@@ -123,3 +123,47 @@ def test_search_scan_limit_is_not_silent_truncation(tmp_path):
         add(m, message="another")
         with pytest.raises(ValueError, match="scan limit"):
             m.search([1, 2], max_vectors=1)
+
+
+def test_orphan_vector_cannot_disappear_after_restart(tmp_path):
+    import sqlite3
+
+    path = tmp_path / "m.sqlite"
+    with SemanticMemory(path, session_id="s", embedding_id="v1", dimension=2) as m:
+        add(m, message="valid")
+        add(m, message="orphan")
+    with sqlite3.connect(path) as corrupt:
+        corrupt.execute("PRAGMA foreign_keys=OFF")
+        corrupt.execute("DELETE FROM sources WHERE message='orphan'")
+    with SemanticMemory(path, session_id="s", embedding_id="v1", dimension=2) as m:
+        with pytest.raises(ValueError, match="integrity"):
+            m.search([1, 2], k=1)
+        assert not m.db.in_transaction
+        assert m.recall(episode="e", message="valid")["content"] == "abc"
+
+
+@pytest.mark.parametrize("assignment", ["role='invalid'", "tool_call=''", "tool_call='   '"])
+def test_corrupt_source_metadata_rejected(tmp_path, assignment):
+    with SemanticMemory(tmp_path / "m.sqlite", session_id="s", embedding_id="v1", dimension=2) as m:
+        add(m)
+        with m.db:
+            m.db.execute("UPDATE sources SET " + assignment)
+        with pytest.raises(ValueError):
+            m.recall(episode="e", message="m")
+        with pytest.raises(ValueError):
+            m.search([1, 2])
+
+
+def test_bounded_top_k_retains_stable_ties_and_validates_discarded_rows(tmp_path):
+    with SemanticMemory(tmp_path / "m.sqlite", session_id="s", embedding_id="v1", dimension=2) as m:
+        for name, vector in [("z", (1, 0)), ("d", (0, 1)), ("c", (1, 0)),
+                             ("b", (1, 0)), ("a", (-1, 0))]:
+            add(m, message=name, vector=vector)
+        expected = ["b", "c", "z", "d", "a"]
+        for k in (1, 2, 3, 5, 8):
+            assert [h["message"] for h in m.search([1, 0], k=k)] == expected[:k]
+        with m.db:
+            m.db.execute("UPDATE vectors SET span_digest='bad' WHERE message='d'")
+        with pytest.raises(ValueError, match="integrity"):
+            m.search([1, 0], k=1)
+        assert not m.db.in_transaction
