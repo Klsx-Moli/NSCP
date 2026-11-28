@@ -1,18 +1,9 @@
 """Offline preview and exact recall for request-only agent compaction."""
 import argparse
 import json
-from pathlib import Path
 
 from agent_context import STRATEGIES, plan_request, recall, verify_request_plan
-
-
-def _messages(path):
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
-    if isinstance(data, dict):
-        data = data.get("messages")
-    if not isinstance(data, list):
-        raise ValueError("Expected a message list")
-    return data
+from context_io import load_messages as _messages
 
 
 def run_cli(argv=None):
@@ -43,6 +34,7 @@ def run_cli(argv=None):
     try:
         source = _messages(args.transcript)
         if args.command == "plan":
+            request = _messages(args.input)
             kwargs = dict(keep_recent=args.keep_recent, strategy=args.strategy,
                           focus_terms=args.focus)
             if args.excerpts:
@@ -64,7 +56,7 @@ def run_cli(argv=None):
                     route = args.excerpts.replace("-", "_")
                     pool = "bounded_all"
                 result = plan_extractive_request(
-                    _messages(args.input), source, args.budget, **kwargs,
+                    request, source, args.budget, **kwargs,
                     preview_reserve=args.preview_reserve, selector=selector,
                     max_model_calls=args.max_model_calls, selector_route=route,
                     selector_pool=pool)
@@ -73,9 +65,9 @@ def run_cli(argv=None):
             else:
                 if args.preview_reserve:
                     raise ValueError("--preview-reserve requires --excerpts")
-                result = plan_request(_messages(args.input), source, args.budget, **kwargs)
+                result = plan_request(request, source, args.budget, **kwargs)
             result.report["verification"] = verify_request_plan(
-                _messages(args.input), source, result, args.budget,
+                request, source, result, args.budget,
                 keep_recent=args.keep_recent, focus_terms=args.focus)
             payload = {"messages": result.messages, "report": result.report}
             code = 0 if result.report["fits_metered_budget"] else 2

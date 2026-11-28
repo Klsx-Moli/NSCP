@@ -280,6 +280,7 @@ class MainWindow(QMainWindow):
         self.header.settings_requested.connect(self._open_settings)
         self.header.help_requested.connect(self._open_help)
         self.header.about_requested.connect(self._open_about)
+        self.header.context_requested.connect(self._open_context_workbench)
         layout.addWidget(self.header)
 
         self.mode_stack = QStackedWidget()
@@ -1342,6 +1343,10 @@ class MainWindow(QMainWindow):
     def _open_help(self) -> None:
         self._switch_to_mode(MODE_EXTREME)
         self._select_page("glosario")
+
+    def _open_context_workbench(self) -> None:
+        from npsc_gui.context_workbench import ContextWorkbench
+        ContextWorkbench(self).exec()
 
     def _open_about(self) -> None:
         dialog = AboutDialog(self, language=str(self.settings.get("language", "es")))

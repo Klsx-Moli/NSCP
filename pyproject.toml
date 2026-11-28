@@ -14,6 +14,7 @@ npsc-agent-context = "npsc_agent_cli:run_cli"
 nscp-resources = "nscp_resources:run_cli"
 nscp-memory = "memory_index:run_cli"
 npsc-gui = "npsc_gui.main:main"
+nscp-context-gui = "npsc_gui.context_workbench:main"
 
 [build-system]
 requires = ["setuptools>=61"]
@@ -23,6 +24,7 @@ build-backend = "setuptools.build_meta"
 package-dir = {"" = "src"}
 py-modules = [
   "agent_context",
+  "context_io",
   "nscp_resources",
   "semantic_memory",
   "memory_index",
