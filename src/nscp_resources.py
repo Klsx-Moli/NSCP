@@ -191,6 +191,8 @@ def run_cli(argv=None):
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("list")
     sub.add_parser("verify")
+    routing = sub.add_parser("plan-route", help="Read-only resource admission and route preview")
+    routing.add_argument("--policy", required=True, type=Path)
     imp = sub.add_parser("import-local")
     imp.add_argument("--from-dir", action="append", required=True)
     imp.add_argument("--model-id", action="append", choices=tuple(CATALOG),
@@ -198,6 +200,18 @@ def run_cli(argv=None):
     imp.add_argument("--apply", action="store_true", help="Without this flag, read-only plan")
     args = parser.parse_args(argv)
     try:
+        if args.command == "plan-route":
+            from context_route_policy import plan_resource_route
+            with args.policy.open("rb") as stream:
+                raw = stream.read(65537)
+            if len(raw) > 65536:
+                raise ValueError("Resource policy exceeds byte limit")
+            policy = json.loads(raw)
+            if not isinstance(policy, dict):
+                raise ValueError("Expected resource policy object")
+            result = plan_resource_route(**policy)
+            print(json.dumps(result, ensure_ascii=False, allow_nan=False, indent=2))
+            return 2 if result["decision"]["route"] in ("ABORT", "RECOVERY") else 0
         root = root_path(args.root)
         if args.command == "import-local":
             rows = plan_import(root, args.from_dir, model_ids=args.model_id)
@@ -209,7 +223,7 @@ def run_cli(argv=None):
             result = inventory(root, verify=args.command == "verify")
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (OSError, ValueError, KeyError) as exc:
+    except (OSError, ValueError, KeyError, TypeError) as exc:
         print(json.dumps({"error": type(exc).__name__, "detail": str(exc)}), file=sys.stderr)
         return 2
 

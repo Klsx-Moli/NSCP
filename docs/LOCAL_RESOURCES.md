@@ -38,3 +38,36 @@ Add --apply only after checking the plan. All files for one model must
 come from one source directory. Weight files may be in native onnx/ or
 flat in the source folder; managed destinations use onnx/. These are
 byte-preserving copies, not hard links to the original source.
+
+
+## Resource-aware routing preview
+
+`nscp-resources plan-route --policy policy.json` accepts a bounded JSON
+object and calls the existing route planner with resource admission. It does
+not require an extras directory. Example synthetic values (bytes, not measured
+hardware or estimates for actual models):
+
+```json
+{
+  "capacity": {"ram_bytes": 1000, "vram_bytes": null},
+  "reserve": {"ram_bytes": 100, "vram_bytes": 0},
+  "costs": {"embedding": {"ram_bytes": 500, "vram_bytes": 0}},
+  "context_tokens": 12000,
+  "request_budget": 8000,
+  "need": "semantic",
+  "health": {"embedding": "ready"},
+  "allow_rerank": false
+}
+```
+
+Capacity means currently available memory, not installed RAM/VRAM. Cost
+means a conservative additional peak estimate including runtime and context
+overheads, not weight size. Null capacity is unknown; a missing cost excludes
+the engine. Zero must be explicitly justified by the caller. Simultaneous
+embedding/reranking is admitted using the sum of incremental bounds; if the
+combined estimate cannot fit, optional reranking is omitted without claiming
+semantic quality. Exit 2 means recovery/abort or invalid input, not success.
+A candidate route is not a successful compression. Health and resource values
+are caller-supplied, not measurements or attestations; there is no atomic
+reservation, live hardware sampler, cross-process lock, model launch or
+automatic Hermes integration in this preview. Revalidate at execution time.

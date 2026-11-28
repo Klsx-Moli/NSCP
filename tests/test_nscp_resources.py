@@ -111,3 +111,28 @@ def test_new_onnx_bundle_targeted_import(tmp_path, mid):
     result = next(m for m in inventory(root)["models"] if m["model_id"] == mid)
     assert result["availability"] == "PRESENT"
     assert result["inference"] == "not_verified"
+
+
+def test_resource_plan_cli_is_read_only_and_reports_unresolved_need(tmp_path, capsys):
+    policy = tmp_path / "policy.json"
+    root = tmp_path / "no-extras"
+    data = {"capacity": {"ram_bytes": 100, "vram_bytes": None},
+            "reserve": {"ram_bytes": 10, "vram_bytes": 0},
+            "costs": {"embedding": {"ram_bytes": 20, "vram_bytes": 1}},
+            "context_tokens": 200, "request_budget": 100,
+            "need": "semantic", "health": {"embedding": "ready"}}
+    policy.write_text(json.dumps(data), encoding="utf-8")
+    args = ["--root", str(root), "plan-route", "--policy", str(policy)]
+    assert run_cli(args) == 2
+    assert json.loads(capsys.readouterr().out)["decision"]["route"] == "RECOVERY"
+    assert not root.exists()
+    data["costs"]["embedding"]["vram_bytes"] = 0
+    policy.write_text(json.dumps(data), encoding="utf-8")
+    assert run_cli(args) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["decision"]["route"] == "EMBEDDING"
+    assert result["execution"] == "not_executed"
+    assert not root.exists()
+    policy.write_text(" " * 65537, encoding="utf-8")
+    assert run_cli(args) == 2
+    assert "byte limit" in capsys.readouterr().err
