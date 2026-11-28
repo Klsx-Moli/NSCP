@@ -94,3 +94,20 @@ def test_root_escape_and_space_guard(tmp_path):
         pytest.skip("symlink permission unavailable")
     with pytest.raises(ValueError, match="escapes root"):
         inventory(root)
+
+
+@pytest.mark.parametrize("mid", ["ctxprune-small-int8", "multilingual-minilm-nli-onnx"])
+def test_new_onnx_bundle_targeted_import(tmp_path, mid):
+    source = tmp_path / "source"
+    source.mkdir()
+    files = model_files(mid)
+    for parts in files:
+        (source / parts[-1]).write_bytes(parts[-1].encode())
+    root = tmp_path / "extras"
+    rows = plan_import(root, [source], model_ids=[mid])
+    assert len(rows) == len(files)
+    assert {row["model_id"] for row in rows} == {mid}
+    apply_import(root, rows, min_free_bytes=0)
+    result = next(m for m in inventory(root)["models"] if m["model_id"] == mid)
+    assert result["availability"] == "PRESENT"
+    assert result["inference"] == "not_verified"

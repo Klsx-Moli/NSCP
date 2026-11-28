@@ -25,3 +25,16 @@ is required. Existing external model stores are not modified.
 
 This is the first deliberately narrow resource-management implementation,
 not yet a downloader, runtime supervisor or full installation lockfile.
+
+
+ITER08 extends the catalog to CTXPrune and multilingual MiniLM NLI.
+Import each complete bundle explicitly from the existing ITER07 directory
+(no new downloads):
+
+    python -m nscp_resources --root ABSOLUTE_EXTRAS import-local --model-id ctxprune-small-int8 --from-dir ABSOLUTE_CTXPRUNE_DIR
+    python -m nscp_resources --root ABSOLUTE_EXTRAS import-local --model-id multilingual-minilm-nli-onnx --from-dir ABSOLUTE_NLI_DIR
+
+Add --apply only after checking the plan. All files for one model must
+come from one source directory. Weight files may be in native onnx/ or
+flat in the source folder; managed destinations use onnx/. These are
+byte-preserving copies, not hard links to the original source.

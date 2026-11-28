@@ -19,8 +19,15 @@ CATALOG = {
     "qwen3-reranker-0.6b-q8": ("reranking", "qwen3-reranker-0.6b-q8_0.gguf"),
     "compactor-qwen3.5-4b-q4": ("compaction", "Compactor-Qwen3.5-4B.Q4_K_M.gguf"),
     "kompress-v2-base-int8": ("extraction", "kompress-int8-wo.onnx"),
+    "ctxprune-small-int8": ("extraction", "model_quantized.onnx"),
+    "multilingual-minilm-nli-onnx": ("nli", "model.onnx"),
 }
 KOMPRESS_FILES = ("config.json", "tokenizer.json", "tokenizer_config.json", "special_tokens_map.json")
+BUNDLE_CONFIGS = {
+    "kompress-v2-base-int8": KOMPRESS_FILES,
+    "ctxprune-small-int8": ("config.json", "tokenizer.json", "tokenizer_config.json"),
+    "multilingual-minilm-nli-onnx": (*KOMPRESS_FILES, "sentencepiece.bpe.model"),
+}
 SCHEMA = "nscp/local-resources/v1"
 
 
@@ -68,8 +75,8 @@ def file_hash(path):
 def model_files(model_id):
     category, filename = CATALOG[model_id]
     base = ("models", category, model_id)
-    if model_id == "kompress-v2-base-int8":
-        return [(*base, "onnx", filename), *[(*base, f) for f in KOMPRESS_FILES]]
+    if model_id in BUNDLE_CONFIGS:
+        return [(*base, "onnx", filename), *[(*base, f) for f in BUNDLE_CONFIGS[model_id]]]
     return [(*base, filename)]
 
 
@@ -94,15 +101,18 @@ def inventory(root, *, verify=False):
     return {"schema": SCHEMA, "models": rows}
 
 
-def plan_import(root, source_dirs):
+def plan_import(root, source_dirs, *, model_ids=None):
     """Search only the supplied directories and the known native ONNX folder."""
     dirs = [Path(p).expanduser().resolve(strict=True) for p in source_dirs]
     if any(not d.is_dir() for d in dirs):
         raise ValueError("Import sources must be directories")
+    selected = list(CATALOG) if model_ids is None else list(model_ids)
+    if len(set(selected)) != len(selected) or any(mid not in CATALOG for mid in selected):
+        raise ValueError("Invalid model selection")
     result = []
-    for mid in CATALOG:
+    for mid in selected:
         paths = model_files(mid)
-        # Kompress is a multi-file bundle: use one explicit source directory,
+        # Multi-file bundles must come from one explicit source directory,
         # never mix tokenizer/config files found in unrelated folders.
         for directory in dirs:
             candidates = []
@@ -183,12 +193,14 @@ def run_cli(argv=None):
     sub.add_parser("verify")
     imp = sub.add_parser("import-local")
     imp.add_argument("--from-dir", action="append", required=True)
+    imp.add_argument("--model-id", action="append", choices=tuple(CATALOG),
+                     help="Limit import to an explicit model, repeatable")
     imp.add_argument("--apply", action="store_true", help="Without this flag, read-only plan")
     args = parser.parse_args(argv)
     try:
         root = root_path(args.root)
         if args.command == "import-local":
-            rows = plan_import(root, args.from_dir)
+            rows = plan_import(root, args.from_dir, model_ids=args.model_id)
             if args.apply:
                 result = apply_import(root, rows)
             else:
