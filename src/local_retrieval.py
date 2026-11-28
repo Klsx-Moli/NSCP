@@ -93,6 +93,7 @@ class SemanticSpanSelector:
             raise ValueError("Expected retrieval configuration")
         self.config = config
         self.requests = 0
+        self.last_selection = None
 
     def _call(self, port, path, payload):
         if self.requests >= self.config.max_requests:
@@ -101,12 +102,30 @@ class SemanticSpanSelector:
         return _post(port, path, payload, self.config.timeout)
 
     def __call__(self, query, spans):
+        self.last_selection = None
         if not isinstance(query, str) or not query.strip() or not 1 <= len(spans) <= MAX_SPANS:
             raise ValueError("Invalid or oversized semantic candidate pool")
         ids = [s.id for s in spans]
         if any(type(i) is not int for i in ids) or len(set(ids)) != len(ids):
             raise ValueError("Invalid span identity")
-        items = [self.config.query_prefix + query] + [s.text for s in spans]
+        # Exact text deduplication is local to this single source result.
+        # Keep the first occurrence and account for every original offset.
+        # Never merge separate messages, sessions, or historical events.
+        unique = {}
+        groups = {}
+        for span in spans:
+            if not isinstance(span.text, str):
+                raise ValueError("Invalid span text")
+            if span.text not in unique:
+                unique[span.text] = span
+                groups[span.id] = []
+            groups[unique[span.text].id].append(span.id)
+        representatives = list(unique.values())
+        self.last_selection = {"offered_occurrences": len(spans),
+                               "unique_texts": len(representatives),
+                               "duplicate_occurrences": len(spans) - len(representatives),
+                               "occurrence_groups": groups}
+        items = [self.config.query_prefix + query] + [s.text for s in representatives]
         if any(not isinstance(s, str) or not s or len(s.encode("utf-8")) > MAX_ITEM_BYTES for s in items):
             raise ValueError("Oversized local retrieval input")
         needed = (len(items) + MAX_BATCH - 1) // MAX_BATCH + int(self.config.reranker_port is not None)
@@ -118,7 +137,7 @@ class SemanticSpanSelector:
             response = self._call(self.config.embedding_port, "/v1/embeddings", {"input": batch})
             vectors.extend(embedding_results(response, len(batch), self.config.dimension))
         q = vectors[0]
-        ranked = sorted(zip(spans, vectors[1:]), key=lambda pair: (
+        ranked = sorted(zip(representatives, vectors[1:]), key=lambda pair: (
             -math.fsum(a * b for a, b in zip(q, pair[1])), pair[0].id))
         pool = [s for s, _ in ranked[:16]]
         if self.config.reranker_port is not None:

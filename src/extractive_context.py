@@ -214,6 +214,7 @@ def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
                   selector_attempts=[], skipped_sources=0, excerpt_tokens_added=0,
                   requested_selection_route=selector_route if selector is not None else "bm25",
                   selector_pool_policy=selector_pool,
+                  duplicate_preview_spans_skipped=0,
                   semantic_equivalence="not_verified" if base.report["references"] else "unchanged")
     query = _current_query(messages)
     report["query_available"] = isinstance(query, str) and 0 < len(query) <= 4096
@@ -250,18 +251,24 @@ def plan_extractive_request(messages, transcript, budget, *, keep_recent=8,
                         ids = _validate_ids(selector(query, tuple(pool)), {s.id for s in pool})
                         route = selector_route
                         attempt.update(outcome="selected", selected_ids=list(ids))
+                        telemetry = getattr(selector, "last_selection", None)
+                        if isinstance(telemetry, dict):
+                            from copy import deepcopy
+                            attempt["selector_telemetry"] = deepcopy(telemetry)
                     except Exception as exc:
                         report["selector_failures"] += 1
                         route = "bm25_fallback"
                         attempt.update(outcome="failed", error_type=type(exc).__name__)
                     report["selector_attempts"].append(attempt)
+            diverse = _diverse_ids(spans, ids)
+            report["duplicate_preview_spans_skipped"] += len(ids) - len(diverse)
             chosen = []
-            for sid in ids:
+            for sid in diverse:
                 span = spans[sid]
                 proposed = chosen + [span]
                 row["content"] = _render(marker, proposed)
                 measured = _estimate(out)
-                if measured <= budget:
+                if measured <= budget and len(_json(row).encode("utf-8")) < len(_json(old).encode("utf-8")):
                     chosen = proposed
                     after = measured
                 else:

@@ -25,3 +25,9 @@ No calibrated abstention policy or semantic equivalence claim. Rankings
 are only candidate previews; original source remains available. Context
 budget remains a UTF-8 heuristic. Not wired into Hermes or automatic
 memory indexing yet.
+
+ITER09: identical text within a single archived result is scored once. All
+occurrence IDs remain in telemetry, and the canonical source remains intact.
+Preview selection also removes duplicate text returned by custom selectors.
+A preview cannot enlarge its individual source row. This is presentation
+and inference deduplication, not event deduplication or semantic equivalence.

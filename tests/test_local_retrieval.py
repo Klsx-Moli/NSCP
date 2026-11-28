@@ -94,3 +94,35 @@ def test_oversize_semantic_pool_is_not_silently_sampled():
                                      selector_pool="bounded_all")
     assert result.report["selector_calls"] == 0
     assert result.report["selector_attempts"][0]["outcome"] == "pool_limit"
+
+
+
+def test_exact_duplicate_occurrences_cost_one_embedding(monkeypatch):
+    spans = [Span(0, 0, 3, "abc"), Span(1, 3, 6, "abc"),
+             Span(2, 6, 9, "def"), Span(3, 9, 12, "abc")]
+    calls = []
+
+    def post(port, path, data, timeout):
+        calls.append(data["input"])
+        return {"data": [{"index": i, "embedding": [1, 0]}
+                         for i in range(len(data["input"]))]}
+
+    monkeypatch.setattr("local_retrieval._post", post)
+    selector = SemanticSpanSelector(RetrievalConfig(8081, dimension=2, max_requests=1))
+    assert selector("query", spans) == [0, 2]
+    assert calls == [["query", "abc", "def"]]
+    assert selector.last_selection["occurrence_groups"] == {0: [0, 1, 3], 2: [2]}
+    assert selector.last_selection["duplicate_occurrences"] == 2
+
+
+def test_preview_deduplicates_even_if_selector_returns_repeated_text():
+    rows = history()
+    rows[4]["content"] = "a" * 384 * 20 + "unique critical evidence " + "b" * 300
+    original = rows[4]["content"]
+    result = plan_extractive_request(rows, rows, 1300, keep_recent=1,
+        selector=lambda query, spans: [0, 1, 2, len(spans) - 1],
+        selector_route="embedding", selector_pool="bounded_all")
+    assert result.report["duplicate_preview_spans_skipped"] == 2
+    assert len(result.report["excerpts"][0]["spans"]) == 2
+    assert rows[4]["content"] == original
+    assert "unique critical evidence" in result.messages[4]["content"]
