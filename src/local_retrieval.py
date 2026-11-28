@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import math
+import time
 import urllib.request
 from dataclasses import dataclass
 
@@ -52,6 +53,8 @@ class RetrievalConfig:
     query_prefix: str = ""
     timeout: float = 60.0
     max_requests: int = 24
+    total_timeout: float = 120.0
+    min_similarity: float | None = None
 
     def __post_init__(self):
         for port in (self.embedding_port, self.reranker_port):
@@ -65,7 +68,10 @@ class RetrievalConfig:
                 or not isinstance(self.query_prefix, str)
                 or len(self.query_prefix.encode("utf-8")) > 512
                 or type(self.timeout) not in (int, float) or not 0 < self.timeout <= 180
-                or type(self.max_requests) is not int or not 1 <= self.max_requests <= 128):
+                or type(self.max_requests) is not int or not 1 <= self.max_requests <= 128
+                or type(self.total_timeout) not in (int, float) or not 0 < self.total_timeout <= 600
+                or (self.min_similarity is not None and (type(self.min_similarity) not in (int, float)
+                    or not -1 <= self.min_similarity <= 1))):
             raise ValueError("Invalid retrieval policy")
 
 
@@ -98,12 +104,22 @@ class SemanticSpanSelector:
         self.config = config
         self.requests = 0
         self.last_selection = None
+        self._started = None
 
     def _call(self, port, path, payload):
         if self.requests >= self.config.max_requests:
             raise ValueError("Local retrieval request limit")
+        now = time.monotonic()
+        if self._started is None:
+            self._started = now
+        remaining = self.config.total_timeout - (now - self._started)
+        if remaining <= 0:
+            raise TimeoutError("Local retrieval time budget exhausted")
         self.requests += 1
-        return _post(port, path, payload, self.config.timeout)
+        result = _post(port, path, payload, min(self.config.timeout, remaining))
+        if time.monotonic() - self._started > self.config.total_timeout:
+            raise TimeoutError("Local retrieval time budget exhausted")
+        return result
 
     def embed(self, items):
         """Bounded explicit embedding operation for session-local memory."""
@@ -152,9 +168,17 @@ class SemanticSpanSelector:
             raise ValueError("Local retrieval request budget insufficient")
         vectors = self.embed(items)
         q = vectors[0]
-        ranked = sorted(zip(representatives, vectors[1:]), key=lambda pair: (
-            -math.fsum(a * b for a, b in zip(q, pair[1])), pair[0].id))
-        pool = [s for s, _ in ranked[:16]]
+        scored = [(s, max(-1.0, min(1.0, math.fsum(a * b for a, b in zip(q, v)))))
+                  for s, v in zip(representatives, vectors[1:])]
+        ranked = sorted(scored, key=lambda pair: (-pair[1], pair[0].id))
+        threshold = self.config.min_similarity
+        self.last_selection.update(similarity_scores=[{"id": s.id, "score": score} for s, score in ranked],
+                                   experimental_min_similarity=threshold,
+                                   answerability="unknown")
+        pool = [s for s, score in ranked if threshold is None or score >= threshold][:16]
+        if not pool:
+            self.last_selection["abstention"] = "experimental_similarity_cutoff"
+            return []
         if self.config.reranker_port is not None:
             response = self._call(self.config.reranker_port, "/rerank",
                                   {"query": query, "documents": [s.text for s in pool]})

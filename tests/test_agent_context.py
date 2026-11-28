@@ -231,3 +231,12 @@ def test_independent_gate_detects_tampering_and_source_loss():
         report["fits_metered_budget"] = report["tokens_after"] <= 4500
         with pytest.raises(ValueError):
             verify_request_plan(rows, rows, RequestPlan(new, report), 4500, keep_recent=1)
+
+
+
+def test_context_envelope_reserves_and_rejects_nonpositive_input():
+    from agent_context import available_request_budget
+    assert available_request_budget(8192, output=1024, tools=512, framing=128) == 6528
+    for kwargs in ({"output": 8192}, {"output": True}, {"output": 0}, {"output": 1, "tools": -1}):
+        with pytest.raises(ValueError):
+            available_request_budget(8192, **kwargs)

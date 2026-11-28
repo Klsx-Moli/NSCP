@@ -13,6 +13,7 @@ from copy import deepcopy
 
 from agent.context_compressor import ContextCompressor
 
+from .agent_context import available_request_budget
 from .local_summary import LocalSummaryConfig, LocalSummaryError, complete_summary
 from .request_engine import NSCPContextEngine
 
@@ -90,7 +91,7 @@ def check_host_contract():
 
 class NSCPHybridContextEngine(ContextCompressor):
     def __init__(self, *, config, output_reserve, route, local_config=None, selection_mode="observe",
-                 selection_route="references", retrieval=None, max_model_calls=1):
+                 selection_route="references", retrieval=None, max_model_calls=1, tool_reserve=0):
         if route not in ("native", "local"):
             raise ValueError("Explicit summary route must be native or local")
         check_host_contract()
@@ -110,7 +111,10 @@ class NSCPHybridContextEngine(ContextCompressor):
         self._nscp_local = local_config or LocalSummaryConfig()
         self._nscp_summary_report = None
         self._nscp_init_config = {"compression": deepcopy(compression)}
+        if type(tool_reserve) is not int or tool_reserve < 0:
+            raise ValueError("Invalid explicit tool/framing reserve")
         self._nscp_output_reserve = output_reserve
+        self._nscp_tool_reserve = tool_reserve
         self._nscp_selection = NSCPContextEngine(mode=selection_mode, selection_route=selection_route,
                                                 retrieval=retrieval, max_model_calls=max_model_calls)
         # Host initializes the actual model/endpoint via update_model immediately
@@ -128,7 +132,8 @@ class NSCPHybridContextEngine(ContextCompressor):
                           selection_mode=self._nscp_selection.mode,
                           selection_route=self._nscp_selection.selection_route,
                           retrieval=self._nscp_selection.retrieval,
-                          max_model_calls=self._nscp_selection.max_model_calls)
+                          max_model_calls=self._nscp_selection.max_model_calls,
+                          tool_reserve=self._nscp_tool_reserve)
 
     def update_model(self, model, context_length, base_url="", api_key="", provider="",
                      api_mode="", max_tokens=None):
@@ -164,13 +169,15 @@ class NSCPHybridContextEngine(ContextCompressor):
         # are inherited, not replaced by NSCP's request-only optimization.
         length = budget_tokens or self.context_length
         reserve = self.max_tokens or 0
-        if type(length) is not int or length <= reserve:
+        try:
+            input_budget = available_request_budget(length, output=reserve, tools=self._nscp_tool_reserve)
+        except ValueError:
             return None
         # Use a reduced window for request planning; native threshold/output
         # accounting remains in ContextCompressor.
         return self._nscp_selection.select_context(
             request_messages, conversation_messages=conversation_messages,
-            incoming_message=incoming_message, budget_tokens=length - reserve)
+            incoming_message=incoming_message, budget_tokens=input_budget)
 
     def get_tool_schemas(self):
         schemas = list(super().get_tool_schemas())
@@ -244,6 +251,7 @@ class NSCPHybridContextEngine(ContextCompressor):
         status.update(nscp_hybrid=True, nscp_summary_route=self._nscp_route,
                       nscp_summary_report=deepcopy(self._nscp_summary_report),
                       nscp_request=self._nscp_selection.get_status(),
+                      nscp_tool_reserve=self._nscp_tool_reserve,
                       nscp_host_reference=REVIEWED_HERMES_COMMIT,
                       nscp_host_runtime_verified=False)
         return status
@@ -260,7 +268,7 @@ def register(ctx):
         raise RuntimeError("NSCP_HYBRID_POLICY must explicitly select native or local summary")
     policy = json.loads(raw)
     allowed = {"route", "output_reserve", "local", "selection_mode", "selection_route",
-               "retrieval", "max_model_calls"}
+               "retrieval", "max_model_calls", "tool_reserve"}
     if not isinstance(policy, dict) or set(policy) - allowed:
         raise ValueError("Invalid NSCP hybrid policy")
     local = policy.get("local", {})
@@ -277,4 +285,4 @@ def register(ctx):
         route=policy.get("route"), local_config=LocalSummaryConfig(**local),
         selection_mode=policy.get("selection_mode", "observe"),
         selection_route=policy.get("selection_route", "references"), retrieval=retrieval,
-        max_model_calls=policy.get("max_model_calls", 1)))
+        max_model_calls=policy.get("max_model_calls", 1), tool_reserve=policy.get("tool_reserve", 0)))

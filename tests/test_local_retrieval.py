@@ -126,3 +126,35 @@ def test_preview_deduplicates_even_if_selector_returns_repeated_text():
     assert len(result.report["excerpts"][0]["spans"]) == 2
     assert rows[4]["content"] == original
     assert "unique critical evidence" in result.messages[4]["content"]
+
+
+
+def test_explicit_similarity_cutoff_abstains_without_rerank(monkeypatch):
+    calls = []
+    def post(port, path, payload, timeout):
+        calls.append(path)
+        return {"data": [{"index": 0, "embedding": [1, 0]},
+                         {"index": 1, "embedding": [0, 1]}]}
+    monkeypatch.setattr("local_retrieval._post", post)
+    selector = SemanticSpanSelector(RetrievalConfig(8081, 8082, dimension=2, min_similarity=0.5))
+    assert selector("query", [Span(0, 0, 3, "abc")]) == []
+    assert calls == ["/v1/embeddings"]
+    assert selector.last_selection["answerability"] == "unknown"
+    assert selector.last_selection["abstention"] == "experimental_similarity_cutoff"
+
+
+def test_total_time_budget_stops_additional_inference(monkeypatch):
+    now = [0.0]
+    monkeypatch.setattr("local_retrieval.time.monotonic", lambda: now[0])
+    def post(port, path, payload, timeout):
+        assert timeout <= 1.0
+        now[0] += 2
+        return {"data": [{"index": i, "embedding": [1, 0]}
+                         for i in range(len(payload["input"]))]}
+    monkeypatch.setattr("local_retrieval._post", post)
+    selector = SemanticSpanSelector(RetrievalConfig(8081, dimension=2, total_timeout=1))
+    with pytest.raises(TimeoutError):
+        selector("query", [Span(0, 0, 3, "abc")])
+    with pytest.raises(TimeoutError):
+        selector("query", [Span(0, 0, 3, "abc")])
+    assert selector.requests == 1

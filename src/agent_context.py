@@ -339,3 +339,18 @@ def verify_request_plan(messages, transcript, plan, budget, *, keep_recent=8,
     return {"status": "structurally_verified", "changed_rows": len(refs),
             "exact_excerpts": excerpts, "fits_metered_budget": after <= budget,
             "semantic_equivalence": "not_verified" if refs else "unchanged"}
+
+
+def available_request_budget(window, *, output, tools=0, framing=0):
+    """Explicit input envelope; caller supplies counts or estimates.
+
+    Never silently ignore an output/tool/framing reserve that exceeds the
+    declared window. This does not convert a heuristic into exact tokens.
+    """
+    values = (window, output, tools, framing)
+    if any(type(x) is not int or x < 0 for x in values) or window <= 0 or output <= 0:
+        raise ValueError("Invalid context envelope")
+    result = window - output - tools - framing
+    if result <= 0:
+        raise ValueError("Context envelope leaves no input budget")
+    return result

@@ -2,7 +2,7 @@
 import argparse
 import json
 
-from agent_context import STRATEGIES, plan_request, recall, verify_request_plan
+from agent_context import STRATEGIES, available_request_budget, plan_request, recall, verify_request_plan
 from context_io import load_messages as _messages
 
 
@@ -12,7 +12,12 @@ def run_cli(argv=None):
     plan = sub.add_parser("plan")
     plan.add_argument("--input", required=True)
     plan.add_argument("--transcript", required=True)
-    plan.add_argument("--budget", type=int, required=True)
+    budget_args = plan.add_mutually_exclusive_group(required=True)
+    budget_args.add_argument("--budget", type=int, help="Already reserved input budget")
+    budget_args.add_argument("--window", type=int, help="Full context window; requires output reserve")
+    plan.add_argument("--reserve-output", type=int)
+    plan.add_argument("--reserve-tools", type=int)
+    plan.add_argument("--reserve-framing", type=int)
     plan.add_argument("--keep-recent", type=int, default=8)
     plan.add_argument("--strategy", choices=STRATEGIES, default="adaptive")
     plan.add_argument("--focus", action="append", default=None, help="Explicit protected identifier (repeatable)")
@@ -25,6 +30,8 @@ def run_cli(argv=None):
     plan.add_argument("--embedding-port", type=int)
     plan.add_argument("--reranker-port", type=int)
     plan.add_argument("--max-local-requests", type=int, default=24)
+    plan.add_argument("--local-total-timeout", type=float, default=120.0)
+    plan.add_argument("--min-similarity", type=float, help="Experimental uncalibrated cosine cutoff")
     recover = sub.add_parser("recall")
     recover.add_argument("--transcript", required=True)
     recover.add_argument("--reference", required=True)
@@ -35,6 +42,16 @@ def run_cli(argv=None):
         source = _messages(args.transcript)
         if args.command == "plan":
             request = _messages(args.input)
+            envelope = None
+            if args.window is not None:
+                envelope = {"window": args.window, "output": args.reserve_output,
+                            "tools": args.reserve_tools if args.reserve_tools is not None else 0,
+                            "framing": args.reserve_framing if args.reserve_framing is not None else 0}
+                args.budget = available_request_budget(**envelope)
+            elif any(x is not None for x in (args.reserve_output, args.reserve_tools, args.reserve_framing)):
+                raise ValueError("Reserves require --window")
+            if args.min_similarity is not None and args.excerpts not in ("embedding", "embedding-rerank"):
+                raise ValueError("Similarity cutoff requires embedding selection")
             kwargs = dict(keep_recent=args.keep_recent, strategy=args.strategy,
                           focus_terms=args.focus)
             if args.excerpts:
@@ -52,7 +69,8 @@ def run_cli(argv=None):
                     selector = SemanticSpanSelector(RetrievalConfig(
                         embedding_port=args.embedding_port,
                         reranker_port=args.reranker_port if args.excerpts == "embedding-rerank" else None,
-                        max_requests=args.max_local_requests))
+                        max_requests=args.max_local_requests, total_timeout=args.local_total_timeout,
+                        min_similarity=args.min_similarity))
                     route = args.excerpts.replace("-", "_")
                     pool = "bounded_all"
                 result = plan_extractive_request(
@@ -69,6 +87,8 @@ def run_cli(argv=None):
             result.report["verification"] = verify_request_plan(
                 request, source, result, args.budget,
                 keep_recent=args.keep_recent, focus_terms=args.focus)
+            if envelope is not None:
+                result.report["context_envelope"] = envelope
             payload = {"messages": result.messages, "report": result.report}
             code = 0 if result.report["fits_metered_budget"] else 2
         else:

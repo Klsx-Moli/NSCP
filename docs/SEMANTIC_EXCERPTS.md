@@ -36,3 +36,13 @@ CLI and Hermes request adapter now require an independent structural
 verification before publishing the plan. The gate checks source existence,
 protected message lineage, metadata, exact markers, exact excerpt offsets,
 reference multiplicity and measured budget. It cannot certify semantics.
+
+Budget envelope: CLI accepts either an already-reserved --budget or
+--window with explicit --reserve-output and optional --reserve-tools and
+--reserve-framing. The hybrid accepts an explicit tool_reserve. Counts
+remain caller estimates unless measured for the actual target request.
+Local semantic inference has a shared time and request limit; socket timeouts
+are not a hard OS-level cancellation guarantee. Optional --min-similarity
+is an experimental uncalibrated cosine cutoff. It can return no excerpts;
+raw scores are retained, answerability remains UNKNOWN, and the default
+route does not use a threshold. Calibrate on separate data before adoption.
