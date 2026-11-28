@@ -46,3 +46,9 @@ Fallido: primer pytest por permisos del temp dir del sistema (no código); NLI 3
 Pendiente revisión remota: atribución corregida de scores, instrucciones Kompress/CTXPrune,
 interpretación de offload solicitado vs VRAM medida.
 Autorización requerida: integración en producto (NO ejecutada).
+
+REMOTE REVIEW 2026-11-28T05:52:00Z
+- Read ITER07 original benchmark rows and scripts; independently recomputed ranks and metrics. T012 accepted within saved-evidence scope only.
+- CTXPrune smoke applied sigmoid to the class-1 logit; upstream uses two-class softmax. New local_onnx adapter and benchmark are ready for real inference tests. NLI 3/6 is diagnostic only.
+- New feature candidate 5fbdd030ec5571039159534a413ff8b44fe3dc45: ONNX exact previews, semantic local CLI excerpts, explicit authorization event resolver, NLI diagnostic, two additional model bundles and one local runner.
+- T013: import existing CTXPrune/NLI bundles into extras. T014: run tools/run_iter08_local.py using isolated ONNX Python. Do not rewrite tests or launch new broad campaign. No downloads, main merge, production Hermes changes, or skills changes.

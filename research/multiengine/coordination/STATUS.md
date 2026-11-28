@@ -21,3 +21,5 @@ UPDATE 2026-11-28T05:28:56.834521+00:00: ITER07 executed on isolated validation 
 Tests 41 passed/1 skipped; 4 managed resources present; corrected benchmark
 complete with no errors; four new-engine smoke tests executed.
 main and feature/context-compactor untouched. No new campaign started.
+
+REMOTE REVIEW 2026-11-28T05:52:00Z: T012 ACCEPTED for replayed index attribution and metric arithmetic only. 270 rows, 135 rerank rows, 44 nonempty rerank calls; 43 change rank and 43 old zip assignments would change top4. No metric discrepancies. All routes return candidates on both no-answer queries. ITER05 rerank ranking comparison superseded. Feature candidate 5fbdd030ec5571039159534a413ff8b44fe3dc45; local ITER08 runner prepared. T013/T014 pending; no new downloads needed. Main unchanged.

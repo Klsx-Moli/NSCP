@@ -1,28 +1,35 @@
 {
-  "updated_at": "2026-11-28T05:28:56.834521+00:00",
+  "updated_at": "2026-11-28T05:52:00Z",
   "branch": "research/multiengine",
   "base_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
-  "phase": "ITER07_LOCAL_EXECUTION_TESTED",
-  "status": "TESTED",
+  "phase": "ITER07_REMOTE_REVIEW_ITER08_PREPARED",
+  "status": "READY_FOR_REVIEW",
   "verified": {
     "embedding": "VERIFIED_BY_EXECUTOR",
     "reranker": "VERIFIED_BY_EXECUTOR",
     "compactor": "VERIFIED_BY_EXECUTOR",
     "memory": 12,
     "router": 17,
-    "differential_hard_selection": 1.0,
+    "differential_hard_selection": 1,
     "vram_offload_proxy": "VERIFIED_BY_EXECUTOR_PROXY",
     "iter07_tests": "41 passed, 1 skipped",
     "iter07_resources": "4 managed models PRESENT, 8 SHA256 verified",
     "iter07_benchmark": "complete=true, no errors, ngl_requested=99",
-    "iter07_smoke": "4 engines executed; NLI 3/6 labels"
+    "iter07_smoke": "4 engines executed; NLI 3/6 labels",
+    "iter07_rerank_attribution": "VERIFIED_BY_ME: 270 records, 135 rerank rows, no metric discrepancies",
+    "iter05_rerank": "SUPERSEDED: positional mapping defect"
   },
   "not_executed": [
     "ITER06",
-    "routes H/I/J"
+    "routes H/I/J",
+    "ITER08 actual ONNX benchmark and semantic preview",
+    "full production Hermes integration",
+    "calibrated abstention"
   ],
   "next": [
-    "remote audit of corrected score attribution (T012)",
-    "no new campaign until remote review"
-  ]
+    "T013 targeted import existing local bundles",
+    "T014 prepared local runner",
+    "review latest feature CI"
+  ],
+  "feature_candidate_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45"
 }

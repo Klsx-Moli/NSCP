@@ -23,9 +23,11 @@
     "priority": "high",
     "source_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
     "evidence": "prototypes/memory/results.json 12/12",
-    "blockers": [],
-    "next_action": "reproduce DB checks after sanitized-path substitution",
-    "updated_at": "2026-11-28T02:21:14.001253+00:00"
+    "blockers": [
+      "Static review found unscoped recall, dot product named cosine, and embedding identity collision; replacement semantic_memory.py in feature. Original prototype not certified."
+    ],
+    "next_action": "review replacement contracts and actual integration; do not promote original prototype",
+    "updated_at": "2026-11-28T05:52:00Z"
   },
   {
     "task_id": "T003",
@@ -38,24 +40,28 @@
     "priority": "medium",
     "source_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
     "evidence": "prototypes/router/results.json 17/17",
-    "blockers": [],
-    "next_action": "challenge rule ordering and RECOVERY semantics",
-    "updated_at": "2026-11-28T02:21:14.001253+00:00"
+    "blockers": [
+      "Static review found default readiness and unhealthy routes; replacement context_route_policy.py in feature. Original prototype not certified."
+    ],
+    "next_action": "review replacement contracts and actual integration; do not promote original prototype",
+    "updated_at": "2026-11-28T05:52:00Z"
   },
   {
     "task_id": "T004",
     "title": "Reconcile hard differential: BM25 vs embedding vs RRF",
     "owner": "remote-agent",
-    "status": "READY_FOR_REVIEW",
+    "status": "SUPERSEDED",
     "dependencies": [
       "T001"
     ],
     "priority": "high",
     "source_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
     "evidence": "MULTIENGINE_DIFFERENTIAL_HARD.json",
-    "blockers": [],
-    "next_action": "confirm preregistered gold labels independently",
-    "updated_at": "2026-11-28T02:21:14.001253+00:00"
+    "blockers": [
+      "ITER05 rerank score attribution was positional and raw indices not retained"
+    ],
+    "next_action": "ITER07 raw index replay accepted in T012; old comparative rerank rankings not accepted",
+    "updated_at": "2026-11-28T05:52:00Z"
   },
   {
     "task_id": "T005",
@@ -160,15 +166,47 @@
     "task_id": "T012",
     "title": "Audit corrected reranker attribution",
     "owner": "remote-agent",
-    "status": "READY_FOR_REVIEW",
+    "status": "ACCEPTED",
     "dependencies": [
       "T010"
     ],
     "priority": "high",
     "source_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
-    "evidence": "embedding_rerank@4 top1 0.923, rrf_rerank@4 recall 1.0",
+    "evidence": "coordination/ITER07_REMOTE_REVIEW.md; iterations/ITER07/benchmark/results.json",
+    "blockers": [
+      "acceptance limited to saved score attribution and metric replay, not model quality or production integration"
+    ],
+    "next_action": "use corrected parser; evaluate abstention and larger independent corpus separately",
+    "updated_at": "2026-11-28T05:52:00Z"
+  },
+  {
+    "task_id": "T013",
+    "title": "Import existing CTXPrune and NLI bundles into shared extras",
+    "owner": "hermes-local",
+    "status": "PENDING",
+    "dependencies": [
+      "T009"
+    ],
+    "priority": "high",
+    "source_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45",
+    "evidence": "docs/LOCAL_RESOURCES.md in feature at 5fbdd030ec5571039159534a413ff8b44fe3dc45",
     "blockers": [],
-    "next_action": "confirm evaluator interpretation",
-    "updated_at": "2026-11-28T05:28:56.834521+00:00"
+    "next_action": "targeted import plan, apply, verify; no new downloads",
+    "updated_at": "2026-11-28T05:52:00Z"
+  },
+  {
+    "task_id": "T014",
+    "title": "Execute prepared ITER08 local runner",
+    "owner": "hermes-local",
+    "status": "PENDING",
+    "dependencies": [
+      "T013"
+    ],
+    "priority": "high",
+    "source_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45",
+    "evidence": "tools/run_iter08_local.py in feature at 5fbdd030ec5571039159534a413ff8b44fe3dc45",
+    "blockers": [],
+    "next_action": "use isolated ONNX Python; publish sanitized result JSON and logs",
+    "updated_at": "2026-11-28T05:52:00Z"
   }
 ]
