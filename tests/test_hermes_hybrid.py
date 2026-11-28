@@ -210,6 +210,7 @@ def test_hybrid_observe_keeps_native_and_experimental_scopes_recall(hybrid):
     assert engine.select_context(rows) is None
     assert engine.get_status()["nscp_request"]["nscp_last_plan"]["disposition"] == "observe_only"
     engine = build(plugin, route="native", mode="experimental", config=cfg)
+    engine.get_tool_schemas()
     engine.update_model("main", 8192)
     engine.bind_session_state(None, "s1", persistence=store)
     assert engine.select_context(rows) is not None
@@ -258,3 +259,40 @@ def test_registration_requires_explicit_policy(hybrid, monkeypatch):
     monkeypatch.setenv("HERMES_PLUGIN_HOST_PROCESS", "1")
     with pytest.raises(RuntimeError, match="in-process"):
         plugin.register(ctx)
+
+
+
+def test_hybrid_bm25_preview_and_observe_never_invokes_selector(hybrid, monkeypatch):
+    plugin, _, dest = hybrid
+    rows = transcript()
+    rows[4]["content"] += " Unique answer token."
+    for i in range(15):
+        rows.extend([{"role": "user", "content": f"question {i}"},
+                     {"role": "assistant", "content": "answer"}])
+    rows.append({"role": "user", "content": "Unique answer?"})
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows]))
+    cfg = {"compression": {"protect_last_n": 8, "threshold": 0.75}}
+    engine = plugin.NSCPHybridContextEngine(config=cfg, output_reserve=2048, route="native",
+                                             selection_mode="experimental", selection_route="bm25")
+    engine.get_tool_schemas()
+    engine.update_model("main", 8192)
+    engine.bind_session_state(None, "s", persistence=store)
+    result = engine.select_context(rows)
+    assert result is not None
+    assert "Unique answer token." in result[4]["content"]
+    report = engine.get_status()["nscp_request"]["nscp_last_plan"]
+    assert report["verification"]["status"] == "structurally_verified"
+    assert (dest / "local_retrieval.py").is_file()
+    from importlib import import_module
+    retrieval = import_module(plugin.__name__ + ".local_retrieval")
+    def forbidden(*args):
+        pytest.fail("observe must not send history to a model")
+    monkeypatch.setattr(retrieval, "_post", forbidden)
+    observed = plugin.NSCPHybridContextEngine(config=cfg, output_reserve=2048, route="native",
+        selection_mode="observe", selection_route="embedding",
+        retrieval=retrieval.RetrievalConfig(18101))
+    observed.update_model("main", 8192)
+    observed.bind_session_state(None, "s", persistence=store)
+    assert observed.select_context(rows) is None
+    assert observed.get_status()["nscp_request"]["nscp_last_plan"]["disposition"] == "observe_only"

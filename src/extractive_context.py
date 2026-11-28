@@ -13,8 +13,12 @@ import re
 from collections import Counter
 from dataclasses import dataclass
 
-from agent_context import MARKER, PREVIEW_MARKER, _estimate, _ref, plan_request, RequestPlan
-from local_summary import LocalSummaryConfig, complete_summary
+if __package__:
+    from .agent_context import MARKER, PREVIEW_MARKER, _estimate, _ref, plan_request, RequestPlan
+    from .local_summary import LocalSummaryConfig, complete_summary
+else:
+    from agent_context import MARKER, PREVIEW_MARKER, _estimate, _ref, plan_request, RequestPlan
+    from local_summary import LocalSummaryConfig, complete_summary
 
 MAX_SOURCE_CHARS = 131072
 MAX_CHUNKS = 512

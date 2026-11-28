@@ -20,9 +20,11 @@ def install(hermes_home: Path, engine=PLUGIN) -> Path:
         "plugin.yaml": (source / "plugin.yaml").read_bytes(),
         "agent_context.py": (ROOT / "src" / "agent_context.py").read_bytes(),
     }
+    for module in ("local_summary", "extractive_context", "local_retrieval",
+                   "semantic_memory", "semantic_ranking"):
+        files[module + ".py"] = (ROOT / "src" / (module + ".py")).read_bytes()
     if engine == "nscp_hybrid":
         files["request_engine.py"] = (ROOT / "integrations" / "hermes" / PLUGIN / "__init__.py").read_bytes()
-        files["local_summary.py"] = (ROOT / "src" / "local_summary.py").read_bytes()
     plugins = hermes_home / "plugins"
     plugins.mkdir(parents=True, exist_ok=True)
     dest = plugins / engine

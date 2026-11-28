@@ -11,8 +11,12 @@ import math
 import urllib.request
 from dataclasses import dataclass
 
-from semantic_memory import _vector
-from semantic_ranking import rerank_results
+if __package__:
+    from .semantic_memory import _vector
+    from .semantic_ranking import rerank_results
+else:
+    from semantic_memory import _vector
+    from semantic_ranking import rerank_results
 
 MAX_SPANS = 64
 MAX_BATCH = 4

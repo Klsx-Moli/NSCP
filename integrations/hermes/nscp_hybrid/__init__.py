@@ -89,7 +89,8 @@ def check_host_contract():
 
 
 class NSCPHybridContextEngine(ContextCompressor):
-    def __init__(self, *, config, output_reserve, route, local_config=None, selection_mode="observe"):
+    def __init__(self, *, config, output_reserve, route, local_config=None, selection_mode="observe",
+                 selection_route="references", retrieval=None, max_model_calls=1):
         if route not in ("native", "local"):
             raise ValueError("Explicit summary route must be native or local")
         check_host_contract()
@@ -110,7 +111,8 @@ class NSCPHybridContextEngine(ContextCompressor):
         self._nscp_summary_report = None
         self._nscp_init_config = {"compression": deepcopy(compression)}
         self._nscp_output_reserve = output_reserve
-        self._nscp_selection = NSCPContextEngine(mode=selection_mode)
+        self._nscp_selection = NSCPContextEngine(mode=selection_mode, selection_route=selection_route,
+                                                retrieval=retrieval, max_model_calls=max_model_calls)
         # Host initializes the actual model/endpoint via update_model immediately
         # after selecting the plugin. Native construction defers metadata lookup.
         super().__init__(model="", **options)
@@ -123,7 +125,10 @@ class NSCPHybridContextEngine(ContextCompressor):
         return type(self)(config=self._nscp_init_config,
                           output_reserve=self._nscp_output_reserve,
                           route=self._nscp_route, local_config=self._nscp_local,
-                          selection_mode=self._nscp_selection.mode)
+                          selection_mode=self._nscp_selection.mode,
+                          selection_route=self._nscp_selection.selection_route,
+                          retrieval=self._nscp_selection.retrieval,
+                          max_model_calls=self._nscp_selection.max_model_calls)
 
     def update_model(self, model, context_length, base_url="", api_key="", provider="",
                      api_mode="", max_tokens=None):
@@ -254,13 +259,22 @@ def register(ctx):
     if not raw:
         raise RuntimeError("NSCP_HYBRID_POLICY must explicitly select native or local summary")
     policy = json.loads(raw)
-    allowed = {"route", "output_reserve", "local", "selection_mode"}
+    allowed = {"route", "output_reserve", "local", "selection_mode", "selection_route",
+               "retrieval", "max_model_calls"}
     if not isinstance(policy, dict) or set(policy) - allowed:
         raise ValueError("Invalid NSCP hybrid policy")
     local = policy.get("local", {})
     if not isinstance(local, dict):
         raise ValueError("Invalid local summary policy")
+    retrieval = policy.get("retrieval")
+    if retrieval is not None:
+        if not isinstance(retrieval, dict):
+            raise ValueError("Invalid retrieval policy")
+        from .local_retrieval import RetrievalConfig
+        retrieval = RetrievalConfig(**retrieval)
     ctx.register_context_engine(NSCPHybridContextEngine(
         config=load_config_readonly(), output_reserve=policy.get("output_reserve"),
         route=policy.get("route"), local_config=LocalSummaryConfig(**local),
-        selection_mode=policy.get("selection_mode", "observe")))
+        selection_mode=policy.get("selection_mode", "observe"),
+        selection_route=policy.get("selection_route", "references"), retrieval=retrieval,
+        max_model_calls=policy.get("max_model_calls", 1)))

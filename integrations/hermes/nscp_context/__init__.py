@@ -23,11 +23,30 @@ class NSCPContextEngine(ContextEngine):
     protect_first_n = 3
     protect_last_n = 8
 
-    def __init__(self, *, mode=None):
+    def __init__(self, *, mode=None, selection_route="references", retrieval=None,
+                 max_model_calls=1):
         # Explicit operator opt-in: this hook cannot inspect the final enabled toolset.
         self.mode = mode if mode is not None else os.getenv("NSCP_CONTEXT_MODE", "observe")
         if self.mode not in ("observe", "experimental"):
             raise ValueError("Invalid NSCP_CONTEXT_MODE")
+        if selection_route not in ("references", "bm25", "embedding", "embedding_rerank"):
+            raise ValueError("Invalid request selection route")
+        if type(max_model_calls) is not int or not 0 <= max_model_calls <= 4:
+            raise ValueError("Invalid host inference call limit")
+        if selection_route.startswith("embedding"):
+            from .local_retrieval import RetrievalConfig
+            if not isinstance(retrieval, RetrievalConfig):
+                raise ValueError("Explicit local retrieval configuration required")
+            if (selection_route == "embedding_rerank") != (retrieval.reranker_port is not None):
+                raise ValueError("Reranking route and port must agree")
+        elif retrieval is not None:
+            raise ValueError("Retrieval config requires embedding route")
+        self.selection_route = selection_route
+        self.retrieval = retrieval
+        self.max_model_calls = max_model_calls
+        # Schema discovery is necessary but not sufficient proof of tool
+        # dispatch. The isolated-host preflight must check collision/gating.
+        self._recall_schema_requested = False
         self._issued_refs = set()
         self._session_id = None
         self._persistence = None
@@ -45,7 +64,8 @@ class NSCPContextEngine(ContextEngine):
         return "nscp_context"
 
     def clone_for_agent(self):
-        clone = type(self)(mode=self.mode)
+        clone = type(self)(mode=self.mode, selection_route=self.selection_route,
+                           retrieval=self.retrieval, max_model_calls=self.max_model_calls)
         clone.threshold_percent = self.threshold_percent
         clone.protect_first_n = self.protect_first_n
         clone.protect_last_n = self.protect_last_n
@@ -121,9 +141,27 @@ class NSCPContextEngine(ContextEngine):
             if source is None:
                 self._last_report = {"disposition": "source_unavailable", "applied": False}
                 return None
-            plan = plan_request(request_messages, source, budget,
-                                keep_recent=self.protect_last_n, protect_first=self.protect_first_n,
-                                strategy="adaptive")
+            if self.mode == "experimental" and not self._recall_schema_requested:
+                self._last_report = {"disposition": "recall_schema_not_requested", "applied": False}
+                return None
+            kwargs = dict(keep_recent=self.protect_last_n, protect_first=self.protect_first_n,
+                          strategy="adaptive")
+            # Observe mode never sends historical text to an extra model.
+            if self.mode != "experimental" or self.selection_route == "references":
+                plan = plan_request(request_messages, source, budget, **kwargs)
+            else:
+                from .extractive_context import plan_extractive_request
+                selector = None
+                if self.selection_route.startswith("embedding"):
+                    from .local_retrieval import SemanticSpanSelector
+                    selector = SemanticSpanSelector(self.retrieval)
+                plan = plan_extractive_request(
+                    request_messages, source, budget, **kwargs, selector=selector,
+                    selector_route=self.selection_route if selector is not None else "local_ids",
+                    selector_pool="bounded_all" if selector is not None else "sampled",
+                    max_model_calls=self.max_model_calls)
+                if selector is not None:
+                    plan.report["local_http_requests"] = selector.requests
             if binding is not self._binding:
                 return None
             verification = verify_request_plan(request_messages, source, plan, budget,
@@ -152,6 +190,9 @@ class NSCPContextEngine(ContextEngine):
             return None
 
     def get_tool_schemas(self):
+        if self.mode != "experimental":
+            return []
+        self._recall_schema_requested = True
         return [{
             "name": "nscp_recall",
             "description": "Read original historical tool output referenced by NSCP in this session. "
@@ -164,7 +205,7 @@ class NSCPContextEngine(ContextEngine):
         }]
 
     def handle_tool_call(self, name, args, **kwargs):
-        if name != "nscp_recall":
+        if name != "nscp_recall" or self.mode != "experimental":
             return json.dumps({"error": "unknown_nscp_tool"})
         try:
             if not isinstance(args, dict) or set(args) - {"reference", "offset", "limit"}:
@@ -187,6 +228,8 @@ class NSCPContextEngine(ContextEngine):
     def get_status(self):
         result = super().get_status()
         result["nscp_mode"] = self.mode
+        result["nscp_selection_route"] = self.selection_route
+        result["nscp_recall_schema_requested"] = self._recall_schema_requested
         result["nscp_manual_compaction"] = False
         result["nscp_last_plan"] = deepcopy(self._last_report)
         result["nscp_issued_references"] = len(self._issued_refs)

@@ -40,7 +40,9 @@ def engine(monkeypatch, tmp_path):
     dest = installer.install(tmp_path)
     plugin = load_file("_nscp_test_plugin", dest / "__init__.py", package=True)
     try:
-        yield plugin.NSCPContextEngine(mode="experimental"), installer, dest
+        instance = plugin.NSCPContextEngine(mode="experimental")
+        instance.get_tool_schemas()  # simulate host schema discovery
+        yield instance, installer, dest
     finally:
         for name in list(sys.modules):
             if name.startswith("_nscp_test_plugin") or name == "_nscp_installer_test":
@@ -172,3 +174,18 @@ def test_recall_does_not_cross_rebinding_during_source_read(engine):
 
     instance._source = changed
     assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
+
+
+
+def test_no_archive_before_host_requests_recall_schema(engine):
+    instance, _, _ = engine
+    clone = instance.clone_for_agent()
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows]))
+    clone.bind_session_state(None, "s", store)
+    assert clone.select_context(rows, budget_tokens=6000) is None
+    assert clone.get_status()["nscp_last_plan"]["disposition"] == "recall_schema_not_requested"
+    assert not clone._issued_refs
+    assert clone.get_tool_schemas()[0]["name"] == "nscp_recall"
+    assert clone.select_context(rows, budget_tokens=6000) is not None
