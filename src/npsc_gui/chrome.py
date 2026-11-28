@@ -40,6 +40,7 @@ class Header(QFrame):
     settings_requested = Signal()
     help_requested = Signal()
     about_requested = Signal()
+    context_requested = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -88,6 +89,10 @@ class Header(QFrame):
         self.mode_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mode_button.clicked.connect(self.mode_toggle_requested)
         layout.addWidget(self.mode_button)
+        self.context_button = QPushButton("Compressor")
+        self.context_button.setToolTip("Open local context workbench")
+        self.context_button.clicked.connect(self.context_requested)
+        layout.addWidget(self.context_button)
 
         spacer = QWidget()
         spacer.setFixedWidth(s.xs)

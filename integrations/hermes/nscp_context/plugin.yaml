@@ -1,0 +1,3 @@
+name: nscp_context
+description: Experimental NSCP request-only tool context compaction and recall
+version: "0.1.0"

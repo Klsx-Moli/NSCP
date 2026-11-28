@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import argparse
+import re
 from pathlib import Path
 from typing import Any
 
-from context_loss_verifier import verify_context_loss
+from context_loss_verifier import INTERNAL_TERMS, verify_context_loss
 from exporters import export_json, export_text, prepare_output_dir
 from nsl_compiler import compile_to_nsl
 from nsl_parser import parse_nsl
+from npsc_service import CompileRequest, compile_prompt
+from prompt_quality import evaluate_quality
 from prompt_reconstructor import reconstruct_prompt
 from semantic_dictionary import load_semantic_dictionary
 from semantic_extractor import extract_semantics
@@ -172,13 +175,6 @@ if __name__ == "__main__":
 # executability, critical-constraint retention, no degradation of already
 # excellent prompts). Deterministic and local.
 
-import re
-
-from context_loss_verifier import (
-    INTERNAL_TERMS,
-)
-from npsc_service import CompileRequest, compile_prompt
-from prompt_quality import evaluate_quality
 
 
 def _goal_tokens(text: str) -> set[str]:

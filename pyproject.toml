@@ -9,7 +9,12 @@ dependencies = ["PySide6>=6.11"]
 
 [project.scripts]
 npsc = "npsc_cli:run_cli"
+npsc-compact = "npsc_compact_cli:run_cli"
+npsc-agent-context = "npsc_agent_cli:run_cli"
+nscp-resources = "nscp_resources:run_cli"
+nscp-memory = "memory_index:run_cli"
 npsc-gui = "npsc_gui.main:main"
+nscp-context-gui = "npsc_gui.context_workbench:main"
 
 [build-system]
 requires = ["setuptools>=61"]
@@ -18,8 +23,30 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 package-dir = {"" = "src"}
 py-modules = [
+  "agent_context",
+  "context_io",
+  "nscp_resources",
+  "semantic_memory",
+  "memory_index",
+  "semantic_ranking",
+  "context_route_policy",
+  "resource_snapshot",
+  "local_onnx",
+  "local_retrieval",
+  "context_state",
+  "local_nli",
+  "extractive_context",
+  "npsc_agent_cli",
   "benchmark_quality",
   "compilation_profiles",
+  "compaction_verifier",
+  "compression_policy",
+  "context_compactor",
+  "conversation_store",
+  "npsc_compact_cli",
+  "summarizer",
+  "local_summary",
+  "local_llama_summary",
   "compiler_defaults",
   "clarification_gate",
   "constraint_normalizer",

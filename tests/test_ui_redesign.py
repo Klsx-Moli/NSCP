@@ -13,7 +13,6 @@ These tests pin the behaviour the new UI depends on, not pixels:
 from __future__ import annotations
 
 import os
-import re
 import sys
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -24,21 +23,18 @@ import pytest
 
 pytest.importorskip("PySide6")
 
-from PySide6.QtWidgets import QApplication, QComboBox, QLabel
+from PySide6.QtWidgets import QApplication, QLabel
 
 import i18n
 from npsc_gui.components import (
     Card,
     EmptyState,
-    Field,
     MetricTile,
     PageHeader,
     PrimaryButton,
     ProgressIndicator,
     ResultCard,
     SecondaryButton,
-    SegmentedControl,
-    Skeleton,
     StatusChip,
     Toast,
     ToastHost,

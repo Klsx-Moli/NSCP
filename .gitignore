@@ -63,3 +63,11 @@ _ui_redesign_backup/
 
 # One-off debugging scripts
 scripts/_tmp_*.py
+
+# Local context-engine resources and private runtime state
+/extras/
+/data/
+/workspace/
+*.gguf
+*.onnx
+*.safetensors

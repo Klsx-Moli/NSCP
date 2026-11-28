@@ -280,6 +280,7 @@ class MainWindow(QMainWindow):
         self.header.settings_requested.connect(self._open_settings)
         self.header.help_requested.connect(self._open_help)
         self.header.about_requested.connect(self._open_about)
+        self.header.context_requested.connect(self._open_context_workbench)
         layout.addWidget(self.header)
 
         self.mode_stack = QStackedWidget()
@@ -1343,6 +1344,10 @@ class MainWindow(QMainWindow):
         self._switch_to_mode(MODE_EXTREME)
         self._select_page("glosario")
 
+    def _open_context_workbench(self) -> None:
+        from npsc_gui.context_workbench import ContextWorkbench
+        ContextWorkbench(self).exec()
+
     def _open_about(self) -> None:
         dialog = AboutDialog(self, language=str(self.settings.get("language", "es")))
         dialog.exec()
@@ -2015,7 +2020,6 @@ class MainWindow(QMainWindow):
         # would duplicate the same numbers on the same screen.
         self.simple_metrics_panel.hide()
 
-        state = "error" if errors else "warning" if warnings else "success"
         self.simple_result_header.setText(tr("toast.compile_done"))
         self.simple_metrics_label.setText(
             tr("result.summary").format(

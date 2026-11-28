@@ -1,0 +1,21 @@
+{
+  "$comment": "Perfiles de ventana efectiva por runtime. El num_ctx REAL debe verificarse en tu máquina ('ollama show <modelo>' y logs del servidor, o parámetro --ctx-size). Estos valores asumidos son conservadores y NO son hechos sobre tu instalación.",
+  "ollama": {
+    "default_num_ctx_assumed": 4096,
+    "verify_with": "ollama show <modelo> + logs del servidor Ollama",
+    "note": "Ollama recorta la ventana según el num_ctx configurado; en GPUs de 8 GB la caché KV limita ventanas grandes aunque el modelo las soporte."
+  },
+  "llama_cpp": {
+    "default_num_ctx_assumed": 4096,
+    "verify_with": "parámetro -c / --ctx-size con el que se lanzó el servidor",
+    "note": "La ventana efectiva es la pasada al servidor, no la nativa del modelo."
+  },
+  "hermes_family": {
+    "native_context_claim_tokens": 131072,
+    "note": "Soporte nativo declarado para Hermes 3 (familia Llama 3.1). El límite práctico local lo fijan el runtime y la VRAM, no el modelo."
+  },
+  "compaction_defaults": {
+    "default_level": "safe",
+    "note": "El perfil 'hermes' de model_profiles.json marca compression_tolerance=low y best_level=safe; no bajar el nivel por defecto para objetivos Hermes."
+  }
+}

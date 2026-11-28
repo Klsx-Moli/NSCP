@@ -1,0 +1,191 @@
+"""Adapter contract tests with a fake host; not a live Hermes integration test."""
+import importlib.util
+import json
+import sys
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+
+import pytest
+
+from agent_context import _ref
+from test_agent_context import transcript
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def load_file(name, path, package=False):
+    spec = importlib.util.spec_from_file_location(
+        name, path, submodule_search_locations=[str(path.parent)] if package else None)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture
+def engine(monkeypatch, tmp_path):
+    class ContextEngine:
+        def get_status(self):
+            return {}
+
+        def on_session_reset(self):
+            self.compression_count = 0
+
+    agent = ModuleType("agent")
+    contract = ModuleType("agent.context_engine")
+    contract.ContextEngine = ContextEngine
+    monkeypatch.setitem(sys.modules, "agent", agent)
+    monkeypatch.setitem(sys.modules, "agent.context_engine", contract)
+    installer = load_file("_nscp_installer_test", ROOT / "scripts" / "install_hermes_context.py")
+    dest = installer.install(tmp_path)
+    plugin = load_file("_nscp_test_plugin", dest / "__init__.py", package=True)
+    try:
+        instance = plugin.NSCPContextEngine(mode="experimental")
+        instance.get_tool_schemas()  # simulate host schema discovery
+        yield instance, installer, dest
+    finally:
+        for name in list(sys.modules):
+            if name.startswith("_nscp_test_plugin") or name == "_nscp_installer_test":
+                sys.modules.pop(name, None)
+
+
+def old_history():
+    source = transcript()
+    for i in range(10):
+        source.extend([{"role": "user", "content": f"question {i}"},
+                       {"role": "assistant", "content": "answer"}])
+    return source
+
+
+def test_adapter_request_selection_and_recall(engine):
+    instance, _, _ = engine
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ] if session == "s1" else []))
+    instance.bind_session_state(None, "s1", store)
+    output = instance.select_context(rows, budget_tokens=6000)
+    assert output is not None
+    ref = instance.get_status()["nscp_last_plan"]["references"][0]
+    source_index = next(i for i, row in enumerate(rows)
+                        if row["role"] == "tool" and _ref(row) == ref)
+    assert output[source_index]["content"] != rows[source_index]["content"]
+    result = json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref, "limit": 20}))
+    assert result["content"] == rows[source_index]["content"][:20]
+    assert instance.compress(rows, force=True) == rows
+    assert instance.should_compress() is False
+    instance.on_session_reset()
+    assert instance.select_context(rows, budget_tokens=6000) is None
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
+
+
+def test_clone_does_not_inherit_session_and_installer_is_non_overwriting(engine):
+    instance, installer, dest = engine
+    instance.bind_session_state(None, "secret", object())
+    clone = instance.clone_for_agent()
+    assert clone._session_id is None and clone._persistence is None
+    assert installer.install(dest.parent.parent) == dest
+    (dest / "plugin.yaml").write_text("custom", encoding="utf-8")
+    with pytest.raises(FileExistsError):
+        installer.install(dest.parent.parent)
+    assert (dest / "plugin.yaml").read_text(encoding="utf-8") == "custom"
+
+
+def test_unavailable_persistence_is_noop(engine):
+    instance, _, _ = engine
+    instance.bind_session_state(None, "s1")
+    assert instance.select_context(old_history(), budget_tokens=1000) is None
+
+
+def test_observe_mode_reports_but_does_not_rewrite_or_issue_references(engine):
+    instance, _, _ = engine
+    instance.mode = "observe"
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=6000) is None
+    status = instance.get_status()
+    assert status["nscp_last_plan"]["disposition"] == "observe_only"
+    assert status["nscp_last_plan"]["references"]
+    assert not status["nscp_last_plan"]["applied"]
+    assert status["nscp_issued_references"] == 0
+    ref = status["nscp_last_plan"]["references"][0]
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
+
+
+def test_budget_unmet_is_explicit_and_never_applied(engine):
+    instance, _, _ = engine
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=100) is None
+    assert instance.get_status()["nscp_last_plan"]["disposition"] == "budget_unmet"
+    assert instance.get_status()["nscp_issued_references"] == 0
+
+
+def test_recall_rejects_unissued_hash_and_removed_original(engine):
+    instance, _, _ = engine
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=6000) is not None
+    status = instance.get_status()
+    ref = status["nscp_last_plan"]["references"][0]
+    status["nscp_last_plan"]["references"].clear()
+    assert instance.get_status()["nscp_last_plan"]["references"]
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": "0" * 64}))
+    rows[:] = [row for row in rows if row["role"] != "tool" or _ref(row) != ref]
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
+    instance.select_context([{"role": "user", "content": "small"}], budget_tokens=6000)
+    assert instance.get_status()["nscp_last_plan"]["disposition"] == "below_threshold"
+
+
+def test_clone_keeps_policy_but_not_session(engine):
+    instance, _, _ = engine
+    instance.protect_first_n = 5
+    instance.protect_last_n = 12
+    instance.bind_session_state(None, "s1")
+    clone = instance.clone_for_agent()
+    assert clone.mode == instance.mode
+    assert clone.protect_first_n == 5 and clone.protect_last_n == 12
+    assert not clone._issued_refs and clone._session_id is None
+
+
+def test_recall_does_not_cross_rebinding_during_source_read(engine):
+    instance, _, _ = engine
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows
+    ]))
+    instance.bind_session_state(None, "s1", store)
+    assert instance.select_context(rows, budget_tokens=6000) is not None
+    ref = instance.get_status()["nscp_last_plan"]["references"][0]
+    read = instance._source
+
+    def changed():
+        instance.bind_session_state(None, "s2", store)
+        return read()
+
+    instance._source = changed
+    assert "error" in json.loads(instance.handle_tool_call("nscp_recall", {"reference": ref}))
+
+
+
+def test_no_archive_before_host_requests_recall_schema(engine):
+    instance, _, _ = engine
+    clone = instance.clone_for_agent()
+    rows = old_history()
+    store = SimpleNamespace(messages=SimpleNamespace(read_conversation=lambda session: [
+        SimpleNamespace(as_openai_message=lambda row=row: row) for row in rows]))
+    clone.bind_session_state(None, "s", store)
+    assert clone.select_context(rows, budget_tokens=6000) is None
+    assert clone.get_status()["nscp_last_plan"]["disposition"] == "recall_schema_not_requested"
+    assert not clone._issued_refs
+    assert clone.get_tool_schemas()[0]["name"] == "nscp_recall"
+    assert clone.select_context(rows, budget_tokens=6000) is not None
