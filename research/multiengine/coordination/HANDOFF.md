@@ -29,3 +29,10 @@ PENDIENTE DE REVISION REMOTA
 DECISIONES QUE REQUIEREN AUTORIZACION
 - Integracion en producto (no autorizada aqui).
 - Cualquier merger a feature/context-compactor o main.
+
+BLOQUE ADDICIONAL 2026-11-28T02:26:17.686557+00:00 — T006
+- Ejecutado: probe de offload total (-ngl 99) para embedding, reranker y compactor.
+- Resultado: los tres modelos cargaron e infirieron; RSS sistema 1098/1204/2785 MB.
+- Limitacion: no existe contador de VRAM por proceso para RX 570; el resultado es
+  un PROXY de compatibilidad, no una medicion de capacidad de VRAM.
+- Pendiente: validacion remota del proxy; T005 (ITER06 externo) y T007 siguen abiertas.

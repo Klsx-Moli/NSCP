@@ -2,7 +2,7 @@
   "generated_at": "2026-11-28T02:21:14.001253+00:00",
   "base_code_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
   "repo_visibility": "PUBLIC",
-  "total_files": 212,
+  "total_files": 214,
   "entries": [
     {
       "path": "iterations/ITER01/evidence/ADVERSARIAL_CASES.json",
@@ -3819,6 +3819,41 @@
       "result": "",
       "limitations": "",
       "verification": "STATICALLY_INSPECTED"
+    },
+    {
+      "path": "iterations/ITER06/evidence/VRAM_OFFLOAD_PROXY.json",
+      "sha256": "930c195307e8c63f4226f89d54b1a1e50418ed02a0dd2599c8619febaea3458c",
+      "bytes": 2915,
+      "code_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+      "date": "2026-11-28T02:26:17.686557+00:00",
+      "agent": "hermes-local",
+      "model": "embedding/reranker/compactor",
+      "runtime": "llama.cpp b9947 Vulkan -ngl 99",
+      "hardware": "i5-4570, 16 GB RAM, RX 570 4 GB reported",
+      "configuration": "sequential, one model at a time, all layers offloaded",
+      "dataset": "single-probe prompts",
+      "command": "python <HARNESS_DIR>/VRAM_OFFLOAD_PROXY.json",
+      "result": "all three models loaded with -ngl 99 and inferred",
+      "limitations": "no per-process VRAM counter; proxy only; system RSS measured separately",
+      "verification": "VERIFIED_BY_EXECUTOR_PROXY"
+    },
+    {
+      "path": "benchmarks/harnesses/ITER06/vram_probe.py",
+      "sha256": "fdd23f1b82ff04adc7ecec6b927e22b928755f9fe27522fa119493ff40addcf3",
+      "bytes": 6320,
+      "code_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
+      "date": "2026-11-28T02:26:17.686557+00:00",
+      "agent": "hermes-local",
+      "model": "embedding/reranker/compactor",
+      "runtime": "llama.cpp b9947 Vulkan -ngl 99",
+      "hardware": "i5-4570, 16 GB RAM, RX 570 4 GB reported",
+      "configuration": "sequential, one model at a time, all layers offloaded",
+      "dataset": "single-probe prompts",
+      "command": "python <HARNESS_DIR>/vram_probe.py",
+      "result": "harness executed in scratch then sanitized",
+      "limitations": "requires placeholder substitution",
+      "verification": "STATICALLY_INSPECTED"
     }
-  ]
+  ],
+  "updated_at": "2026-11-28T02:26:17.686557+00:00"
 }

@@ -13,3 +13,6 @@ ITER06: NOT_ACCESSIBLE — no ITER06 directory or files found in evidence root.
 Verified: embeddings real, reranker real, compactor A/B real, differential
 hard/discriminating, memory 12/12, router 17/17, mutation 8/8.
 Pending: remote review, VRAM measurement, H/I/J routes, ITER06 evidence.
+
+UPDATE 2026-11-28T02:26:17.686557+00:00: T006 TESTED. ITER06 iniciado con evidencia nueva (proxy de offload).
+No se han publicado pesos, DBs, venvs ni sesiones. Sin merge ni push a main.
