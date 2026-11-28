@@ -28,6 +28,8 @@ py-modules = [
   "context_route_policy",
   "local_onnx",
   "local_retrieval",
+  "context_state",
+  "local_nli",
   "extractive_context",
   "npsc_agent_cli",
   "benchmark_quality",
