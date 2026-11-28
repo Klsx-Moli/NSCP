@@ -11,6 +11,7 @@ dependencies = ["PySide6>=6.11"]
 npsc = "npsc_cli:run_cli"
 npsc-compact = "npsc_compact_cli:run_cli"
 npsc-agent-context = "npsc_agent_cli:run_cli"
+nscp-resources = "nscp_resources:run_cli"
 npsc-gui = "npsc_gui.main:main"
 
 [build-system]
@@ -21,6 +22,7 @@ build-backend = "setuptools.build_meta"
 package-dir = {"" = "src"}
 py-modules = [
   "agent_context",
+  "nscp_resources",
   "extractive_context",
   "npsc_agent_cli",
   "benchmark_quality",
