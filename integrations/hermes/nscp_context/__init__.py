@@ -12,7 +12,7 @@ from copy import deepcopy
 
 from agent.context_engine import ContextEngine
 
-from .agent_context import _estimate, plan_request, recall
+from .agent_context import _estimate, plan_request, recall, verify_request_plan
 
 logger = logging.getLogger(__name__)
 MAX_ISSUED_REFERENCES = 4096
@@ -126,7 +126,9 @@ class NSCPContextEngine(ContextEngine):
                                 strategy="adaptive")
             if binding is not self._binding:
                 return None
-            self._last_report = dict(plan.report, applied=False)
+            verification = verify_request_plan(request_messages, source, plan, budget,
+                                               keep_recent=self.protect_last_n, protect_first=self.protect_first_n)
+            self._last_report = dict(plan.report, applied=False, verification=verification)
             if self.mode != "experimental":
                 self._last_report["disposition"] = "observe_only"
                 return None

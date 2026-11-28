@@ -31,3 +31,8 @@ occurrence IDs remain in telemetry, and the canonical source remains intact.
 Preview selection also removes duplicate text returned by custom selectors.
 A preview cannot enlarge its individual source row. This is presentation
 and inference deduplication, not event deduplication or semantic equivalence.
+
+CLI and Hermes request adapter now require an independent structural
+verification before publishing the plan. The gate checks source existence,
+protected message lineage, metadata, exact markers, exact excerpt offsets,
+reference multiplicity and measured budget. It cannot certify semantics.

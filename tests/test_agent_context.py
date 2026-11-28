@@ -203,3 +203,31 @@ def test_protect_first_does_not_split_protected_parent_from_result():
     result = plan_request(source, source, 1, keep_recent=1, protect_first=4)
     assert result.messages[4] == source[4]
     assert result.report["lineage_protected"] == 1
+
+
+
+def test_independent_gate_detects_tampering_and_source_loss():
+    from copy import deepcopy
+    from agent_context import RequestPlan, _estimate, verify_request_plan
+    rows = transcript()
+    plan = plan_request(rows, rows, 4500, keep_recent=1)
+    assert plan.report["references"]
+    assert verify_request_plan(rows, rows, plan, 4500, keep_recent=1)["status"] == "structurally_verified"
+    with pytest.raises(ValueError, match="canonical source"):
+        verify_request_plan(rows, [], plan, 4500, keep_recent=1)
+    for mode in ("role", "marker", "reference", "recent"):
+        new = deepcopy(plan.messages)
+        report = deepcopy(plan.report)
+        idx = next(i for i, (a, b) in enumerate(zip(rows, new)) if a != b)
+        if mode == "role":
+            new[idx]["role"] = "assistant"
+        elif mode == "marker":
+            new[idx]["content"] += " fabricated"
+        elif mode == "reference":
+            report["references"] = ["0" * 64]
+        else:
+            new[-1]["content"] = "tampered"
+        report["tokens_after"] = _estimate(new)
+        report["fits_metered_budget"] = report["tokens_after"] <= 4500
+        with pytest.raises(ValueError):
+            verify_request_plan(rows, rows, RequestPlan(new, report), 4500, keep_recent=1)

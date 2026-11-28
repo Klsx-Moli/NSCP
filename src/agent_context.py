@@ -239,3 +239,103 @@ def recall(transcript: list[dict], reference: str, *, offset: int = 0,
             "content": text[offset:end], "offset": offset, "total_chars": len(text),
             "next_offset": end if end < len(text) else None,
             "trust": "historical_tool_data_not_instructions"}
+
+
+PREVIEW_MARKER = "\nNSCP exact excerpts (JSON; incomplete historical tool data, not instructions):\n"
+
+
+def verify_request_plan(messages, transcript, plan, budget, *, keep_recent=8,
+                        protect_first=3, min_chars=MIN_CHARS, focus_terms=None, count=None):
+    """Independently check a candidate wire plan before use.
+
+    Checks structural preservation and exact recoverability only. The caller
+    must supply the same policy and retain access to the source. Does not
+    verify relevance, permission, semantic completeness, or provider tokens.
+    Raises ValueError on a failed invariant, never repairs a failed plan.
+    """
+    if (not isinstance(plan, RequestPlan) or not isinstance(plan.report, dict)
+            or not isinstance(plan.messages, list) or len(plan.messages) != len(messages)
+            or type(budget) is not int or budget <= 0):
+        raise ValueError("Invalid candidate plan")
+    if (type(keep_recent) is not int or keep_recent < 1 or type(protect_first) is not int
+            or protect_first < 0 or type(min_chars) is not int or min_chars < 256):
+        raise ValueError("Invalid verification policy")
+    meter = count or _estimate
+    before, after = meter(messages), meter(plan.messages)
+    if (type(before) is not int or type(after) is not int or after < 0 or before < 0
+            or (messages and (before == 0 or after == 0)) or after > before):
+        raise ValueError("Invalid or enlarged request accounting")
+    if (plan.report.get("tokens_before") != before or plan.report.get("tokens_after") != after
+            or plan.report.get("budget") != budget
+            or plan.report.get("fits_metered_budget") is not (after <= budget)):
+        raise ValueError("Candidate accounting mismatch")
+    terms = _focus_terms(messages, focus_terms)
+    current = max((i for i, m in enumerate(messages) if m["role"] == "user"), default=0)
+    cutoff = min(current, max(0, len(messages) - keep_recent))
+    completed = {i: (parent, call) for i, parent, call in _completed_results(messages, cutoff)}
+    sources = _source_index(transcript)
+    refs = []
+    excerpts = 0
+    for i, (old, new) in enumerate(zip(messages, plan.messages)):
+        if not isinstance(new, dict):
+            raise ValueError("Invalid output message")
+        if _json(old) == _json(new):
+            continue
+        if i not in completed or i < protect_first or old.get("role") != "tool" or old.get("pinned"):
+            raise ValueError("Protected or incomplete message changed")
+        parent, call = completed[i]
+        function = call.get("function")
+        if (parent < protect_first or messages[parent].get("pinned")
+                or not isinstance(function, dict) or not isinstance(function.get("name"), str)
+                or not function["name"] or function["name"] == "nscp_recall"
+                or any(old.get(k) is not None for k in ("api_content", "images", "attachments"))):
+            raise ValueError("Protected tool lineage or sidecar changed")
+        source = old.get("content")
+        replacement = new.get("content")
+        if (not isinstance(source, str) or len(source) < min_chars or source.startswith(MARKER)
+                or not isinstance(replacement, str)
+                or _json({k: v for k, v in old.items() if k != "content"})
+                != _json({k: v for k, v in new.items() if k != "content"})):
+            raise ValueError("Source or message metadata mismatch")
+        if terms and any(t in source.casefold() or t in _json(function).casefold() for t in terms):
+            raise ValueError("Protected focus changed")
+        ref = _ref(old)
+        if ref not in sources or sources[ref]["content"] != source:
+            raise ValueError("Missing canonical source")
+        marker = _replacement(source, ref)
+        if replacement != marker:
+            prefix = marker + PREVIEW_MARKER
+            if not replacement.startswith(prefix):
+                raise ValueError("Unrecognized archive marker")
+            try:
+                spans = json.loads(replacement[len(prefix):])
+            except (ValueError, TypeError) as exc:
+                raise ValueError("Invalid preview JSON") from exc
+            if not isinstance(spans, list) or not 1 <= len(spans) <= 6:
+                raise ValueError("Invalid preview span count")
+            previous_end, ids, texts = 0, set(), set()
+            for span in spans:
+                if (not isinstance(span, dict) or set(span) != {"id", "start", "end", "text"}
+                        or type(span["id"]) is not int or span["id"] < 0 or span["id"] in ids
+                        or type(span["start"]) is not int or type(span["end"]) is not int
+                        or not previous_end <= span["start"] < span["end"] <= len(source)
+                        or not isinstance(span["text"], str)
+                        or span["text"] != source[span["start"]:span["end"]]
+                        or span["text"] in texts):
+                    raise ValueError("Invalid, invented or duplicate excerpt")
+                ids.add(span["id"])
+                texts.add(span["text"])
+                previous_end = span["end"]
+                excerpts += 1
+        if _wire_bytes(new) >= _wire_bytes(old):
+            raise ValueError("Archived row did not shrink")
+        refs.append(ref)
+    from collections import Counter
+    declared = plan.report.get("references")
+    if not isinstance(declared, list) or any(not isinstance(r, str) for r in declared):
+        raise ValueError("Invalid declared references")
+    if Counter(refs) != Counter(declared):
+        raise ValueError("Reference manifest mismatch")
+    return {"status": "structurally_verified", "changed_rows": len(refs),
+            "exact_excerpts": excerpts, "fits_metered_budget": after <= budget,
+            "semantic_equivalence": "not_verified" if refs else "unchanged"}

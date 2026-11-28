@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-from agent_context import STRATEGIES, plan_request, recall
+from agent_context import STRATEGIES, plan_request, recall, verify_request_plan
 
 
 def _messages(path):
@@ -74,6 +74,9 @@ def run_cli(argv=None):
                 if args.preview_reserve:
                     raise ValueError("--preview-reserve requires --excerpts")
                 result = plan_request(_messages(args.input), source, args.budget, **kwargs)
+            result.report["verification"] = verify_request_plan(
+                _messages(args.input), source, result, args.budget,
+                keep_recent=args.keep_recent, focus_terms=args.focus)
             payload = {"messages": result.messages, "report": result.report}
             code = 0 if result.report["fits_metered_budget"] else 2
         else:
