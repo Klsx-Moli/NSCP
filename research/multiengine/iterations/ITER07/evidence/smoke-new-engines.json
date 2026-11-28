@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-11-28T05:06:07.684216+00:00",
+  "runtime": {
+    "onnxruntime": "1.32.0",
+    "numpy": "2.5.5",
+    "sqlite_vec": "0.1.9",
+    "providers": [
+      "AzureExecutionProvider",
+      "CPUExecutionProvider"
+    ]
+  },
+  "classification": "VERIFIED_BY_EXECUTOR",
+  "engines": {
+    "kompress": {
+      "status": "INFERENCE_OK",
+      "inputs": [
+        "input_ids",
+        "attention_mask"
+      ],
+      "output_shape": [
+        1,
+        10
+      ],
+      "score_min": 0.2239033281803131,
+      "score_max": 0.7992085814476013,
+      "score_sample": [
+        0.672136,
+        0.466543,
+        0.769486,
+        0.469111,
+        0.724031,
+        0.269701,
+        0.223903,
+        0.799209
+      ],
+      "token_count": 10,
+      "note": "final_scores observed; no semantic compression claim"
+    },
+    "ctxprune": {
+      "status": "INFERENCE_OK",
+      "tool_result": "INFO build ok; WARN retry 2; ERROR tests/test_agent_context.py missing; INFO done",
+      "input_shape": [
+        1,
+        25
+      ],
+      "output_shape": [
+        1,
+        25,
+        2
+      ],
+      "keep_ratio": 0.04,
+      "kept_text": "",
+      "note": "token classifier drop/keep; heuristic threshold 0.5, not validated quality"
+    },
+    "nli": {
+      "status": "INFERENCE_OK",
+      "pairs": [
+        {
+          "case": "es-entailment",
+          "premise": "El servidor está apagado.",
+          "hypothesis": "El servidor no está encendido.",
+          "predicted": "entailment",
+          "expected": "entailment",
+          "scores": {
+            "entailment": 0.983883,
+            "neutral": 0.004863,
+            "contradiction": 0.011254
+          }
+        },
+        {
+          "case": "es-contradiction",
+          "premise": "El servidor está apagado.",
+          "hypothesis": "El servidor está encendido.",
+          "predicted": "entailment",
+          "expected": "contradiction",
+          "scores": {
+            "entailment": 0.632224,
+            "neutral": 0.006122,
+            "contradiction": 0.361654
+          }
+        },
+        {
+          "case": "es-neutral",
+          "premise": "El servidor está apagado.",
+          "hypothesis": "El servidor fue comprado ayer.",
+          "predicted": "contradiction",
+          "expected": "neutral",
+          "scores": {
+            "entailment": 0.005491,
+            "neutral": 0.475705,
+            "contradiction": 0.518804
+          }
+        },
+        {
+          "case": "en-entailment",
+          "premise": "The permission was revoked.",
+          "hypothesis": "Access is no longer authorized.",
+          "predicted": "contradiction",
+          "expected": "entailment",
+          "scores": {
+            "entailment": 0.323195,
+            "neutral": 0.108063,
+            "contradiction": 0.568742
+          }
+        },
+        {
+          "case": "en-contradiction",
+          "premise": "The permission was revoked.",
+          "hypothesis": "The permission is still valid.",
+          "predicted": "contradiction",
+          "expected": "contradiction",
+          "scores": {
+            "entailment": 0.24318,
+            "neutral": 0.106726,
+            "contradiction": 0.650094
+          }
+        },
+        {
+          "case": "en-neutral",
+          "premise": "The permission was revoked.",
+          "hypothesis": "The file was created yesterday.",
+          "predicted": "neutral",
+          "expected": "neutral",
+          "scores": {
+            "entailment": 0.014339,
+            "neutral": 0.7047,
+            "contradiction": 0.280961
+          }
+        }
+      ],
+      "label_hits": 3,
+      "total": 6
+    },
+    "sqlite_vec": {
+      "status": "QUERY_OK",
+      "neighbors": [
+        [
+          1,
+          0.0
+        ],
+        [
+          2,
+          0.141421
+        ]
+      ],
+      "note": "in-memory index only; no persistent DB published"
+    }
+  },
+  "errors": []
+}

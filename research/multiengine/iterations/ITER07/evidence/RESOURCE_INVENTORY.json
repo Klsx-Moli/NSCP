@@ -1,0 +1,296 @@
+{
+  "generated_at": "2026-11-28T05:21:53.883440+00:00",
+  "classification": "VERIFIED_BY_EXECUTOR",
+  "managed_import": {
+    "schema": "nscp/local-resources/v1",
+    "root": "<REPO_ROOT>/extras",
+    "models": [
+      {
+        "model_id": "qwen3-embedding-0.6b-q8",
+        "function": "embedding",
+        "availability": "PRESENT",
+        "files": [
+          {
+            "path": "models/embedding/qwen3-embedding-0.6b-q8/Qwen3-Embedding-0.6B-Q8_0.gguf",
+            "bytes": 639150592,
+            "sha256": "06507c7b42688469...[trimmed]"
+          }
+        ]
+      },
+      {
+        "model_id": "qwen3-reranker-0.6b-q8",
+        "function": "reranking",
+        "availability": "PRESENT",
+        "files": [
+          {
+            "path": "models/reranking/qwen3-reranker-0.6b-q8/qwen3-reranker-0.6b-q8_0.gguf",
+            "bytes": 639153184,
+            "sha256": "22c9979ce4fbcdc5...[trimmed]"
+          }
+        ]
+      },
+      {
+        "model_id": "compactor-qwen3.5-4b-q4",
+        "function": "compaction",
+        "availability": "PRESENT",
+        "files": [
+          {
+            "path": "models/compaction/compactor-qwen3.5-4b-q4/Compactor-Qwen3.5-4B.Q4_K_M.gguf",
+            "bytes": 2708804832,
+            "sha256": "0b5b943c72ba4402...[trimmed]"
+          }
+        ]
+      },
+      {
+        "model_id": "kompress-v2-base-int8",
+        "function": "extraction",
+        "availability": "PRESENT",
+        "files": [
+          {
+            "path": "models/extraction/kompress-v2-base-int8/onnx/kompress-int8-wo.onnx",
+            "bytes": 274049435,
+            "sha256": "c47ddd764dec5cf9...[trimmed]"
+          },
+          {
+            "path": "models/extraction/kompress-v2-base-int8/config.json",
+            "bytes": 432,
+            "sha256": "1449bb02c1375480...[trimmed]"
+          },
+          {
+            "path": "models/extraction/kompress-v2-base-int8/tokenizer.json",
+            "bytes": 3583228,
+            "sha256": "6c8aaa9a542084f2...[trimmed]"
+          },
+          {
+            "path": "models/extraction/kompress-v2-base-int8/tokenizer_config.json",
+            "bytes": 20840,
+            "sha256": "2966a59b9e9cf122...[trimmed]"
+          },
+          {
+            "path": "models/extraction/kompress-v2-base-int8/special_tokens_map.json",
+            "bytes": 694,
+            "sha256": "ea97ecdbcc737130...[trimmed]"
+          }
+        ]
+      }
+    ],
+    "note": "Full SHA256 values retained in local resources-verify.json; short prefix published"
+  },
+  "downloads": {
+    "ctxprune-small": {
+      "revision": "bb52cb4eedcbd0961bed89bce3cf508e78e01418",
+      "license": "apache-2.0",
+      "source": "https://huggingface.co/darioooooo0o/ctxprune-small",
+      "files": [
+        {
+          "file": "config.json",
+          "bytes": 2040,
+          "sha256": "dc139d7ae0d3633a2896aa99ab857c63a5057a4dd6b0f67e3ea6a86898649972",
+          "revision": "bb52cb4eedcbd0961bed89bce3cf508e78e01418",
+          "license": "apache-2.0",
+          "source": "huggingface.co/darioooooo0o/ctxprune-small"
+        },
+        {
+          "file": "model_quantized.onnx",
+          "bytes": 142501996,
+          "sha256": "a00b6154721359f3786367d07be50e235a072d59887496eb462334c0b599ac48",
+          "revision": "bb52cb4eedcbd0961bed89bce3cf508e78e01418",
+          "license": "apache-2.0",
+          "source": "huggingface.co/darioooooo0o/ctxprune-small"
+        },
+        {
+          "file": "tokenizer.json",
+          "bytes": 34363188,
+          "sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+          "revision": "bb52cb4eedcbd0961bed89bce3cf508e78e01418",
+          "license": "apache-2.0",
+          "source": "huggingface.co/darioooooo0o/ctxprune-small"
+        },
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 574,
+          "sha256": "14b147f2a4f939d9b12ab36e9633917040dd948fa78ce283b03402e4cf2c9cba",
+          "revision": "bb52cb4eedcbd0961bed89bce3cf508e78e01418",
+          "license": "apache-2.0",
+          "source": "huggingface.co/darioooooo0o/ctxprune-small"
+        }
+      ]
+    },
+    "mnli_xnli": {
+      "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+      "license": "mit",
+      "source": "https://huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+      "files": [
+        {
+          "file": "config.json",
+          "bytes": 921,
+          "sha256": "e08b628c4d46c8601dda34ddb40a7857e5961870b80482382d420db6dfb6e00e",
+          "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "license": "mit",
+          "source": "huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli"
+        },
+        {
+          "file": "model.onnx",
+          "bytes": 428127016,
+          "sha256": "79f8cda2b1230585a95ea0514a6f1bd21c5c986ba0529bb3261213a3e195fa6e",
+          "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "license": "mit",
+          "source": "huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli"
+        },
+        {
+          "file": "sentencepiece.bpe.model",
+          "bytes": 5069051,
+          "sha256": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+          "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "license": "mit",
+          "source": "huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli"
+        },
+        {
+          "file": "special_tokens_map.json",
+          "bytes": 964,
+          "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835",
+          "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "license": "mit",
+          "source": "huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli"
+        },
+        {
+          "file": "tokenizer.json",
+          "bytes": 17082854,
+          "sha256": "b2116c05e7305eea30394284760789681c5b3440dd4cd9a8c77539da68f9e8a6",
+          "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "license": "mit",
+          "source": "huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli"
+        },
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 1255,
+          "sha256": "10dd51e1952b6725b3c65edd16411a4ffe97a6f61636f11a7505bcb0bdb6b360",
+          "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+          "license": "mit",
+          "source": "huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli"
+        }
+      ]
+    },
+    "kompress-v2-base-jsons": {
+      "revision": "e00cc5e60ff73b01674ef8fa6da6c5acf6d54181",
+      "license": "apache-2.0",
+      "source": "https://huggingface.co/chopratejas/kompress-v2-base",
+      "verification": "git blob SHA1 checked by downloader for all four JSON files",
+      "files": [
+        {
+          "file": "config.json",
+          "bytes": 432,
+          "sha256": "1449bb02c1375480bc33b8ab0d6bded9c685953d8c6e4213dd2e9ac50116d8b9",
+          "revision": "e00cc5e60ff73b01674ef8fa6da6c5acf6d54181",
+          "license": "apache-2.0",
+          "source": "huggingface.co/chopratejas/kompress-v2-base",
+          "git_blob_sha1_expected": {
+            "tokenizer.json": "2f4d8583e507b7466d2490e2d6c045647a822698",
+            "tokenizer_config.json": "708dcd477ee11392ab611bcd98e298b5bccdcfd7",
+            "special_tokens_map.json": "6bf65ea14185a88eef7e24b41c86a953a58dcbad",
+            "config.json": "74f01962b591cc6d1a9faab115b2f4326305e63c"
+          }
+        },
+        {
+          "file": "special_tokens_map.json",
+          "bytes": 694,
+          "sha256": "ea97ecdbcc73713039d8d64dbb05e3689495c96657fbd9a18f5bed381be81049",
+          "revision": "e00cc5e60ff73b01674ef8fa6da6c5acf6d54181",
+          "license": "apache-2.0",
+          "source": "huggingface.co/chopratejas/kompress-v2-base",
+          "git_blob_sha1_expected": {
+            "tokenizer.json": "2f4d8583e507b7466d2490e2d6c045647a822698",
+            "tokenizer_config.json": "708dcd477ee11392ab611bcd98e298b5bccdcfd7",
+            "special_tokens_map.json": "6bf65ea14185a88eef7e24b41c86a953a58dcbad",
+            "config.json": "74f01962b591cc6d1a9faab115b2f4326305e63c"
+          }
+        },
+        {
+          "file": "tokenizer.json",
+          "bytes": 3583228,
+          "sha256": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+          "revision": "e00cc5e60ff73b01674ef8fa6da6c5acf6d54181",
+          "license": "apache-2.0",
+          "source": "huggingface.co/chopratejas/kompress-v2-base",
+          "git_blob_sha1_expected": {
+            "tokenizer.json": "2f4d8583e507b7466d2490e2d6c045647a822698",
+            "tokenizer_config.json": "708dcd477ee11392ab611bcd98e298b5bccdcfd7",
+            "special_tokens_map.json": "6bf65ea14185a88eef7e24b41c86a953a58dcbad",
+            "config.json": "74f01962b591cc6d1a9faab115b2f4326305e63c"
+          }
+        },
+        {
+          "file": "tokenizer_config.json",
+          "bytes": 20840,
+          "sha256": "2966a59b9e9cf122279aec1249e22e5bc7ad8430c754e95031b13fd128d4e560",
+          "revision": "e00cc5e60ff73b01674ef8fa6da6c5acf6d54181",
+          "license": "apache-2.0",
+          "source": "huggingface.co/chopratejas/kompress-v2-base",
+          "git_blob_sha1_expected": {
+            "tokenizer.json": "2f4d8583e507b7466d2490e2d6c045647a822698",
+            "tokenizer_config.json": "708dcd477ee11392ab611bcd98e298b5bccdcfd7",
+            "special_tokens_map.json": "6bf65ea14185a88eef7e24b41c86a953a58dcbad",
+            "config.json": "74f01962b591cc6d1a9faab115b2f4326305e63c"
+          }
+        }
+      ]
+    },
+    "ctxprune_source_zip": {
+      "revision": "e49a1de270e0dc74090f5dfa0b4e79100c5421e7",
+      "license": "see archive LICENSE",
+      "source": "local Downloads/ctxprune-main.zip",
+      "files": [
+        {
+          "file": "ctxprune-main.zip",
+          "bytes": 4126146,
+          "sha256": "4c9d826339a22b280d06fa76bf2ac4fbed21cd169e4be2fda562cb511fff6413",
+          "revision": "e49a1de270e0dc74090f5dfa0b4e79100c5421e7",
+          "license": "see archive LICENSE",
+          "source": "local pre-existing download"
+        }
+      ]
+    },
+    "priority2_source_archives": {
+      "source": "github.com/rtk-ai/rtk, github.com/chopratejas/headroom",
+      "revision": "download snapshot 2026-11-28; not executed or audited",
+      "license": "see archives",
+      "files": [
+        {
+          "file": "headroom-main.zip",
+          "bytes": 38296555,
+          "sha256": "35f136d6ea3260ff9f66cd9630e08bdce74220ec1257789857bcb16f9574a4a3",
+          "revision": "snapshot-2026-11-28",
+          "license": "see archives",
+          "source": "github codeload snapshots"
+        },
+        {
+          "file": "rtk-master.zip",
+          "bytes": 5634035,
+          "sha256": "6fa0663890eb7d9d682cdf53ab28ae5641f08fde29e7a761e8932820d09075a9",
+          "revision": "snapshot-2026-11-28",
+          "license": "see archives",
+          "source": "github codeload snapshots"
+        }
+      ]
+    }
+  },
+  "runtime_packages": {
+    "onnxruntime": "1.32.0",
+    "numpy": "2.5.5",
+    "tokenizers": "0.23.3",
+    "sqlite-vec": "0.1.9",
+    "installation": "isolated venv under ITER07-resources/.venv; no global install"
+  },
+  "exclusions": [
+    "GGUF/ONNX weights not published",
+    "extras/ excluded via .git/info/exclude before copy",
+    "import plan with private paths kept local only",
+    "sqlite-vec test DB is in-memory only",
+    "no venv, cache, credential or session published"
+  ],
+  "errors": [],
+  "not_downloaded": {
+    "llmlingua-2-multilingual": "NOT_DOWNLOADED: no ONNX artifact in upstream repo; PyTorch not installed; not needed for ITER07 smoke tests",
+    "rtk_develop_branch": "master snapshot downloaded; default develop branch not fetched"
+  }
+}

@@ -36,3 +36,13 @@ BLOQUE ADDICIONAL 2026-11-28T02:26:17.686557+00:00 — T006
 - Limitacion: no existe contador de VRAM por proceso para RX 570; el resultado es
   un PROXY de compatibilidad, no una medicion de capacidad de VRAM.
 - Pendiente: validacion remota del proxy; T005 (ITER06 externo) y T007 siguen abiertas.
+
+BLOQUE ITER07 2026-11-28T05:28:56.834521+00:00
+Realizado: sincronización desde 7835e7c746bed1429b993d2f7a21ae380dfd37c3; worktree aislado; 4 tests del agente remoto
+ejecutados (41 passed, 1 skipped); catálogo local importado y verificado;
+benchmark corregido ejecutado; smoke tests de Kompress/CTXPrune/NLI/SQLite-vec.
+Cambiado: coordination TASKS/STATUS/CHECKPOINT/EVIDENCE_INDEX; nueva carpeta ITER07.
+Fallido: primer pytest por permisos del temp dir del sistema (no código); NLI 3/6.
+Pendiente revisión remota: atribución corregida de scores, instrucciones Kompress/CTXPrune,
+interpretación de offload solicitado vs VRAM medida.
+Autorización requerida: integración en producto (NO ejecutada).

@@ -1,0 +1,137 @@
+{
+  "docs": {
+    "d01": "La autorización para publicar en producción quedó revocada.",
+    "d02": "El despliegue en pruebas sigue permitido.",
+    "d03": "The worker was terminated because the memory limit was exceeded.",
+    "d04": "A network request was cancelled after the service stopped responding.",
+    "d05": "El archivo de configuración contiene una clave duplicada.",
+    "d06": "La lectura del fichero falló porque no existía en disco.",
+    "d07": "The previous successful test result was invalidated by a later regression.",
+    "d08": "The current unit test suite passed after the latest repair.",
+    "d09": "Los datos originales permanecen intactos en un archivo recuperable.",
+    "d10": "El resumen perdió una restricción y no debe usarse como fuente primaria.",
+    "d11": "The vector index was rebuilt after the embedding model revision changed.",
+    "d12": "The old cache was retained only for historical comparison.",
+    "d13": "Se concedió acceso de lectura, pero no permiso de escritura.",
+    "d14": "El administrador confirmó una copia de seguridad independiente.",
+    "d15": "The background task is queued; no execution has been observed yet.",
+    "d16": "A completed task has a recorded exit status and output.",
+    "d17": "El servidor local escucha exclusivamente en la interfaz de loopback.",
+    "d18": "The reranker considers a negated statement highly relevant as well.",
+    "d19": "La transacción se revirtió tras detectar una referencia huérfana.",
+    "d20": "A model file has a matching digest but has not been loaded.",
+    "d21": "The repository was inspected without changing the stable branch.",
+    "d22": "El generador produjo un resultado truncado por el límite de salida.",
+    "d23": "La sesión se restauró con el mismo identificador tras reiniciar.",
+    "d24": "The new tokenizer changed the number of tokens in the prompt."
+  },
+  "cases": [
+    [
+      "c01",
+      "May we still release to production?",
+      [
+        "d01"
+      ]
+    ],
+    [
+      "c02",
+      "¿Qué ocasionó que el proceso fuese eliminado por consumo de recursos?",
+      [
+        "d03"
+      ]
+    ],
+    [
+      "c03",
+      "Which settings file problem involves repeated fields?",
+      [
+        "d05"
+      ]
+    ],
+    [
+      "c04",
+      "¿Por qué dejó de ser válida la comprobación anterior?",
+      [
+        "d07"
+      ]
+    ],
+    [
+      "c05",
+      "Can we recover the unmodified material?",
+      [
+        "d09"
+      ]
+    ],
+    [
+      "c06",
+      "¿Qué ocurrió cuando cambiaron los pesos de representación semántica?",
+      [
+        "d11"
+      ]
+    ],
+    [
+      "c07",
+      "Can the actor edit content, or only view it?",
+      [
+        "d13"
+      ]
+    ],
+    [
+      "c08",
+      "¿Se ha llegado a ejecutar el trabajo en espera?",
+      [
+        "d15"
+      ]
+    ],
+    [
+      "c09",
+      "Can another machine reach the listening service?",
+      [
+        "d17"
+      ]
+    ],
+    [
+      "c10",
+      "¿Qué pasó al encontrar un vínculo sin fuente?",
+      [
+        "d19"
+      ]
+    ],
+    [
+      "c11",
+      "¿Se alteró la rama estable durante la inspección?",
+      [
+        "d21"
+      ]
+    ],
+    [
+      "c12",
+      "Did the conversation identity survive a restart?",
+      [
+        "d23"
+      ]
+    ],
+    [
+      "c13",
+      "Which statements show that checking a digest or a queue is not execution?",
+      [
+        "d15",
+        "d20"
+      ]
+    ],
+    [
+      "c14",
+      "What is the user's bank account number?",
+      []
+    ],
+    [
+      "c15",
+      "¿Qué versión exacta del kernel Linux se ejecutó?",
+      []
+    ]
+  ],
+  "ks": [
+    4,
+    8,
+    16
+  ]
+}

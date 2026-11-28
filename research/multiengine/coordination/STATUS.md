@@ -16,3 +16,8 @@ Pending: remote review, VRAM measurement, H/I/J routes, ITER06 evidence.
 
 UPDATE 2026-11-28T02:26:17.686557+00:00: T006 TESTED. ITER06 iniciado con evidencia nueva (proxy de offload).
 No se han publicado pesos, DBs, venvs ni sesiones. Sin merge ni push a main.
+
+UPDATE 2026-11-28T05:28:56.834521+00:00: ITER07 executed on isolated validation worktree at 7835e7c746bed1429b993d2f7a21ae380dfd37c3.
+Tests 41 passed/1 skipped; 4 managed resources present; corrected benchmark
+complete with no errors; four new-engine smoke tests executed.
+main and feature/context-compactor untouched. No new campaign started.

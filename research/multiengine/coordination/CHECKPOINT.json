@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-28T02:26:17.686557+00:00",
+  "updated_at": "2026-11-28T05:28:56.834521+00:00",
   "branch": "research/multiengine",
-  "base_sha": "97ea9e987656bf64234cfc56ee3a89196a3b579d",
-  "phase": "ITER06_T006_TESTED",
+  "base_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
+  "phase": "ITER07_LOCAL_EXECUTION_TESTED",
   "status": "TESTED",
   "verified": {
     "embedding": "VERIFIED_BY_EXECUTOR",
@@ -11,15 +11,18 @@
     "memory": 12,
     "router": 17,
     "differential_hard_selection": 1.0,
-    "vram_offload_proxy": "VERIFIED_BY_EXECUTOR_PROXY"
+    "vram_offload_proxy": "VERIFIED_BY_EXECUTOR_PROXY",
+    "iter07_tests": "41 passed, 1 skipped",
+    "iter07_resources": "4 managed models PRESENT, 8 SHA256 verified",
+    "iter07_benchmark": "complete=true, no errors, ngl_requested=99",
+    "iter07_smoke": "4 engines executed; NLI 3/6 labels"
   },
   "not_executed": [
     "ITER06",
     "routes H/I/J"
   ],
   "next": [
-    "remote validation of offload proxy",
-    "T005 external ITER06 artifacts",
-    "T007 routes H/I/J"
+    "remote audit of corrected score attribution (T012)",
+    "no new campaign until remote review"
   ]
 }

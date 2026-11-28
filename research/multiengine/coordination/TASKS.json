@@ -99,5 +99,76 @@
     "blockers": [],
     "next_action": "define budget and preregister before execution",
     "updated_at": "2026-11-28T02:21:14.001253+00:00"
+  },
+  {
+    "task_id": "T008",
+    "title": "Run ITER07 remote-agent test quartet",
+    "owner": "hermes-local",
+    "status": "TESTED",
+    "dependencies": [],
+    "priority": "high",
+    "source_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
+    "evidence": "iterations/ITER07/evidence/pytest-valid.txt",
+    "blockers": [],
+    "next_action": "remote agent confirms no component changes",
+    "updated_at": "2026-11-28T05:28:56.834521+00:00"
+  },
+  {
+    "task_id": "T009",
+    "title": "Import and verify local resource catalog",
+    "owner": "hermes-local",
+    "status": "TESTED",
+    "dependencies": [],
+    "priority": "high",
+    "source_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
+    "evidence": "iterations/ITER07/evidence/RESOURCE_INVENTORY.json",
+    "blockers": [],
+    "next_action": "review provenance and licenses",
+    "updated_at": "2026-11-28T05:28:56.834521+00:00"
+  },
+  {
+    "task_id": "T010",
+    "title": "Run corrected specialized-engine benchmark",
+    "owner": "hermes-local",
+    "status": "TESTED",
+    "dependencies": [
+      "T009"
+    ],
+    "priority": "high",
+    "source_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
+    "evidence": "iterations/ITER07/benchmark/results.json",
+    "blockers": [],
+    "next_action": "refute ITER05 score attribution with new results",
+    "updated_at": "2026-11-28T05:28:56.834521+00:00"
+  },
+  {
+    "task_id": "T011",
+    "title": "Smoke-test Kompress, CTXPrune, NLI, sqlite-vec",
+    "owner": "hermes-local",
+    "status": "TESTED",
+    "dependencies": [
+      "T009"
+    ],
+    "priority": "medium",
+    "source_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
+    "evidence": "iterations/ITER07/evidence/smoke-new-engines.json",
+    "blockers": [],
+    "next_action": "validate NLI label agreement independently",
+    "updated_at": "2026-11-28T05:28:56.834521+00:00"
+  },
+  {
+    "task_id": "T012",
+    "title": "Audit corrected reranker attribution",
+    "owner": "remote-agent",
+    "status": "READY_FOR_REVIEW",
+    "dependencies": [
+      "T010"
+    ],
+    "priority": "high",
+    "source_sha": "7835e7c746bed1429b993d2f7a21ae380dfd37c3",
+    "evidence": "embedding_rerank@4 top1 0.923, rrf_rerank@4 recall 1.0",
+    "blockers": [],
+    "next_action": "confirm evaluator interpretation",
+    "updated_at": "2026-11-28T05:28:56.834521+00:00"
   }
 ]
