@@ -10,6 +10,7 @@ import json
 import math
 import time
 import urllib.request
+from collections import OrderedDict
 from dataclasses import dataclass
 
 if __package__:
@@ -23,6 +24,8 @@ MAX_SPANS = 64
 MAX_BATCH = 4
 MAX_ITEM_BYTES = 1536
 MAX_RESPONSE = 8 * 1024 * 1024
+MAX_CACHE_COMPONENTS = 65536
+MAX_CACHE_ENTRIES = 64
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -55,6 +58,7 @@ class RetrievalConfig:
     max_requests: int = 24
     total_timeout: float = 120.0
     min_similarity: float | None = None
+    cache_entries: int = 0
 
     def __post_init__(self):
         for port in (self.embedding_port, self.reranker_port):
@@ -70,6 +74,7 @@ class RetrievalConfig:
                 or type(self.timeout) not in (int, float) or not 0 < self.timeout <= 180
                 or type(self.max_requests) is not int or not 1 <= self.max_requests <= 128
                 or type(self.total_timeout) not in (int, float) or not 0 < self.total_timeout <= 600
+                or type(self.cache_entries) is not int or not 0 <= self.cache_entries <= MAX_CACHE_ENTRIES
                 or (self.min_similarity is not None and (type(self.min_similarity) not in (int, float)
                     or not -1 <= self.min_similarity <= 1))):
             raise ValueError("Invalid retrieval policy")
@@ -101,10 +106,30 @@ class SemanticSpanSelector:
     def __init__(self, config):
         if not isinstance(config, RetrievalConfig):
             raise ValueError("Expected retrieval configuration")
-        self.config = config
+        self._config = config
+        self._cache = OrderedDict()
+        self._cache_limit = min(config.cache_entries, MAX_CACHE_COMPONENTS // config.dimension)
+        self._cache_hits = 0
+        self._deduplicated_inputs = 0
+        self._successful_inputs_sent = 0
         self.requests = 0
         self.last_selection = None
         self._started = None
+
+    @property
+    def config(self):
+        return self._config
+
+    def cache_stats(self):
+        """Counts from completed embedding operations, never content or vectors."""
+        return {"entry_limit": self._cache_limit, "entries": len(self._cache),
+                "cache_hits": self._cache_hits, "deduplicated_inputs": self._deduplicated_inputs,
+                "successful_inputs_sent": self._successful_inputs_sent}
+
+    def _missing_items(self, items):
+        if not self._cache_limit:
+            return list(items)
+        return [item for item in dict.fromkeys(items) if item not in self._cache]
 
     def _call(self, port, path, payload):
         if self.requests >= self.config.max_requests:
@@ -116,25 +141,52 @@ class SemanticSpanSelector:
         if remaining <= 0:
             raise TimeoutError("Local retrieval time budget exhausted")
         self.requests += 1
-        result = _post(port, path, payload, min(self.config.timeout, remaining))
-        if time.monotonic() - self._started > self.config.total_timeout:
-            raise TimeoutError("Local retrieval time budget exhausted")
-        return result
+        try:
+            result = _post(port, path, payload, min(self.config.timeout, remaining))
+            if time.monotonic() - self._started > self.config.total_timeout:
+                raise TimeoutError("Local retrieval time budget exhausted")
+            return result
+        except Exception:
+            self._cache.clear()
+            raise
 
     def embed(self, items):
         """Bounded explicit embedding operation for session-local memory."""
         if (not isinstance(items, (list, tuple)) or not 1 <= len(items) <= MAX_SPANS + 1
                 or any(not isinstance(s, str) or not s or len(s.encode("utf-8")) > MAX_ITEM_BYTES for s in items)):
             raise ValueError("Invalid or oversized embedding inputs")
-        needed = (len(items) + MAX_BATCH - 1) // MAX_BATCH
+        if self._started is not None and time.monotonic() - self._started >= self.config.total_timeout:
+            self._cache.clear()
+            raise TimeoutError("Local retrieval time budget exhausted")
+        missing = self._missing_items(items)
+        needed = (len(missing) + MAX_BATCH - 1) // MAX_BATCH
         if self.requests + needed > self.config.max_requests:
             raise ValueError("Local retrieval request budget insufficient")
         vectors = []
-        for i in range(0, len(items), MAX_BATCH):
-            batch = list(items[i:i + MAX_BATCH])
-            response = self._call(self.config.embedding_port, "/v1/embeddings", {"input": batch})
-            vectors.extend(embedding_results(response, len(batch), self.config.dimension))
-        return vectors
+        try:
+            for i in range(0, len(missing), MAX_BATCH):
+                batch = missing[i:i + MAX_BATCH]
+                response = self._call(self.config.embedding_port, "/v1/embeddings", {"input": batch})
+                vectors.extend(embedding_results(response, len(batch), self.config.dimension))
+        except Exception:
+            # Do not retain a partial batch or reuse entries after a daemon failure.
+            self._cache.clear()
+            raise
+        self._successful_inputs_sent += len(missing)
+        if not self._cache_limit:
+            return vectors
+        resolved = {item: self._cache[item] for item in items if item in self._cache}
+        self._cache_hits += sum(item in resolved for item in items)
+        self._deduplicated_inputs += sum(item not in resolved for item in items) - len(missing)
+        resolved.update((item, tuple(vector)) for item, vector in zip(missing, vectors))
+        # Materialize results before eviction; never expose mutable cached vectors.
+        result = [list(resolved[item]) for item in items]
+        for item in items:
+            self._cache[item] = resolved[item]
+            self._cache.move_to_end(item)
+            if len(self._cache) > self._cache_limit:
+                self._cache.popitem(last=False)
+        return result
 
     def __call__(self, query, spans):
         self.last_selection = None
@@ -163,7 +215,7 @@ class SemanticSpanSelector:
         items = [self.config.query_prefix + query] + [s.text for s in representatives]
         if any(not isinstance(s, str) or not s or len(s.encode("utf-8")) > MAX_ITEM_BYTES for s in items):
             raise ValueError("Oversized local retrieval input")
-        needed = (len(items) + MAX_BATCH - 1) // MAX_BATCH + int(self.config.reranker_port is not None)
+        needed = (len(self._missing_items(items)) + MAX_BATCH - 1) // MAX_BATCH + int(self.config.reranker_port is not None)
         if self.requests + needed > self.config.max_requests:
             raise ValueError("Local retrieval request budget insufficient")
         vectors = self.embed(items)
@@ -174,7 +226,7 @@ class SemanticSpanSelector:
         threshold = self.config.min_similarity
         self.last_selection.update(similarity_scores=[{"id": s.id, "score": score} for s, score in ranked],
                                    experimental_min_similarity=threshold,
-                                   answerability="unknown")
+                                   answerability="unknown", embedding_cache=self.cache_stats())
         pool = [s for s, score in ranked if threshold is None or score >= threshold][:16]
         if not pool:
             self.last_selection["abstention"] = "experimental_similarity_cutoff"
@@ -182,6 +234,10 @@ class SemanticSpanSelector:
         if self.config.reranker_port is not None:
             response = self._call(self.config.reranker_port, "/rerank",
                                   {"query": query, "documents": [s.text for s in pool]})
-            scores = rerank_results([str(s.id) for s in pool], response)
+            try:
+                scores = rerank_results([str(s.id) for s in pool], response)
+            except Exception:
+                self._cache.clear()
+                raise
             return [int(sid) for sid, _ in scores[:6]]
         return [s.id for s in pool[:6]]

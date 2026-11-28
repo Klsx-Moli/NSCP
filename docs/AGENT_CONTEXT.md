@@ -235,3 +235,26 @@ reported rather than repaired by injecting the answer. Every visible
 excerpt is checked against the original offset, reference and digest.
 No provider usage, billing, model accuracy or semantic task success is
 inferred from evidence visibility.
+
+
+## Optional exact-input embedding cache
+
+For CLI previews using `--excerpts embedding` or `embedding-rerank`, add
+`--embedding-cache-entries 64` to reuse validated vectors for identical
+wire input within one selector instance. Default 0 preserves uncached behavior.
+The cache is bounded by both the requested entry limit (0–64) and 65,536
+stored vector components, uses LRU eviction, never persists data, and returns
+independent vector lists. It does not combine source IDs or occurrences,
+cache reranking, or share data across selector instances. Failed inference
+or invalid embedding/reranking responses clear the cache. Failed HTTP calls
+still count toward request limits; cache hits do not extend the total deadline.
+
+Only enable this optimization when the trusted local embedding daemon is
+stable and serves the same model and input policy for the selector's entire
+lifetime. A port and vector dimension do not attest model identity, and a
+silent same-port model replacement is not detectable. Create a new selector
+on any session/model/runtime change. Concurrent use of one selector is not
+supported. CLI creates a fresh selector for each invocation; Hermes and
+memory CLI defaults remain uncached. Reports count actual HTTP requests
+separately from cache statistics from completed embedding operations.
+These counts are not measured latency, quality, or provider token savings.

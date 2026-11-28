@@ -32,6 +32,8 @@ def run_cli(argv=None):
     plan.add_argument("--max-local-requests", type=int, default=24)
     plan.add_argument("--local-total-timeout", type=float, default=120.0)
     plan.add_argument("--min-similarity", type=float, help="Experimental uncalibrated cosine cutoff")
+    plan.add_argument("--embedding-cache-entries", type=int, default=0,
+                      help="Opt-in per-selector exact-input cache (stable local model required)")
     recover = sub.add_parser("recall")
     recover.add_argument("--transcript", required=True)
     recover.add_argument("--reference", required=True)
@@ -52,6 +54,8 @@ def run_cli(argv=None):
                 raise ValueError("Reserves require --window")
             if args.min_similarity is not None and args.excerpts not in ("embedding", "embedding-rerank"):
                 raise ValueError("Similarity cutoff requires embedding selection")
+            if args.embedding_cache_entries and args.excerpts not in ("embedding", "embedding-rerank"):
+                raise ValueError("Embedding cache requires embedding selection")
             kwargs = dict(keep_recent=args.keep_recent, strategy=args.strategy,
                           focus_terms=args.focus)
             if args.excerpts:
@@ -70,7 +74,7 @@ def run_cli(argv=None):
                         embedding_port=args.embedding_port,
                         reranker_port=args.reranker_port if args.excerpts == "embedding-rerank" else None,
                         max_requests=args.max_local_requests, total_timeout=args.local_total_timeout,
-                        min_similarity=args.min_similarity))
+                        min_similarity=args.min_similarity, cache_entries=args.embedding_cache_entries))
                     route = args.excerpts.replace("-", "_")
                     pool = "bounded_all"
                 result = plan_extractive_request(
@@ -80,6 +84,7 @@ def run_cli(argv=None):
                     selector_pool=pool)
                 if pool == "bounded_all":
                     result.report["local_http_requests"] = selector.requests
+                    result.report["embedding_cache"] = selector.cache_stats()
             else:
                 if args.preview_reserve:
                     raise ValueError("--preview-reserve requires --excerpts")

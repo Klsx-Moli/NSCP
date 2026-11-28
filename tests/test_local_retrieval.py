@@ -158,3 +158,37 @@ def test_total_time_budget_stops_additional_inference(monkeypatch):
     with pytest.raises(TimeoutError):
         selector("query", [Span(0, 0, 3, "abc")])
     assert selector.requests == 1
+
+
+def test_cli_opt_in_cache_reports_completed_embedding_inputs(tmp_path, monkeypatch, capsys):
+    import json
+
+    from npsc_agent_cli import run_cli
+
+    rows = history()
+    path = tmp_path / "history.json"
+    path.write_text(json.dumps(rows), encoding="utf-8")
+    calls = []
+
+    def post(port, endpoint, payload, timeout):
+        assert port == 8081 and endpoint == "/v1/embeddings"
+        calls.append(payload["input"])
+        return {"data": [{"index": i, "embedding": [1.0] * 1024}
+                         for i in range(len(payload["input"]))]}
+
+    monkeypatch.setattr("local_retrieval._post", post)
+    args = ["plan", "--input", str(path), "--transcript", str(path), "--budget", "1300",
+            "--keep-recent", "1", "--excerpts", "embedding", "--embedding-port", "8081",
+            "--embedding-cache-entries", "8"]
+    assert run_cli(args) == 0
+    report = json.loads(capsys.readouterr().out)["report"]
+    assert report["embedding_cache"]["entry_limit"] == 8
+    assert report["embedding_cache"]["entries"] == 8
+    assert report["embedding_cache"]["successful_inputs_sent"] == sum(map(len, calls)) > 8
+    assert report["local_http_requests"] == len(calls)
+    assert report["verification"]["status"] == "structurally_verified"
+    args[args.index("embedding")] = "bm25"
+    with pytest.raises(SystemExit) as exc:
+        run_cli(args)
+    assert exc.value.code == 1
+    assert "cache requires embedding" in capsys.readouterr().err
