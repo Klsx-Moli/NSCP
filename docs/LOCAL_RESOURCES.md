@@ -6,7 +6,7 @@ does not start models, modify Ollama stores, download files, or alter PATH.
 PowerShell, from a checkout with src available:
 
     $env:PYTHONPATH = "src"
-    $root = "C:\Users\KLSX\Documents\NSCP\extras"
+    $root = "$HOME\Documents\NSCP\extras"
     python -m nscp_resources --root $root list
     python -m nscp_resources --root $root import-local --from-dir "$HOME\Downloads"
 

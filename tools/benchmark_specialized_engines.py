@@ -175,11 +175,12 @@ def server(executable, model, out, name, args, telemetry):
     if os.name == "nt":
         win = Path(env.get("SystemRoot", r"C:\Windows"))
         env["PATH"] = os.pathsep.join([str(executable.parent), str(win / "System32"), str(win)])
+    model_digest = file_hash(model)
     started = time.monotonic()
     with (out / (name + ".log")).open("x", encoding="utf-8") as log:
         proc = subprocess.Popen(command, env=env, stdout=log, stderr=subprocess.STDOUT)
         info = telemetry[name] = {"pid": proc.pid, "port": port, "arguments": command,
-                                  "model_sha256": file_hash(model)}
+                                  "model_sha256": model_digest}
         try:
             deadline = time.monotonic() + 180
             while time.monotonic() < deadline:

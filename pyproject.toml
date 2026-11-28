@@ -25,6 +25,7 @@ py-modules = [
   "nscp_resources",
   "semantic_memory",
   "semantic_ranking",
+  "context_route_policy",
   "extractive_context",
   "npsc_agent_cli",
   "benchmark_quality",

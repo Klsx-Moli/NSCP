@@ -25,3 +25,10 @@ Static inspection, not a replay of the Windows inference experiments.
 The new modules are independently testable without models. They are not yet
 wired into Hermes, the current request planner, or an actual vector endpoint.
 No previous experimental result has been silently relabeled as verified.
+
+Additional artifact inspection: all 16 D rankings match A, all 16 E rankings
+match B, and all 16 F rankings match C at the same query and k. The earlier
+harness does not retain raw result indices for these comparisons, so a
+corrected replay is required. The new route policy is deliberately a planner,
+requires explicit engine readiness, and reports unmet semantic requirements.
+It is not yet wired into request execution.
