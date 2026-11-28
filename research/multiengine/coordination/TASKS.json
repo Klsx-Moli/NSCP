@@ -217,46 +217,49 @@
     "task_id": "T015",
     "title": "Sync Git and validate new feature candidate in isolated Windows worktree",
     "owner": "hermes-local",
-    "status": "PENDING",
+    "status": "TESTED",
     "dependencies": [
       "T014"
     ],
     "priority": "high",
     "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
-    "evidence": "docs/ITER09_LOCAL_EXECUTION.md",
+    "evidence": "iterations/ITER09/evidence/pytest-targeted.txt",
     "blockers": [],
-    "next_action": "fetch, verify refs; targeted tests including GUI; no rewrites",
-    "updated_at": "2026-11-28"
+    "next_action": "remote agent reviews targeted green suite",
+    "updated_at": "2026-11-28T07:56:21.486257+00:00"
   },
   {
     "task_id": "T016",
     "title": "Run bounded real embedding and persistent memory replay",
     "owner": "hermes-local",
-    "status": "PENDING",
+    "status": "TESTED",
     "dependencies": [
       "T015"
     ],
     "priority": "high",
     "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
-    "evidence": "tools/run_iter09_local.py",
+    "evidence": "iterations/ITER09/evidence/runner-checkpoint.json",
     "blockers": [],
-    "next_action": "publish sanitized checkpoint and log; no DB publication",
-    "updated_at": "2026-11-28"
+    "next_action": "remote agent reviews memory replay and token accounting",
+    "updated_at": "2026-11-28T07:56:21.486257+00:00"
   },
   {
     "task_id": "T017",
     "title": "Qualify actual installed Hermes host hooks and dispatch",
     "owner": "hermes-local",
-    "status": "PENDING",
+    "status": "BLOCKED",
     "dependencies": [
       "T015"
     ],
     "priority": "high",
     "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
-    "evidence": "scripts/qualify_hermes_context.py",
-    "blockers": [],
-    "next_action": "use actual Hermes interpreter/source, temporary home; preserve any failure",
-    "updated_at": "2026-11-28"
+    "evidence": "iterations/ITER09/evidence/host-report.json; iterations/ITER09/evidence/host-report-retry2.json",
+    "blockers": [
+      "PermissionError on isolated Hermes install lease (reproduced twice)",
+      "child ModuleNotFoundError after Hermes runpy relaunch"
+    ],
+    "next_action": "remote agent decides whether host qualification must be adapted; no local host edits",
+    "updated_at": "2026-11-28T07:56:21.486257+00:00"
   },
   {
     "task_id": "T018",
@@ -268,10 +271,12 @@
     ],
     "priority": "medium",
     "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
-    "evidence": "tools/benchmark_compactor_candidates.py",
-    "blockers": [],
-    "next_action": "existing weights only; no semantic acceptance",
-    "updated_at": "2026-11-28"
+    "evidence": "benchmarks/harnesses/ITER09/benchmark_compactor_candidates.py",
+    "blockers": [
+      "conditional task skipped because T017 is BLOCKED"
+    ],
+    "next_action": "execute only after remote authorization",
+    "updated_at": "2026-11-28T07:56:21.486257+00:00"
   },
   {
     "task_id": "T019",

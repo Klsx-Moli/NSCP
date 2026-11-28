@@ -1,0 +1,16 @@
+{
+  "schema": "nscp/hermes-host-qualification/v1",
+  "complete": false,
+  "stages": {},
+  "limitations": [
+    "synthetic persistence",
+    "no provider generation",
+    "no live session",
+    "no plugin discovery or actual compression",
+    "not production authorization"
+  ],
+  "host_head": "a9ff9799e273f525b82718cdc69fdec71b1dca5a",
+  "host_status": "",
+  "error_type": "PermissionError",
+  "error": "[WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: '<TEMP>/nscp-hermes-qualification-REDACTED\\\\installs\\\\dbf130bc238e6101\\\\pm-runtime\\\\generations\\\\006c2d53e0ee482d8045f9475d6ea22a\\\\.leases\\\\a63c333b48af4617b4d6269bf4930afa'"
+}

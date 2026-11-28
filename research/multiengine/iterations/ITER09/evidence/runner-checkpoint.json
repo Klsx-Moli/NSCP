@@ -1,0 +1,312 @@
+{
+  "schema": "nscp/iter09-local/v1",
+  "complete": true,
+  "server": {
+    "embedding": {
+      "pid": 8596,
+      "port": 7952,
+      "arguments": [
+        "<USERPROFILE>\\AppData\\Local\\Microsoft\\WinGet\\Packages\\ggml.llamacpp_Microsoft.Winget.Source_8wekyb3d8bbwe\\llama-server.exe",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "7952",
+        "-m",
+        "<EXTRAS_DIR>\\models\\embedding\\qwen3-embedding-0.6b-q8\\Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "--ctx-size",
+        "2048",
+        "-t",
+        "2",
+        "-tb",
+        "2",
+        "--parallel",
+        "1",
+        "--no-mmproj-auto",
+        "--no-webui",
+        "--embedding",
+        "-ngl",
+        "99"
+      ],
+      "model_sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+      "startup_s": 4.547,
+      "exit_before_cleanup": null,
+      "termination_requested": true,
+      "exit_after_cleanup": 1
+    }
+  },
+  "tasks": {
+    "preview": {
+      "expected_evidence_visible": true,
+      "plan": {
+        "schema": "nscp/extractive-plan/v1",
+        "strategy": "completed_tool_result_references",
+        "tokens_before": 3808,
+        "tokens_after": 792,
+        "budget": 1300,
+        "requested_strategy": "adaptive",
+        "selected_strategy": "relevance",
+        "eligible_results": 1,
+        "focus_protected": 0,
+        "sidecar_protected": 0,
+        "lineage_protected": 0,
+        "unchanged_prefix_messages": 4,
+        "estimated_tokens_saved": 3016,
+        "token_accounting": "utf8_heuristic",
+        "fits_metered_budget": true,
+        "references": [
+          "b07703fd7f4365a539accb3b5a620a1a187bc6041fde32acad9064459ab8dd14"
+        ],
+        "transcript_modified": false,
+        "semantic_equivalence": "not_verified",
+        "preview_reserve_requested": 0,
+        "reference_only_tokens": 313,
+        "reserved_plan_tokens": 313,
+        "extra_archived_results": 0,
+        "excerpts": [
+          {
+            "message_index": 4,
+            "reference": "b07703fd7f4365a539accb3b5a620a1a187bc6041fde32acad9064459ab8dd14",
+            "route": "embedding",
+            "spans": [
+              {
+                "id": 0,
+                "start": 0,
+                "end": 374,
+                "sha256": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a"
+              },
+              {
+                "id": 14,
+                "start": 5236,
+                "end": 5618,
+                "sha256": "19ead5853722aae38115427f0cbabdca4e075c2931f8db5ba0dfeb96aa458a63"
+              },
+              {
+                "id": 15,
+                "start": 5618,
+                "end": 5990,
+                "sha256": "e5de9577549bdb5d4d2f18e39248a9005f4a06bc9cd2cf40d04ff7dfe2610afb"
+              }
+            ]
+          }
+        ],
+        "selector_calls": 1,
+        "selector_failures": 0,
+        "selector_attempts": [
+          {
+            "message_index": 4,
+            "offered_candidates": 28,
+            "outcome": "selected",
+            "selected_ids": [
+              14,
+              0,
+              15
+            ],
+            "selector_telemetry": {
+              "offered_occurrences": 28,
+              "unique_texts": 3,
+              "duplicate_occurrences": 25,
+              "occurrence_groups": {
+                "0": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13
+                ],
+                "14": [
+                  14
+                ],
+                "15": [
+                  15,
+                  16,
+                  17,
+                  18,
+                  19,
+                  20,
+                  21,
+                  22,
+                  23,
+                  24,
+                  25,
+                  26,
+                  27
+                ]
+              },
+              "similarity_scores": [
+                {
+                  "id": 14,
+                  "score": 0.3504350129306562
+                },
+                {
+                  "id": 0,
+                  "score": 0.3081901634724742
+                },
+                {
+                  "id": 15,
+                  "score": 0.3073351682048734
+                }
+              ],
+              "experimental_min_similarity": null,
+              "answerability": "unknown"
+            }
+          }
+        ],
+        "skipped_sources": 0,
+        "excerpt_tokens_added": 479,
+        "requested_selection_route": "embedding",
+        "selector_pool_policy": "bounded_all",
+        "duplicate_preview_spans_skipped": 0,
+        "query_available": true,
+        "verification": {
+          "status": "structurally_verified",
+          "changed_rows": 1,
+          "exact_excerpts": 3,
+          "fits_metered_budget": true,
+          "semantic_equivalence": "not_verified"
+        }
+      },
+      "http_requests": 1
+    },
+    "memory": {
+      "first": {
+        "inserted": 28,
+        "reused": 0,
+        "source_spans": 28,
+        "embedded_unique_texts": 3
+      },
+      "replay": {
+        "inserted": 0,
+        "reused": 28,
+        "source_spans": 28
+      },
+      "first_http_requests": 1,
+      "replay_http_requests": 0,
+      "exact_recall": true,
+      "session_isolation": true,
+      "hits": [
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 5236,
+          "end": 5618,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nPublication outside the isolated branch is forbidden.\nINFO routine cleanup completed\nINFO routine cleanup completed\nINFO routine cleanup completed\nINFO routine cleanup completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "19ead5853722aae38115427f0cbabdca4e075c2931f8db5ba0dfeb96aa458a63",
+          "score": 0.3504350129306562,
+          "trust": "historical_data_not_authorization"
+        },
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 0,
+          "end": 374,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a",
+          "score": 0.3081901634724742,
+          "trust": "historical_data_not_authorization"
+        },
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 374,
+          "end": 748,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a",
+          "score": 0.3081901634724742,
+          "trust": "historical_data_not_authorization"
+        },
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 748,
+          "end": 1122,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a",
+          "score": 0.3081901634724742,
+          "trust": "historical_data_not_authorization"
+        },
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 1122,
+          "end": 1496,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a",
+          "score": 0.3081901634724742,
+          "trust": "historical_data_not_authorization"
+        },
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 1496,
+          "end": 1870,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a",
+          "score": 0.3081901634724742,
+          "trust": "historical_data_not_authorization"
+        },
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 1870,
+          "end": 2244,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a",
+          "score": 0.3081901634724742,
+          "trust": "historical_data_not_authorization"
+        },
+        {
+          "session": "s1",
+          "episode": "synthetic",
+          "message": "log",
+          "role": "tool",
+          "tool_call": "synthetic",
+          "start": 2244,
+          "end": 2618,
+          "text": "INFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\nINFO routine diagnostic completed\n",
+          "source_digest": "059c4010e8dd669f7ba9757285c08b7cd5a24a95d541ed266b525e6b213eb0aa",
+          "span_digest": "0b08d85f205aa4facd9b93a0f76906fe2f820cd7cd80923a21dc9bae62c2094a",
+          "score": 0.3081901634724742,
+          "trust": "historical_data_not_authorization"
+        }
+      ],
+      "semantic_equivalence": "not_verified"
+    }
+  }
+}

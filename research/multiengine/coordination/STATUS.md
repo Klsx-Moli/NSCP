@@ -29,3 +29,7 @@ six-model catalog verified; prepared runner complete=true; NLI 15/21 with semant
 No downloads, no new campaign, no product/main/feature changes.
 
 REMOTE REVIEW 2026-11-28: ITER08 artifacts inspected; CI 5fbdd03 success 703 full +10 subtests, 231 targeted. Exact old semantic plan independently reconstructed 3808/313/1242; projecting exact duplicate removal gives 643 estimated tokens, not new inference. 5/6 selected spans had identical text. Both ONNX scorers and equal-score baseline 4/6; NLI 15/21, not qualified. T013/T014 accepted only for reported execution and saved-evidence scope. New feature candidate 98f96fa9ec7a6dba7a46d26aeb8481597e9e0976, eight commits, new CI pending at publication. T015-T018 bounded local tests prepared; T019 remote review. No production activation.
+
+UPDATE 2026-11-28T07:56:21.486257+00:00: ITER09 at 98f96fa9ec7a6dba7a46d26aeb8481597e9e0976: T015 TESTED (253 passed, 1 skipped), T016 TESTED
+(runner complete=true, 28/28 replay reuse), T017 BLOCKED by reproducible Hermes
+isolated-install PermissionError; T018 not executed. No downloads, no product/main/feature changes.

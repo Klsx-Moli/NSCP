@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-28",
+  "updated_at": "2026-11-28T07:56:21.486257+00:00",
   "branch": "research/multiengine",
-  "base_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45",
-  "phase": "ITER08_REVIEWED_ITER09_CANDIDATE_READY",
-  "status": "READY_FOR_REVIEW",
+  "base_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
+  "phase": "ITER09_T017_BLOCKED",
+  "status": "BLOCKED",
   "verified": {
     "embedding": "VERIFIED_BY_EXECUTOR",
     "reranker": "VERIFIED_BY_EXECUTOR",
@@ -23,7 +23,10 @@
     "iter08_runner": "complete=true; NLI 15/21; semantic_gate=not_validated",
     "iter08_replay": "VERIFIED_BY_ME: reconstructed exact saved reference and 3808/313/1242 token heuristic; exact duplicate removal projection 643 (not model replay)",
     "iter08_onnx": "REPORTED_BY_EXECUTOR: both ONNX routes 4/6, same as deterministic; no incremental evidence advantage demonstrated",
-    "iter08_nli": "15/21 diagnostic; confident contradiction/authority errors; no authority"
+    "iter08_nli": "15/21 diagnostic; confident contradiction/authority errors; no authority",
+    "iter09_tests": "253 passed, 1 skipped",
+    "iter09_runner": "complete=true; memory replay reused 28/28; exact_recall=true",
+    "iter09_host": "BLOCKED: PermissionError on isolated Hermes install lease (twice)"
   },
   "not_executed": [
     "ITER06",
@@ -35,11 +38,8 @@
     "full product task-continuity benchmark"
   ],
   "next": [
-    "T015 start/end sync and local tests",
-    "T016 memory/preview replay",
-    "T017 actual host qualification",
-    "T018 optional compactor diagnostic",
-    "T019 remote acceptance review"
+    "remote decision on T017 host qualification failure",
+    "T018 only after explicit authorization"
   ],
   "feature_candidate_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976"
 }

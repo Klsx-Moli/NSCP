@@ -66,3 +66,11 @@ REMOTE DEVELOPMENT 2026-11-28
 - Feature 98f96fa9ec7a6dba7a46d26aeb8481597e9e0976: exact-span dedup, independent request verification, atomic private memory CLI, experimental Hermes hybrid semantic selection, GUI workbench, real host qualification script, strict llama.cpp compactor candidate with actual chat token meter, explicit context envelope and request/time limits.
 - Use docs/ITER09_LOCAL_EXECUTION.md. Start/end synchronization is mandatory; read coordination/AGENT_SYNC.md. No downloads. T015 tests; T016 single embedding runner; T017 actual installed host source/interpreter in temporary home; T018 optional three-case compactor diagnostic. Publish sanitized evidence only in research/multiengine. No changes to main, feature, active Hermes or skills. Keep all original worktrees.
 - Do not interpret schema discovery as actual tool dispatch. Actual host qualification is synthetic and does not authorize live activation. No calibrated abstention or semantic truth claims.
+
+BLOQUE ITER09 2026-11-28T07:56:21.486257+00:00
+Realizado: sincronización (fetch, research ff a e6a36a4), worktree detached desde 98f96fa9ec7a6dba7a46d26aeb8481597e9e0976, T015 y T016.
+Fallido: T017 en dos intentos con PermissionError sobre arriendo de instalación temporal de Hermes;
+el hijo relanzado también reportó ModuleNotFoundError. Se conservan reportes y logs. Sin upgradear
+ni activar Hermes productivo.
+Pendiente: T018 no ejecutada por condición; revisión remota de T017 y autorización para reintentar.
+No se publicaron DBs, modelos, sesiones ni rutas privadas.

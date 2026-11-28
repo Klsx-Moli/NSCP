@@ -1,0 +1,16 @@
+hermes: preparing dependencies for this data root (the checkout's updates belong to <HERMES_ROOT>)...
+Preparing the isolated Hermes runtime…
+  → Installing Python dependencies…
+  ✓ Installing Python dependencies
+  → Installing Python dependencies…
+  ✓ Installing Python dependencies
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys, runpy; sys.path.insert(0, '<HERMES_SOURCE>'); sys.argv = ['<VALIDATION_WORKTREE>/scripts/qualify_hermes_context.py', '--hermes-source', '<HERMES_SOURCE>', '--out', '<EVIDENCE_DIR>/ITER09-validation/host-report-retry2.json']; sys._hermes_relaunched = True; runpy.run_path('<VALIDATION_WORKTREE>\\scripts\\qualify_hermes_context.py', run_name='__main__')
+                                                                                                                                                                                                                                                                                                                                                                                                                    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 294, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "<VALIDATION_WORKTREE>\scripts\qualify_hermes_context.py", line 22, in <module>
+    from install_hermes_context import install
+ModuleNotFoundError: No module named 'install_hermes_context'
