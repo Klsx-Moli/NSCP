@@ -61,3 +61,8 @@ Fallido/negativo: NLI 15/21 sin calibración ni autoridad; casos unicode/semanti
 logs ONNX vacíos; baseline determinista no mostró la evidencia esperada.
 Pendiente revisión remota: interpretación científica de NLI y del preview semántico.
 Sin autorización para integración en producto.
+
+REMOTE DEVELOPMENT 2026-11-28
+- Feature 98f96fa9ec7a6dba7a46d26aeb8481597e9e0976: exact-span dedup, independent request verification, atomic private memory CLI, experimental Hermes hybrid semantic selection, GUI workbench, real host qualification script, strict llama.cpp compactor candidate with actual chat token meter, explicit context envelope and request/time limits.
+- Use docs/ITER09_LOCAL_EXECUTION.md. Start/end synchronization is mandatory; read coordination/AGENT_SYNC.md. No downloads. T015 tests; T016 single embedding runner; T017 actual installed host source/interpreter in temporary home; T018 optional three-case compactor diagnostic. Publish sanitized evidence only in research/multiengine. No changes to main, feature, active Hermes or skills. Keep all original worktrees.
+- Do not interpret schema discovery as actual tool dispatch. Actual host qualification is synthetic and does not authorize live activation. No calibrated abstention or semantic truth claims.

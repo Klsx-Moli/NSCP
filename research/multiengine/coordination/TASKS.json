@@ -183,30 +183,110 @@
     "task_id": "T013",
     "title": "Import existing CTXPrune and NLI bundles into shared extras",
     "owner": "hermes-local",
-    "status": "TESTED",
+    "status": "ACCEPTED",
     "dependencies": [
       "T009"
     ],
     "priority": "high",
     "source_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45",
     "evidence": "iterations/ITER08/evidence/resources-verify.json",
-    "blockers": [],
-    "next_action": "remote agent confirms six-model catalog state",
-    "updated_at": "2026-11-28T06:19:50.317157+00:00"
+    "blockers": [
+      "Six-model catalog and hashes reported by executor; reviewed published inventory; no independent rehash of local binaries."
+    ],
+    "next_action": "see ITER08_REMOTE_REVIEW.md and ITER09 tasks",
+    "updated_at": "2026-11-28"
   },
   {
     "task_id": "T014",
     "title": "Execute prepared ITER08 local runner",
     "owner": "hermes-local",
-    "status": "TESTED",
+    "status": "ACCEPTED",
     "dependencies": [
       "T013"
     ],
     "priority": "high",
     "source_sha": "5fbdd030ec5571039159534a413ff8b44fe3dc45",
     "evidence": "iterations/ITER08/evidence/checkpoint.json",
+    "blockers": [
+      "Accepted execution of ITER08 within synthetic development scope; NLI and model superiority explicitly not accepted."
+    ],
+    "next_action": "see ITER08_REMOTE_REVIEW.md and ITER09 tasks",
+    "updated_at": "2026-11-28"
+  },
+  {
+    "task_id": "T015",
+    "title": "Sync Git and validate new feature candidate in isolated Windows worktree",
+    "owner": "hermes-local",
+    "status": "PENDING",
+    "dependencies": [
+      "T014"
+    ],
+    "priority": "high",
+    "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
+    "evidence": "docs/ITER09_LOCAL_EXECUTION.md",
     "blockers": [],
-    "next_action": "remote agent interprets NLI negative results and semantic preview",
-    "updated_at": "2026-11-28T06:19:50.317157+00:00"
+    "next_action": "fetch, verify refs; targeted tests including GUI; no rewrites",
+    "updated_at": "2026-11-28"
+  },
+  {
+    "task_id": "T016",
+    "title": "Run bounded real embedding and persistent memory replay",
+    "owner": "hermes-local",
+    "status": "PENDING",
+    "dependencies": [
+      "T015"
+    ],
+    "priority": "high",
+    "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
+    "evidence": "tools/run_iter09_local.py",
+    "blockers": [],
+    "next_action": "publish sanitized checkpoint and log; no DB publication",
+    "updated_at": "2026-11-28"
+  },
+  {
+    "task_id": "T017",
+    "title": "Qualify actual installed Hermes host hooks and dispatch",
+    "owner": "hermes-local",
+    "status": "PENDING",
+    "dependencies": [
+      "T015"
+    ],
+    "priority": "high",
+    "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
+    "evidence": "scripts/qualify_hermes_context.py",
+    "blockers": [],
+    "next_action": "use actual Hermes interpreter/source, temporary home; preserve any failure",
+    "updated_at": "2026-11-28"
+  },
+  {
+    "task_id": "T018",
+    "title": "Run small compactor candidate diagnostic (optional original baseline)",
+    "owner": "hermes-local",
+    "status": "PENDING",
+    "dependencies": [
+      "T015"
+    ],
+    "priority": "medium",
+    "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
+    "evidence": "tools/benchmark_compactor_candidates.py",
+    "blockers": [],
+    "next_action": "existing weights only; no semantic acceptance",
+    "updated_at": "2026-11-28"
+  },
+  {
+    "task_id": "T019",
+    "title": "Review remaining product gates, empirical quality and integration",
+    "owner": "remote-agent",
+    "status": "PENDING",
+    "dependencies": [
+      "T016",
+      "T017"
+    ],
+    "priority": "high",
+    "source_sha": "98f96fa9ec7a6dba7a46d26aeb8481597e9e0976",
+    "evidence": "coordination/ITER08_REMOTE_REVIEW.md",
+    "blockers": [],
+    "next_action": "remote agent reviews local artifacts; no auto activation",
+    "updated_at": "2026-11-28"
   }
 ]

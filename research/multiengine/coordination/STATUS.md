@@ -27,3 +27,5 @@ REMOTE REVIEW 2026-11-28T05:52:00Z: T012 ACCEPTED for replayed index attribution
 UPDATE 2026-11-28T06:19:50.317157+00:00: ITER08 local validation complete at 5fbdd030ec5571039159534a413ff8b44fe3dc45. Tests 51 passed/1 skipped;
 six-model catalog verified; prepared runner complete=true; NLI 15/21 with semantic_gate=not_validated.
 No downloads, no new campaign, no product/main/feature changes.
+
+REMOTE REVIEW 2026-11-28: ITER08 artifacts inspected; CI 5fbdd03 success 703 full +10 subtests, 231 targeted. Exact old semantic plan independently reconstructed 3808/313/1242; projecting exact duplicate removal gives 643 estimated tokens, not new inference. 5/6 selected spans had identical text. Both ONNX scorers and equal-score baseline 4/6; NLI 15/21, not qualified. T013/T014 accepted only for reported execution and saved-evidence scope. New feature candidate 98f96fa9ec7a6dba7a46d26aeb8481597e9e0976, eight commits, new CI pending at publication. T015-T018 bounded local tests prepared; T019 remote review. No production activation.
