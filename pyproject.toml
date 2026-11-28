@@ -23,6 +23,8 @@ package-dir = {"" = "src"}
 py-modules = [
   "agent_context",
   "nscp_resources",
+  "semantic_memory",
+  "semantic_ranking",
   "extractive_context",
   "npsc_agent_cli",
   "benchmark_quality",
