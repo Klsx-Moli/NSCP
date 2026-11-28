@@ -45,6 +45,7 @@ py-modules = [
   "npsc_compact_cli",
   "summarizer",
   "local_summary",
+  "local_llama_summary",
   "compiler_defaults",
   "clarification_gate",
   "constraint_normalizer",

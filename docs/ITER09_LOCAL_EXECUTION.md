@@ -31,3 +31,15 @@ Start/end synchronization: fetch origin, record actual feature/research/main
 refs, preserve dirty worktrees, fast-forward research only if safe, publish
 sanitized evidence only there, verify remote SHA. Never merge main, overwrite
 local changes or activate production Hermes.
+
+
+Optional bounded compactor comparison (only after the mandatory tests):
+    
+    python tools/benchmark_compactor_candidates.py --root ABSOLUTE_EXTRAS --server ABSOLUTE_LLAMA_SERVER --out NEW_COMPACTOR_EVIDENCE --ngl 99
+
+Pass --baseline only with an existing original Qwen GGUF path. Three
+synthetic cases per model. The b9947 server input_tokens endpoint counts
+the actual chat template before generation; strict completion and usage
+checks reject truncated/inconsistent responses. The adapter is a candidate
+generator, not permission or semantic truth. No Ollama store change.
+No automatic production activation.

@@ -162,16 +162,18 @@ def summary(rows):
 
 
 @contextmanager
-def server(executable, model, out, name, args, telemetry):
+def server(executable, model, out, name, args, telemetry, *, context_size=2048):
     # The data is synthetic; we still avoid proxy/redirect and verify child
     # process liveness. Port release before spawn has a small TOCTOU window.
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
         port = s.getsockname()[1]
     command = [str(executable), "--host", "127.0.0.1", "--port", str(port),
-               "-m", str(model), "--ctx-size", "2048", "-t", "2", "-tb", "2",
+               "-m", str(model), "--ctx-size", str(context_size), "-t", "2", "-tb", "2",
+               "--parallel", "1", "--no-mmproj-auto",
                "--no-webui", *args]
-    env = os.environ.copy()
+    env = {k: v for k, v in os.environ.items() if not k.startswith("LLAMA_ARG_")}
+    env["HF_HUB_OFFLINE"] = "1"
     if os.name == "nt":
         win = Path(env.get("SystemRoot", r"C:\Windows"))
         env["PATH"] = os.pathsep.join([str(executable.parent), str(win / "System32"), str(win)])
