@@ -12,6 +12,7 @@ npsc = "npsc_cli:run_cli"
 npsc-compact = "npsc_compact_cli:run_cli"
 npsc-agent-context = "npsc_agent_cli:run_cli"
 nscp-resources = "nscp_resources:run_cli"
+nscp-memory = "memory_index:run_cli"
 npsc-gui = "npsc_gui.main:main"
 
 [build-system]
@@ -24,6 +25,7 @@ py-modules = [
   "agent_context",
   "nscp_resources",
   "semantic_memory",
+  "memory_index",
   "semantic_ranking",
   "context_route_policy",
   "local_onnx",

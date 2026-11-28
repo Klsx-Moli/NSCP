@@ -107,41 +107,81 @@ class SemanticMemory:
         self.close()
 
     def add(self, *, episode, message, role, content, start, end, vector, tool_call=""):
+        return bool(self.add_many(episode=episode, message=message, role=role,
+                                  content=content, tool_call=tool_call,
+                                  spans=[(start, end, vector)]))
+
+    def _source_args(self, episode, message, role, content, tool_call):
         episode, message = _identifier(episode), _identifier(message)
-        if role not in ROLES or not isinstance(content, str) or len(content) > 2_000_000:
+        if (not isinstance(role, str) or role not in ROLES or not isinstance(content, str)
+                or not 0 < len(content) <= 2_000_000):
             raise ValueError("Invalid source")
         if not isinstance(tool_call, str) or (role == "tool" and not tool_call):
             raise ValueError("Invalid tool identity")
         if tool_call:
             _identifier(tool_call)
-        start = _integer(start, 0, len(content))
-        end = _integer(end, start + 1, len(content))
-        normalized = _vector(vector, self.dimension)
-        # Canonical JSON makes exact replay distinguishable from conflicting
-        # re-embedding. Re-embedding with a different identity is allowed.
-        encoded = json.dumps(normalized, separators=(",", ":"), allow_nan=False)
-        digest, span_digest = _digest(content), _digest(content[start:end])
-        key = (self.session_id, episode, message)
-        vkey = (*key, start, end, self.embedding_id)
+        return (self.session_id, episode, message), (role, tool_call, content, _digest(content))
+
+    def _validate_existing(self, key, source):
+        old = self.db.execute("SELECT role,tool_call,content,digest FROM sources "
+                              "WHERE session=? AND episode=? AND message=?", key).fetchone()
+        if old is not None and tuple(old) != source:
+            raise ValueError("Conflicting immutable source identity")
+        return old is not None
+
+    def indexed_offsets(self, *, episode, message, role, content, tool_call=""):
+        """Read known offsets for this exact immutable source and vector space."""
+        key, source = self._source_args(episode, message, role, content, tool_call)
+        with self.db:
+            self.db.execute("BEGIN")
+            if not self._validate_existing(key, source):
+                return set()
+            rows = self.db.execute("SELECT start,end,dimension,vector,span_digest FROM vectors "
+                                   "WHERE session=? AND episode=? AND message=? AND embedding=?",
+                                   (*key, self.embedding_id))
+            offsets = set()
+            for row in rows:
+                start = _integer(row["start"], 0, len(content))
+                end = _integer(row["end"], start + 1, len(content))
+                if row["dimension"] != self.dimension or row["span_digest"] != _digest(content[start:end]):
+                    raise ValueError("Stored span integrity mismatch")
+                _vector(json.loads(row["vector"]), self.dimension)
+                offsets.add((start, end))
+            return offsets
+
+    def add_many(self, *, episode, message, role, content, spans, tool_call=""):
+        """Commit one source and all supplied vectors atomically; no partial insert."""
+        key, source = self._source_args(episode, message, role, content, tool_call)
+        if not isinstance(spans, (list, tuple)) or not 1 <= len(spans) <= 512:
+            raise ValueError("Invalid vector batch")
+        prepared, seen = [], set()
+        for item in spans:
+            if not isinstance(item, (tuple, list)) or len(item) != 3:
+                raise ValueError("Invalid span")
+            start, end, vector = item
+            start = _integer(start, 0, len(content))
+            end = _integer(end, start + 1, len(content))
+            if (start, end) in seen:
+                raise ValueError("Duplicate span in batch")
+            seen.add((start, end))
+            encoded = json.dumps(_vector(vector, self.dimension), separators=(",", ":"), allow_nan=False)
+            prepared.append(((*key, start, end, self.embedding_id),
+                             (self.dimension, encoded, _digest(content[start:end]))))
+        added = 0
         with self.db:
             self.db.execute("BEGIN IMMEDIATE")
-            old = self.db.execute("SELECT role,tool_call,content,digest FROM sources "
-                                  "WHERE session=? AND episode=? AND message=?", key).fetchone()
-            source = (role, tool_call, content, digest)
-            if old is None:
+            if not self._validate_existing(key, source):
                 self.db.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,?)", (*key, *source))
-            elif tuple(old) != source:
-                raise ValueError("Conflicting immutable source identity")
-            old = self.db.execute("SELECT dimension,vector,span_digest FROM vectors WHERE "
-                                  "session=? AND episode=? AND message=? AND start=? AND end=? AND embedding=?",
-                                  vkey).fetchone()
-            payload = (self.dimension, encoded, span_digest)
-            if old is None:
-                self.db.execute("INSERT INTO vectors VALUES (?,?,?,?,?,?,?,?,?)", (*vkey, *payload))
-                return True
-            if tuple(old) != payload:
-                raise ValueError("Conflicting embedding replay")
-            return False
+            for vkey, payload in prepared:
+                old = self.db.execute("SELECT dimension,vector,span_digest FROM vectors WHERE "
+                                      "session=? AND episode=? AND message=? AND start=? AND end=? AND embedding=?",
+                                      vkey).fetchone()
+                if old is None:
+                    self.db.execute("INSERT INTO vectors VALUES (?,?,?,?,?,?,?,?,?)", (*vkey, *payload))
+                    added += 1
+                elif tuple(old) != payload:
+                    raise ValueError("Conflicting embedding replay")
+        return added
 
     def _checked_source(self, row):
         content = row["content"]
@@ -167,15 +207,22 @@ class SemanticMemory:
                 "next_offset": end if end < len(content) else None,
                 "trust": "historical_data_not_authorization"}
 
-    def search(self, vector, *, k=8):
+    def search(self, vector, *, k=8, max_vectors=10000):
         _integer(k, 1, 256)
+        _integer(max_vectors, 1, 100000)
+        total = self.db.execute("SELECT COUNT(*) FROM vectors WHERE session=? AND embedding=?",
+                                (self.session_id, self.embedding_id)).fetchone()[0]
+        if total > max_vectors:
+            raise ValueError("Memory search exceeds configured scan limit")
         query = _vector(vector, self.dimension)
         rows = self.db.execute("""SELECT v.*,s.content,s.digest,s.role,s.tool_call
             FROM vectors v JOIN sources s USING(session,episode,message)
             WHERE v.session=? AND v.embedding=? ORDER BY v.episode,v.message,v.start,v.end""",
                                (self.session_id, self.embedding_id))
         hits = []
-        for row in rows:
+        for index, row in enumerate(rows):
+            if index >= max_vectors:
+                raise ValueError("Memory search exceeds configured scan limit")
             content = self._checked_source(row)
             start = _integer(row["start"], 0, len(content))
             end = _integer(row["end"], start + 1, len(content))

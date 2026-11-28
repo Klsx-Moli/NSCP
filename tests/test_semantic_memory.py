@@ -100,3 +100,26 @@ def test_metrics_cutoff_multiple_gold_and_no_answer():
     assert retrieval_metrics(["a"], [], k=4)["false_answer"]
     with pytest.raises(ValueError):
         retrieval_metrics(["a", "a"], ["a"], k=2)
+
+
+
+def test_atomic_batch_rolls_back_on_late_conflict(tmp_path):
+    with SemanticMemory(tmp_path / "m.sqlite", session_id="s", embedding_id="v1", dimension=2) as m:
+        add(m, content="abcdef")
+        with pytest.raises(ValueError, match="replay"):
+            m.add_many(episode="e", message="m", role="tool", tool_call="call",
+                       content="abcdef", spans=[(0, 3, [1, 0]), (0, 6, [0, 1])])
+        assert m.indexed_offsets(episode="e", message="m", role="tool", tool_call="call",
+                                 content="abcdef") == {(0, 6)}
+        assert len(m.search([1, 0])) == 1
+        with pytest.raises(ValueError, match="immutable"):
+            m.indexed_offsets(episode="e", message="m", role="tool", tool_call="call",
+                              content="different")
+
+
+def test_search_scan_limit_is_not_silent_truncation(tmp_path):
+    with SemanticMemory(tmp_path / "m.sqlite", session_id="s", embedding_id="v1", dimension=2) as m:
+        add(m)
+        add(m, message="another")
+        with pytest.raises(ValueError, match="scan limit"):
+            m.search([1, 2], max_vectors=1)

@@ -101,6 +101,21 @@ class SemanticSpanSelector:
         self.requests += 1
         return _post(port, path, payload, self.config.timeout)
 
+    def embed(self, items):
+        """Bounded explicit embedding operation for session-local memory."""
+        if (not isinstance(items, (list, tuple)) or not 1 <= len(items) <= MAX_SPANS + 1
+                or any(not isinstance(s, str) or not s or len(s.encode("utf-8")) > MAX_ITEM_BYTES for s in items)):
+            raise ValueError("Invalid or oversized embedding inputs")
+        needed = (len(items) + MAX_BATCH - 1) // MAX_BATCH
+        if self.requests + needed > self.config.max_requests:
+            raise ValueError("Local retrieval request budget insufficient")
+        vectors = []
+        for i in range(0, len(items), MAX_BATCH):
+            batch = list(items[i:i + MAX_BATCH])
+            response = self._call(self.config.embedding_port, "/v1/embeddings", {"input": batch})
+            vectors.extend(embedding_results(response, len(batch), self.config.dimension))
+        return vectors
+
     def __call__(self, query, spans):
         self.last_selection = None
         if not isinstance(query, str) or not query.strip() or not 1 <= len(spans) <= MAX_SPANS:
@@ -131,11 +146,7 @@ class SemanticSpanSelector:
         needed = (len(items) + MAX_BATCH - 1) // MAX_BATCH + int(self.config.reranker_port is not None)
         if self.requests + needed > self.config.max_requests:
             raise ValueError("Local retrieval request budget insufficient")
-        vectors = []
-        for i in range(0, len(items), MAX_BATCH):
-            batch = items[i:i + MAX_BATCH]
-            response = self._call(self.config.embedding_port, "/v1/embeddings", {"input": batch})
-            vectors.extend(embedding_results(response, len(batch), self.config.dimension))
+        vectors = self.embed(items)
         q = vectors[0]
         ranked = sorted(zip(representatives, vectors[1:]), key=lambda pair: (
             -math.fsum(a * b for a, b in zip(q, pair[1])), pair[0].id))
